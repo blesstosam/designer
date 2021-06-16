@@ -1,0 +1,44 @@
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+
+<h1>通过外部响应式数据改变dom</h1>
+<button click="changeMsg">changeMsg</button>
+<div id="app"></div>
+
+<script>
+  const com = {
+    name: 'test',
+    props: ['msg'],
+    template: `<div>{{msg}}</div>`
+  }
+
+  const vmData = new Vue({
+    data: {
+      param: {
+        msg: '111'
+      }
+    }
+  })
+  document.querySelector('button').addEventListener('click', () => {
+    vmData._data.param.msg = '22222'
+  })
+
+  new Vue({
+    component: {
+      com
+    },
+    data: {
+      param: {
+        msg: '1'
+      }
+    },
+    mounted() {
+      setTimeout(() => {
+        this.param.msg = 2
+      }, 2000)
+    },
+    render(h) {
+      // 通过外部响应式数据改变dom
+      return h(com, { props: vmData._data.param })
+    }
+  }).$mount('#app')
+</script>
