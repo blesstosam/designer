@@ -21,6 +21,9 @@
 .toolbar .el-icon-monitor {
   font-size: 20px;
 }
+.toolbar .el-icon-delete {
+  font-size: 20px;
+}
 .toolbar .toolbar-content {
   display: flex;
 }
@@ -51,6 +54,10 @@
         <i class="el-icon-right"></i>
         <span>下一步</span>
       </span>
+      <span class="tool-item" @click="clear">
+        <i class="el-icon-delete"></i>
+        <span>清空</span>
+      </span>
       <span class="tool-item" @click="preview">
         <i class="el-icon-monitor"></i>
         <span>预览</span>
@@ -65,6 +72,7 @@
 
 <script>
 import { computed, reactive, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 // import { _forEach } from '../lib/util.js'
 // import { getCurrentViewNodeModel } from '../config.js'
 
@@ -104,9 +112,9 @@ export default {
   methods: {
     transform(_arr) {
       // 将组件数据的一些字段处理一下
-      const traverse = (arr) => {
+      const traverse = arr => {
         for (let i = 0; i < arr.length; i++) {
-          const item  = arr[i]
+          const item = arr[i]
           delete item.$el
           delete item.accept
           delete item.icon
@@ -118,10 +126,17 @@ export default {
       }
       traverse(_arr)
     },
+    clear() {
+      this.designer.__canvas__.clear()
+    },
     save() {
       const { viewModel } = this.designer.__canvas__
       this.transform(viewModel)
       localStorage.setItem('viewModel', JSON.stringify(viewModel))
+      ElMessage.success({
+        duration: 1000,
+        message: 'save succeed!'
+      })
     },
     preview() {
       this.save()

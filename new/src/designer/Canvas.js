@@ -72,6 +72,12 @@ export class Canvas {
     })
   }
 
+  clear() {
+    this.viewModel = []
+    this.$canvasEle.innerHTML = ''
+    localStorage.clear('viewModel')
+  }
+
   /**
    * 根据 viewModel 来渲染页面
    * @returns {*} void
