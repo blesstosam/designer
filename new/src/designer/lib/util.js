@@ -42,3 +42,9 @@ export function cloneDeep(data) {
 export function _forEach(obj, cb) {
   Object.keys(obj).forEach(k => cb(obj[k], k))
 }
+
+export function makeLogger(prefix) {
+  return function(...arg) {
+    console.log(`-----------${prefix}----------`, ...arg)
+  }
+}

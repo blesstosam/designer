@@ -1,7 +1,8 @@
 import { createApp, reactive, h } from 'vue'
-import { VButtonCfg, VButton } from './components/button/index.js'
-import { VText, VTextCfg } from './components/text/index.js'
-import { VInput } from './components/input/index.js'
+import { VBlock, VBlockCfg } from './components/block/index'
+import { VButtonCfg, VButton } from './components/button/index'
+import { VText, VTextCfg } from './components/text/index'
+import { VInput } from './components/input/index'
 import { parse } from './vue/attr-panel/AttrPanel.vue'
 import { cssProperty } from './cssProperty'
 import { componentTypes } from './Component'
@@ -85,7 +86,7 @@ function parseProps(attrs) {
 export const componentList = [
   {
     id: '0', // 唯一标示 绑定在标签上 在dragstart的时候通过该属性获取组件属性
-    name: 'AText',
+    name: 'VText',
     title: '文字',
     icon: {
       type: 'img', // icon 有 image/font-icon/等几种
@@ -100,6 +101,7 @@ export const componentList = [
     reactiveProps: null,
     render(newProps) {
       // newProps 为对象
+      console.log(newProps, '====> new props')
       this.reactiveProps = this.reactiveProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
@@ -120,7 +122,7 @@ export const componentList = [
 
   {
     id: '1',
-    name: 'ABlock',
+    name: 'VBlock',
     title: '区块',
     icon: {
       type: 'img',
@@ -129,26 +131,35 @@ export const componentList = [
     componentType: LAYOUT,
     $el: null,
     vm: null,
-    attrs: {
-      title: 'ABlock'
+    attrs: VBlockCfg,
+    props() {
+      return parseProps(this.attrs)
     },
-    render() {
-      const div = document.createElement('div')
-      div.textContent = this.content
-      div.style.padding = '2px'
-      div.style.width = '200px'
-      div.style.height = '50px'
-      div.style.display = 'inline-block'
-      div.style.border = '1px dotted #aaaaaa'
-      return div
+    reactiveProps: null,
+    render(newProps) {
+      console.log(newProps, '====> new props')
+      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      // 已经mount过 需要重新计算props 改变props vue会自动更新
+      if (this.$el && newProps) {
+        for (const k in newProps) {
+          if (cssProperty[k]) {
+            this.reactiveProps.style[k] = newProps[k]
+          } else {
+            this.reactiveProps[k] = newProps[k]
+          }
+        }
+      } else {
+        this.vm = genVueInstance(VBlock, this.reactiveProps)
+        return this.vm.$el
+      }
     },
     // 能接收被拖入的组件名称
-    accept: ['AButton', 'AInput']
+    accept: ['VButton', 'VText', 'VInput']
   },
 
   {
     id: '2',
-    name: 'AButton',
+    name: 'VButton',
     title: '按钮',
     icon: {
       type: 'img',
@@ -213,7 +224,7 @@ export const componentList = [
 
   {
     id: '3',
-    name: 'AInput',
+    name: 'VInput',
     title: '输入框',
     icon: {
       type: 'img',
@@ -222,7 +233,7 @@ export const componentList = [
     $el: null,
     vm: null,
     attrs: {
-      title: 'AInput'
+      title: 'VInput'
     },
     render() {
       this.vm = genVueInstance(VInput)
