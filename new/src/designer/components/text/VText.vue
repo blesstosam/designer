@@ -1,5 +1,5 @@
 <template>
-  <span>{{ content }}</span>
+  <span style="display: inline-block">{{ content }}</span>
 </template>
 <script>
 export default {

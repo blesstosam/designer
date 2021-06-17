@@ -1,5 +1,5 @@
 /**
- * 通过 class name 向上查找 dom 节点
+ * 通过 classname 向上查找 最近的一个 dom 节点
  * @param {Element} dom
  * @returns {Element}
  */
