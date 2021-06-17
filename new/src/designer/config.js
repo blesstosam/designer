@@ -2,7 +2,7 @@ import { createApp, reactive, h } from 'vue'
 import { VBlock, VBlockCfg } from './components/block/index'
 import { VButtonCfg, VButton } from './components/button/index'
 import { VText, VTextCfg } from './components/text/index'
-import { VInput } from './components/input/index'
+import { VInput, VInputCfg } from './components/input/index'
 import { parse } from './vue/attr-panel/AttrPanel.vue'
 import { cssProperty } from './cssProperty'
 import { componentTypes } from './Component'
@@ -232,12 +232,27 @@ export const componentList = [
     },
     $el: null,
     vm: null,
-    attrs: {
-      title: 'VInput'
+    attrs: VInputCfg,
+    props() {
+      return parseProps(this.attrs)
     },
-    render() {
-      this.vm = genVueInstance(VInput)
-      return this.vm.$el
+    reactiveProps: null,
+    render(newProps) {
+      console.log(newProps, '====> new props')
+      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      // 已经mount过 需要重新计算props 改变props vue会自动更新
+      if (this.$el && newProps) {
+        for (const k in newProps) {
+          if (cssProperty[k]) {
+            this.reactiveProps.style[k] = newProps[k]
+          } else {
+            this.reactiveProps[k] = newProps[k]
+          }
+        }
+      } else {
+        this.vm = genVueInstance(VInput, this.reactiveProps)
+        return this.vm.$el
+      }
     },
     accept: []
   }

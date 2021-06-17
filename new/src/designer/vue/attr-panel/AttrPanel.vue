@@ -7,6 +7,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
+  align-items: center;
 }
 .attr-panel .dis-flex > span {
   width: 100px;
@@ -66,6 +67,16 @@
                 >
                 </el-option>
               </el-select>
+            </div>
+
+            <div v-else-if="_item.formType === 'switch'" class="dis-flex">
+              <span>{{ _item.title }}</span>
+              <el-switch
+                v-model="_item.value"
+                @change="handleSwitchChange(_item, $event)"
+                active-color="#13ce66"
+                inactive-color="#ccc"
+              ></el-switch>
             </div>
 
             <!-- 文字风格 -->
@@ -163,7 +174,10 @@ const ValidRules = {
  */
 export function parse(schema) {
   const defination = {}
-  function _getVal(type) {
+  function _getVal(item) {
+    const { type } = item
+    if (item.const !== undefined) return item.const
+    if (item.default !== undefined) return item.default
     if (type === 'string') return ''
     if (type === 'number') return 0
     if (type === 'boolean') return true
@@ -211,7 +225,7 @@ export function parse(schema) {
       _forEach(_schema.properties, (item, property) => {
         // 简单类型
         if (item.type !== 'array' && item.type !== 'object') {
-          _def[property] = item.const || item.default || _getVal(item.type)
+          _def[property] = _getVal(item)
           _def.rules = _getRules(_schema.properties)
           _def.options = _getOpts(_schema.properties)
           // 处理条件
@@ -247,7 +261,7 @@ export function parse(schema) {
     if (_schema.type === 'object' && _schema.properties) {
       _forEach(_schema.properties, (item, property) => {
         if (item.type !== 'array' && item.type !== 'object') {
-          _obj[property] = item.const || item.default || _getVal(item.type)
+          _obj[property] = _getVal(item)
           _obj.rules = _getRules(_schema.properties)
           _obj.options = _getOpts(_schema.properties)
           // 处理条件
@@ -374,6 +388,10 @@ export default {
       this.canvas.patch(currentNode.$el, item, val)
     },
     handleSelectChange(item, val) {
+      const currentNode = getCurrentViewNodeModel()
+      this.canvas.patch(currentNode.$el, item, val)
+    },
+    handleSwitchChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
     },

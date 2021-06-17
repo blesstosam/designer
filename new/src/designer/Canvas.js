@@ -9,6 +9,8 @@ import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Component'
 import { makeLogger } from './lib/util'
+import { lookupByClassName } from './lib/dom'
+
 const logger = makeLogger('canvas: ')
 
 export class Canvas {
@@ -123,19 +125,20 @@ export class Canvas {
         logger(_e.target)
         _e.stopPropagation()
         const id = _e.target.getAttribute('data-id')
-
-        const node = this._findViewModel(_e.target.parentNode, this.viewModel)
+        
+        // 查找node-box这个节点
+        const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
+        const node = this._findViewModel($nodeboxEl, this.viewModel)
         if (node) {
-          // TODO ??? 为什么是 parentNode
           setCurrentViewNodeModel(node)
           this.__attr__.vueInstance.setData(node)
         }
 
         const pos = {
-          width: _e.target.offsetWidth,
-          height: _e.target.offsetHeight,
-          top: _e.target.offsetTop,
-          left: _e.target.offsetLeft
+          width: $nodeboxEl.offsetWidth,
+          height: $nodeboxEl.offsetHeight,
+          top: $nodeboxEl.offsetTop,
+          left: $nodeboxEl.offsetLeft
         }
         // TODO 将 focusRect 放到 Node 类里， Node 为组件渲染的节点
         if (this.focusRect) {

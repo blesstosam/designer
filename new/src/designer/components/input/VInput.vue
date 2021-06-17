@@ -1,14 +1,17 @@
 
 <template>
-  <el-input v-model="a"></el-input>  
+  <div>
+    <!-- <label>{{label}}222</label> -->
+    <el-input style="display: inline-block" readonly v-bind="$attrs" />
+  </div>
 </template>
 
 <script>
 import { ElInput } from 'element-plus'
 export default {
   name: 'VInput',
-  data() {
-    return {a: 1}
+  props: {
+    label: String
   },
   components: {
     ElInput
