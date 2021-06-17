@@ -1,8 +1,8 @@
 <style lang="stylus"></style>
 
 <template>
-  <div>
-    <ViewItem :item="item" v-for="(item, index) in data" :key="index"></ViewItem>
+  <div class="preview">
+    <DesignerView :data="data" />
   </div>
 </template>
 
@@ -10,11 +10,11 @@
 import { onMounted, reactive, ref, h, resolveComponent } from 'vue'
 import { Designer, componentList } from '../designer/index'
 import { VButton } from '../designer/components/button/index'
-import ViewItem from '../components/ViewItem.vue'
+import DesignerView from '../components/DesignerView.vue'
 
 export default {
   name: 'Preview',
-  components: { VButton, ViewItem },
+  components: { VButton, DesignerView },
   setup() {
     let data = localStorage.getItem('viewModel')
     if (data) {
@@ -46,19 +46,21 @@ export default {
       data
     }
   },
-  render() {
-    // https://v3.cn.vuejs.org/guide/migration/render-function-api.html#_3-x-%E8%AF%AD%E6%B3%95-4
-    const c = resolveComponent('VButton')
-    // TODO 使用render函数将children通过slot传入
-    return h(
-      c,
-      {
-        content: 'x'
-      },
-      {
-        block: () => [h('div', '22')]
-      }
-    )
-  }
+  // render() {
+       // 使用 render 函数传递slot和使用模板传递slot效果一样
+  //   // https://v3.cn.vuejs.org/guide/migration/render-function-api.html#_3-x-%E8%AF%AD%E6%B3%95-4
+  //   const c = resolveComponent('VButton')
+  //   // for test!
+  //   return h(
+  //     c,
+  //     {
+  //       content: 'x'
+  //     },
+  //     // https://v3.cn.vuejs.org/guide/migration/slots-unification.html#_2-x-%E8%AF%AD%E6%B3%95
+  //     {
+  //       block: () => [h('div', '22')]
+  //     }
+  //   )
+  // }
 }
 </script>

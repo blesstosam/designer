@@ -1,6 +1,7 @@
 <template>
   <el-button v-bind="$attrs">{{ content }}
-    <slot name="block"></slot>
+    <!-- for test -->
+    <!-- <slot name="block"></slot> -->
   </el-button>
 </template>
 
@@ -20,7 +21,7 @@ export default {
     // disabled: Boolean
   },
   created() {
-    console.log(this.$slots.block)
+    // console.log(this.$slots.block)
   },
   components: {
     ElButton
