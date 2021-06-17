@@ -7,6 +7,9 @@ import {
 } from './config.js'
 import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
+import { componentTypes } from './Component'
+import { makeLogger } from './lib/util'
+const logger = makeLogger('canvas: ')
 
 export class Canvas {
   constructor(config, designer) {
@@ -40,7 +43,8 @@ export class Canvas {
     this.viewModel = viewModel || []
     const div = document.createElement('div')
     div.classList.add('drop')
-    div.style.width = config.width || '100%'
+    div.style.width = config.width || window.innerWidth - 550 + 'px' // 550为左右的宽度加边距
+    div.style.minWidth = '100%'
     div.style.height = config.height || '100%'
     this.$canvasWrapEle.appendChild(div)
     this.$canvasEle = div
@@ -51,9 +55,9 @@ export class Canvas {
   bindCanvasEvents() {
     // 最外面的画布监听 drop 事件
     this.$canvasEle.addEventListener('drop', e => {
-      console.log(e, 'drop')
+      logger(e, 'drop')
       e.preventDefault()
-      const dom = this.append(state.data)
+      const dom = this.append(state.data, this.$canvasEle)
       this.viewModel.push({
         ...state.data,
         $el: dom // 记录下该data渲染出来的dom元素
@@ -91,7 +95,7 @@ export class Canvas {
       }
     }
 
-    mount(viewModel)
+    mount(viewModel, this.$canvasEle)
   }
 
   /**
@@ -100,8 +104,8 @@ export class Canvas {
    * @param {Element} container 被拖入的容器（组件或最外层的画布）
    */
   append(d, container) {
-    container = container || this.$canvasEle
-    const wrapper = this.createNodebox()
+    const isLayout = d.componentType === componentTypes.LAYOUT
+    const wrapper = this.createNodebox(isLayout)
     const res = d.render()
     res.setAttribute('data-id', d.id)
     res.setAttribute('data-name', d.name)
@@ -110,6 +114,7 @@ export class Canvas {
     wrapper.addEventListener(
       'click',
       _e => {
+        logger(_e.target)
         _e.stopPropagation()
         const id = _e.target.getAttribute('data-id')
 
@@ -165,10 +170,10 @@ export class Canvas {
   /**
    * 在节点外包一个div 在一个drop监听
    */
-  createNodebox() {
+  createNodebox(isLayout) {
     const wrapper = document.createElement('div')
     wrapper.classList.add('node-box')
-    wrapper.style.display = 'inline-block'
+    !isLayout && (wrapper.style.display = 'inline-block')
     wrapper.addEventListener('dropover', e => {
       e.preventDefault()
       e.stopPropagation() // 阻止冒泡到外面的画布

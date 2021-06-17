@@ -102,13 +102,32 @@ export default {
     }
   },
   methods: {
+    transform(_arr) {
+      // 将组件数据的一些字段处理一下
+      const traverse = (arr) => {
+        for (let i = 0; i < arr.length; i++) {
+          const item  = arr[i]
+          delete item.$el
+          delete item.accept
+          delete item.icon
+          delete item.vm
+          if (item.children && item.children.length) {
+            traverse(item.children)
+          }
+        }
+      }
+      traverse(_arr)
+    },
     save() {
       const { viewModel } = this.designer.__canvas__
+      this.transform(viewModel)
       localStorage.setItem('viewModel', JSON.stringify(viewModel))
     },
     preview() {
-      const vueApp = this.designer.__vueApp__
-      vueApp.$router.push('/preview')
+      this.save()
+      window.open(location.origin + '/#/preview')
+      // const vueApp = this.designer.__vueApp__
+      // vueApp.$router.push('/preview')
     }
   }
 }

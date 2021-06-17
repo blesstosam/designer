@@ -1,5 +1,7 @@
 <template>
-  <el-button v-bind="$attrs">{{ content }}</el-button>
+  <el-button v-bind="$attrs">{{ content }}
+    <slot name="block"></slot>
+  </el-button>
 </template>
 
 <script>
@@ -16,6 +18,9 @@ export default {
     // round: Boolean,
     // circle: Boolean,
     // disabled: Boolean
+  },
+  created() {
+    console.log(this.$slots.block)
   },
   components: {
     ElButton
