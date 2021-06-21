@@ -42,7 +42,6 @@ function genVueInstance(appOpt, props) {
   // TODO 怎么和vue文件相关联 参考vue.extend api
   // #__empty__ 为承载mount的容器 只是为了生成dom（不知道有没有现成的api，只生成dom，不插入到容器）
   const div = document.createElement('div')
-  console.log(div)
   div.style.width = 0
   div.style.height = 0
   div.setAttribute('id', '__empty__')
@@ -101,8 +100,6 @@ export const componentList = [
     },
     reactiveProps: null,
     render(newProps) {
-      // newProps 为对象
-      console.log(newProps, '====> new props')
       this.reactiveProps = this.reactiveProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
@@ -187,7 +184,6 @@ export const componentList = [
     },
     reactiveProps: null,
     render(newProps) {
-      console.log(newProps, this.reactiveProps, 'newProps-------')
       this.reactiveProps = this.reactiveProps || reactive(this.props())
       if (this.$el && newProps) {
         for (const k in newProps) {
@@ -239,7 +235,6 @@ export const componentList = [
     },
     reactiveProps: null,
     render(newProps) {
-      console.log(newProps, '====> new props')
       this.reactiveProps = this.reactiveProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
@@ -275,7 +270,6 @@ export const componentList = [
     },
     reactiveProps: null,
     render(newProps) {
-      console.log(newProps, '====> new props')
       this.reactiveProps = this.reactiveProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {

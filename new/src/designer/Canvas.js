@@ -9,7 +9,7 @@ import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Component'
 import { makeLogger } from './lib/util'
-import { lookupByClassName } from './lib/dom'
+import { lookupByClassName, lookdownByAttr } from './lib/dom'
 
 const logger = makeLogger('canvas: ')
 
@@ -118,7 +118,15 @@ export class Canvas {
     res.setAttribute('data-id', d.id)
     res.setAttribute('data-name', d.name)
     wrapper.appendChild(res)
-    container.appendChild(wrapper)
+    // 当组件的slotname 为 default 时，直接插入到容器的末尾
+    // 当组件的slotname 不为 default 时，需要查找对应的容器
+    const slotName = d.slotName || 'default'
+    if (slotName !== 'default') {
+      const _container = lookdownByAttr(container, 'slot-name', d.slotName)
+      if (_container) _container.appendChild(wrapper)
+    } else {
+      container.appendChild(wrapper)
+    }
     wrapper.addEventListener(
       'click',
       _e => {
@@ -126,7 +134,7 @@ export class Canvas {
         _e.stopPropagation()
         const id = _e.target.getAttribute('data-id')
 
-        // 查找node-box这个节点
+        // 查找 node-box 节点 更新当前节点 通知属性面板更新
         const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
         const node = this._findViewModel($nodeboxEl, this.viewModel)
         if (node) {
@@ -134,6 +142,7 @@ export class Canvas {
           this.__attr__.vueInstance.setData(node)
         }
 
+        // 更新 focusrect 的位置
         const pos = {
           width: $nodeboxEl.offsetWidth,
           height: $nodeboxEl.offsetHeight,
@@ -191,7 +200,7 @@ export class Canvas {
       console.log('nodebox drop')
       e.stopPropagation() // 阻止冒泡到外面的画布
 
-      // 找到node-box这个节点的子节点
+      // 找到node-box节点的子节点
       const slotName = e.target.getAttribute('slot-name') || 'default'
       const $nodeboxEl = lookupByClassName(e.target, 'node-box')
       const targetNodeboxId = $nodeboxEl.firstChild.getAttribute('data-id')
@@ -202,13 +211,13 @@ export class Canvas {
       // 2. 被drop的地方没有组件，直接append
       if (accept.includes(state.data.name)) {
         this.append(state.data, e.target)
-        const dropedContainer = this._findViewModel($nodeboxEl, this.viewModel)
+        const dropedVm = this._findViewModel($nodeboxEl, this.viewModel)
         // TODO 布局组件需要记录slot name
-        if (dropedContainer) {
-          if (dropedContainer.children) {
-            dropedContainer.children.push({ ...state.data, $el: wrapper, slotName })
+        if (dropedVm) {
+          if (dropedVm.children) {
+            dropedVm.children.push({ ...state.data, $el: wrapper, slotName })
           } else {
-            dropedContainer.children = [{ ...state.data, $el: wrapper, slotName }]
+            dropedVm.children = [{ ...state.data, $el: wrapper, slotName }]
           }
         }
 

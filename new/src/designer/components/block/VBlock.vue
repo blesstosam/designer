@@ -8,7 +8,7 @@
 
 <template>
   <div class="v-block" style="width: 100%;">
-    <!-- 布局组件为容器 需要加 slot name 为 default -->
+    <!-- 布局组件为容器 需要加 slot name 和 对应的 class 如果不加为 default -->
     <slot></slot>
   </div>
 </template>
