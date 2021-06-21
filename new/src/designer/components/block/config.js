@@ -60,7 +60,7 @@ export default {
                       const: 'textAlign'
                     },
                     formType: {
-                      const: 'text-align'
+                      const: 'row-align'
                     },
                     value: {
                       type: 'string',

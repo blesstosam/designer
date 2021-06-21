@@ -80,7 +80,7 @@ export default {
     const activeName = ref('component')
 
     const handleClick = (tab, event) => {
-      console.log(tab, event, activeName.value)
+      // console.log(tab, event, activeName.value)
     }
 
     return {

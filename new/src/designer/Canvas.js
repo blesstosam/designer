@@ -125,7 +125,7 @@ export class Canvas {
         logger(_e.target)
         _e.stopPropagation()
         const id = _e.target.getAttribute('data-id')
-        
+
         // 查找node-box这个节点
         const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
         const node = this._findViewModel($nodeboxEl, this.viewModel)
@@ -190,7 +190,11 @@ export class Canvas {
     wrapper.addEventListener('drop', e => {
       console.log('nodebox drop')
       e.stopPropagation() // 阻止冒泡到外面的画布
-      const targetNodeboxId = e.target.getAttribute('data-id')
+
+      // 找到node-box这个节点的子节点
+      const slotName = e.target.getAttribute('slot-name') || 'default'
+      const $nodeboxEl = lookupByClassName(e.target, 'node-box')
+      const targetNodeboxId = $nodeboxEl.firstChild.getAttribute('data-id')
       const component = this.__component__.findComById(targetNodeboxId)
       const { accept = [] } = component
       console.log(component, 1, state.data, e.target)
@@ -198,13 +202,13 @@ export class Canvas {
       // 2. 被drop的地方没有组件，直接append
       if (accept.includes(state.data.name)) {
         this.append(state.data, e.target)
-        // why is e.target.parentNode?
-        const dropedContainer = this._findViewModel(e.target.parentNode, this.viewModel)
+        const dropedContainer = this._findViewModel($nodeboxEl, this.viewModel)
+        // TODO 布局组件需要记录slot name
         if (dropedContainer) {
           if (dropedContainer.children) {
-            dropedContainer.children.push({ ...state.data, $el: wrapper })
+            dropedContainer.children.push({ ...state.data, $el: wrapper, slotName })
           } else {
-            dropedContainer.children = [{ ...state.data, $el: wrapper }]
+            dropedContainer.children = [{ ...state.data, $el: wrapper, slotName }]
           }
         }
 

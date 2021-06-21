@@ -1,5 +1,6 @@
 import { createApp, reactive, h } from 'vue'
 import { VBlock, VBlockCfg } from './components/block/index'
+import { VColumn, VColumnCfg } from './components/column/index'
 import { VButtonCfg, VButton } from './components/button/index'
 import { VText, VTextCfg } from './components/text/index'
 import { VInput, VInputCfg } from './components/input/index'
@@ -255,5 +256,42 @@ export const componentList = [
       }
     },
     accept: []
+  },
+
+  {
+    id: '4',
+    name: 'VColumn',
+    title: '分栏',
+    icon: {
+      type: 'img',
+      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+    },
+    componentType: LAYOUT,
+    $el: null,
+    vm: null,
+    attrs: VColumnCfg,
+    props() {
+      return parseProps(this.attrs)
+    },
+    reactiveProps: null,
+    render(newProps) {
+      console.log(newProps, '====> new props')
+      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      // 已经mount过 需要重新计算props 改变props vue会自动更新
+      if (this.$el && newProps) {
+        for (const k in newProps) {
+          if (cssProperty[k]) {
+            this.reactiveProps.style[k] = newProps[k]
+          } else {
+            this.reactiveProps[k] = newProps[k]
+          }
+        }
+      } else {
+        this.vm = genVueInstance(VColumn, this.reactiveProps)
+        return this.vm.$el
+      }
+    },
+    // 能接收被拖入的组件名称
+    accept: ['VButton', 'VText', 'VInput']
   }
 ]

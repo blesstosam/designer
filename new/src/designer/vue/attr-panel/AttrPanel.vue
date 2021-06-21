@@ -94,10 +94,24 @@
               />
             </div>
 
-            <!-- 文字对齐 -->
-            <div v-else-if="_item.formType === FormTypes.TextAlign" class="dis-flex">
+            <!-- 内容对齐 -->
+            <div v-else-if="_item.formType === FormTypes.VerticalAlign" class="dis-flex">
               <span>{{ _item.title }}</span>
-              <text-align v-model="_item.value" @change="handleAlignChange(_item, $event)" />
+              <vertical-align
+                v-model="_item.value"
+                :options="_item.options"
+                @change="handleVerticalAlignChange(_item, $event)"
+              />
+            </div>
+
+            <!-- 文字对齐 -->
+            <div v-else-if="_item.formType === FormTypes.RowAlign" class="dis-flex">
+              <span>{{ _item.title }}</span>
+              <row-align
+                v-model="_item.value"
+                :options="_item.options"
+                @change="handleAlignChange(_item, $event)"
+              />
             </div>
 
             <!-- 颜色单选 -->
@@ -148,14 +162,16 @@ import TextStyle from './TextStyle.vue'
 import BtnStyle from './BtnStyle.vue'
 import ColorRadio from './ColorRadio.vue'
 import TextDecoration from './TextDecoration.vue'
-import TextAlign from './TextAlign.vue'
+import RowAlign from './RowAlign.vue'
+import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
 
 export const FormTypes = {
   BtnStyle: 'btn-style',
   TextStyle: 'text-style',
   TextDecoration: 'text-decoration',
-  TextAlign: 'text-align',
+  RowAlign: 'row-align',
+  VerticalAlign: 'vertical-align',
   ColorRadio: 'color-radio',
   ColorPicker: 'color-picker'
 }
@@ -299,7 +315,8 @@ export default {
   components: {
     TextStyle,
     TextDecoration,
-    TextAlign,
+    RowAlign,
+    VerticalAlign,
     BtnStyle,
     ColorRadio,
     ColorPicker
@@ -411,6 +428,11 @@ export default {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
     },
+    handleVerticalAlignChange(item, val) {
+      const currentNode = getCurrentViewNodeModel()
+      this.canvas.patch(currentNode.$el, item, val)
+    },
+
     haneleColorChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
