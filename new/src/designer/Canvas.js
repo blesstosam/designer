@@ -43,6 +43,8 @@ export class Canvas {
   init(viewModel) {
     const { config } = this
     this.viewModel = viewModel || []
+    // ------- for debug -----------
+    window.viewModel = this.viewModel
     const div = document.createElement('div')
     div.classList.add('drop')
     div.style.width = config.width || window.innerWidth - 550 + 'px' // 550为左右的宽度加边距
@@ -64,6 +66,7 @@ export class Canvas {
         ...state.data,
         $el: dom // 记录下该data渲染出来的dom元素
       })
+
       // 发送全局事件
       this._dispathAppend()
       resetState()
@@ -77,6 +80,8 @@ export class Canvas {
   clear() {
     this.viewModel = []
     this.$canvasEle.innerHTML = ''
+    this.focusRect.remove()
+    this.focusRect = null
     localStorage.clear('viewModel')
   }
 
@@ -118,6 +123,7 @@ export class Canvas {
     res.setAttribute('data-id', d.id)
     res.setAttribute('data-name', d.name)
     wrapper.appendChild(res)
+
     // 当组件的slotname 为 default 时，直接插入到容器的末尾
     // 当组件的slotname 不为 default 时，需要查找对应的容器
     const slotName = d.slotName || 'default'
@@ -127,6 +133,7 @@ export class Canvas {
     } else {
       container.appendChild(wrapper)
     }
+
     wrapper.addEventListener(
       'click',
       _e => {
@@ -151,10 +158,10 @@ export class Canvas {
         }
         // TODO 将 focusRect 放到 Node 类里， Node 为组件渲染的节点
         if (this.focusRect) {
-          this.focusRect.update(pos)
+          this.focusRect.update(pos, node)
         } else {
           this.focusRect = new FocusRect()
-          this.focusRect.create(pos)
+          this.focusRect.create(pos, node)
         }
       },
       true
@@ -252,7 +259,8 @@ export class Canvas {
   _dispathAppend() {
     this.__designer__.emit('actions', {
       type: ActionTypes.APPEND,
-      data: state.data
+      data: state.data,
+      viewModel: this.viewModel
     })
   }
 }

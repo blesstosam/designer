@@ -11,15 +11,11 @@ import { Toolbar } from './Toolbar.js'
 // { tag: 'div', { style: { width: '50%' } },  children: [ text : 'Hello'] }
 // 然后把 tag 换成 componentName，把布局 css 换成特定的约定 比如 column span 等
 let viewModel = null
-window.viewModel = viewModel
 try {
   viewModel = JSON.parse(localStorage.getItem('viewModel'))
 } catch (e) {
   viewModel = []
 }
-
-// --------- for debug -------
-window.viewModel = viewModel
 
 class Designer extends Event {
   constructor(config) {

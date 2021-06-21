@@ -1,6 +1,7 @@
 import { createApp, reactive, h } from 'vue'
 import { VBlock, VBlockCfg } from './components/block/index'
 import { VColumn, VColumnCfg } from './components/column/index'
+import { VTabs, VTabsCfg } from './components/tabs/index'
 import { VButtonCfg, VButton } from './components/button/index'
 import { VText, VTextCfg } from './components/text/index'
 import { VInput, VInputCfg } from './components/input/index'
@@ -63,18 +64,12 @@ function parseProps(attrs) {
   const allCfgs = def.configs.reduce((r, c) => r.concat(c.children), [])
   const obj = {}
   allCfgs.forEach(i => {
-    const val = typeof i.value === 'object' ? i.value.value : i.value
     // 将css属性包一层style
     if (cssProperty[i.id]) {
       obj.style = obj.style || {}
-      obj.style[i.id] = val
+      obj.style[i.id] = i.value
     } else {
-      obj[i.id] = val
-      if (i.options) {
-        const item = i.options.find(opt => opt.value === val)
-        // TODO 这里的代码非常不优雅 怎么处理？
-        item && (obj[i.id + '-label'] = item.label)
-      }
+      obj[i.id] = i.value
     }
   })
   console.log(allCfgs, obj)
@@ -98,20 +93,20 @@ export const componentList = [
     props() {
       return parseProps(this.attrs)
     },
-    reactiveProps: null,
+    renderProps: null,
     render(newProps) {
-      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      this.renderProps = this.renderProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
         for (const k in newProps) {
           if (cssProperty[k]) {
-            this.reactiveProps.style[k] = newProps[k]
+            this.renderProps.style[k] = newProps[k]
           } else {
-            this.reactiveProps[k] = newProps[k]
+            this.renderProps[k] = newProps[k]
           }
         }
       } else {
-        this.vm = genVueInstance(VText, this.reactiveProps)
+        this.vm = genVueInstance(VText, this.renderProps)
         return this.vm.$el
       }
     },
@@ -133,21 +128,20 @@ export const componentList = [
     props() {
       return parseProps(this.attrs)
     },
-    reactiveProps: null,
+    renderProps: null,
     render(newProps) {
-      console.log(newProps, '====> new props')
-      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      this.renderProps = this.renderProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
         for (const k in newProps) {
           if (cssProperty[k]) {
-            this.reactiveProps.style[k] = newProps[k]
+            this.renderProps.style[k] = newProps[k]
           } else {
-            this.reactiveProps[k] = newProps[k]
+            this.renderProps[k] = newProps[k]
           }
         }
       } else {
-        this.vm = genVueInstance(VBlock, this.reactiveProps)
+        this.vm = genVueInstance(VBlock, this.renderProps)
         return this.vm.$el
       }
     },
@@ -168,7 +162,7 @@ export const componentList = [
     attrs: VButtonCfg,
     props() {
       const p = parseProps(this.attrs)
-      p.type = p['__bgcolor-label']
+      p.type = p.__bgcolor
       p.round = p.__btnstyle === 'round'
       p.plain = p.__btnstyle === 'plain'
       p.size = p.__buttonsize
@@ -182,37 +176,39 @@ export const componentList = [
       }
       return p
     },
-    reactiveProps: null,
+    renderProps: null,
     render(newProps) {
-      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      console.log(this.renderProps, newProps, '====> newprops')
+      this.renderProps = this.renderProps || reactive(this.props())
       if (this.$el && newProps) {
         for (const k in newProps) {
           if (cssProperty[k]) {
-            this.reactiveProps.style[k] = newProps[k]
+            this.renderProps.style[k] = newProps[k]
           } else {
-            this.reactiveProps[k] = newProps[k]
+            this.renderProps[k] = newProps[k]
             if (k === '__bgcolor') {
-              // TODO 这里type依赖其 '__btnstyle-label' 字段 不好处理
-              // p.type =
+              this.renderProps.type = newProps.__bgcolor
             } else if (k === '__btnstyle') {
-              this.reactiveProps.round = this.reactiveProps.__btnstyle === 'round'
-              this.reactiveProps.plain = this.reactiveProps.__btnstyle === 'plain'
+              this.renderProps.round = newProps.__btnstyle === 'round'
+              this.renderProps.plain = newProps.__btnstyle === 'plain'
             } else if (k === '__buttonsize') {
-              this.reactiveProps.size = this.reactiveProps.__buttonsize
+              this.renderProps.size = newProps.__buttonsize
             } else if (k === '__displayway') {
               if (newProps.__displayway === 'text') {
-                this.reactiveProps.content = '222'
+                this.renderProps.content = this.renderProps.oldContent
+                this.renderProps.icon = ''
+                // TODO 将 attrs 里的图标置为空
               } else if (newProps.__displayway === 'icon') {
-                this.reactiveProps.content = ''
-              } else if (newProps.__displayway === 'icon-text') {
-              }
+                this.renderProps.oldContent = this.renderProps.content 
+                this.renderProps.content = ''
+              } else if (newProps.__displayway === 'icon-text') {}
             } else if (k === '__chooseicon') {
-              this.reactiveProps.icon = newProps.__chooseicon
+              this.renderProps.icon = newProps.__chooseicon
             }
           }
         }
       } else {
-        this.vm = genVueInstance(VButton, this.reactiveProps)
+        this.vm = genVueInstance(VButton, this.renderProps)
         return this.vm.$el
       }
     },
@@ -233,20 +229,20 @@ export const componentList = [
     props() {
       return parseProps(this.attrs)
     },
-    reactiveProps: null,
+    renderProps: null,
     render(newProps) {
-      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      this.renderProps = this.renderProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
         for (const k in newProps) {
           if (cssProperty[k]) {
-            this.reactiveProps.style[k] = newProps[k]
+            this.renderProps.style[k] = newProps[k]
           } else {
-            this.reactiveProps[k] = newProps[k]
+            this.renderProps[k] = newProps[k]
           }
         }
       } else {
-        this.vm = genVueInstance(VInput, this.reactiveProps)
+        this.vm = genVueInstance(VInput, this.renderProps)
         return this.vm.$el
       }
     },
@@ -268,24 +264,58 @@ export const componentList = [
     props() {
       return parseProps(this.attrs)
     },
-    reactiveProps: null,
+    renderProps: null,
     render(newProps) {
-      this.reactiveProps = this.reactiveProps || reactive(this.props())
+      this.renderProps = this.renderProps || reactive(this.props())
       // 已经mount过 需要重新计算props 改变props vue会自动更新
       if (this.$el && newProps) {
         for (const k in newProps) {
           if (cssProperty[k]) {
-            this.reactiveProps.style[k] = newProps[k]
+            this.renderProps.style[k] = newProps[k]
           } else {
-            this.reactiveProps[k] = newProps[k]
+            this.renderProps[k] = newProps[k]
           }
         }
       } else {
-        this.vm = genVueInstance(VColumn, this.reactiveProps)
+        this.vm = genVueInstance(VColumn, this.renderProps)
         return this.vm.$el
       }
     },
-    // 能接收被拖入的组件名称
+    accept: ['VButton', 'VText', 'VInput']
+  },
+
+  {
+    id: '5',
+    name: 'VTabs',
+    title: '选项卡',
+    icon: {
+      type: 'img',
+      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+    },
+    componentType: LAYOUT,
+    $el: null,
+    vm: null,
+    attrs: VTabsCfg,
+    props() {
+      return parseProps(this.attrs)
+    },
+    renderProps: null,
+    render(newProps) {
+      this.renderProps = this.renderProps || reactive(this.props())
+      // 已经mount过 需要重新计算props 改变props vue会自动更新
+      if (this.$el && newProps) {
+        for (const k in newProps) {
+          if (cssProperty[k]) {
+            this.renderProps.style[k] = newProps[k]
+          } else {
+            this.renderProps[k] = newProps[k]
+          }
+        }
+      } else {
+        this.vm = genVueInstance(VTabs, this.renderProps)
+        return this.vm.$el
+      }
+    },
     accept: ['VButton', 'VText', 'VInput']
   }
 ]

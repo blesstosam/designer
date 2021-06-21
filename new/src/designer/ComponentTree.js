@@ -1,7 +1,7 @@
-// 组件树
-import { createApp } from 'vue'
+import { createApp, reactive, h } from 'vue'
 import { ElTree } from 'element-plus'
 import ComponentTreeVue from './vue/ComponentTree.vue'
+import { ActionTypes } from './Toolbar'
 
 export class ComponentTree {
   constructor(config, designer) {
@@ -15,10 +15,19 @@ export class ComponentTree {
   }
 
   init(data) {
-    const app = createApp(ComponentTreeVue, {
-      tree: data
+    const renderProps = reactive({ tree: data })
+    const app = createApp({
+      props: Object.keys(renderProps),
+      render: () => h(ComponentTreeVue, renderProps)
     })
+
     app.component(ElTree.name, ElTree)
     this.vueInstance = app.mount(this.config.componentTreeWrap)
+    this.__designer__.on('actions', payload => {
+      if (payload.type === ActionTypes.APPEND) {
+        // todo 要使用...前拷贝一遍才会触发视图更新
+        renderProps.tree = [...payload.viewModel]
+      }
+    })
   }
 }

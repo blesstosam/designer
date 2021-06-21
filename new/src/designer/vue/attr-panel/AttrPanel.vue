@@ -45,7 +45,7 @@
                 :placeholder="_item.description || '请输入'"
                 size="medium"
                 v-model="_item.value"
-                @input="handleInputChange(_item, $event)"
+                @input="handleChange(_item, $event)"
               ></el-input>
             </div>
 
@@ -57,7 +57,7 @@
                 size="medium"
                 :placeholder="_item.description || '请选择'"
                 v-model="_item.value"
-                @change="handleSelectChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               >
                 <el-option
                   v-for="opt in _item.options"
@@ -73,16 +73,16 @@
               <span>{{ _item.title }}</span>
               <el-switch
                 v-model="_item.value"
-                @change="handleSwitchChange(_item, $event)"
                 active-color="#13ce66"
                 inactive-color="#ccc"
+                @change="handleChange(_item, $event)"
               ></el-switch>
             </div>
 
             <!-- 文字风格 -->
             <div v-else-if="_item.formType === FormTypes.TextStyle" class="dis-flex">
               <span>{{ _item.title }}</span>
-              <text-style v-model="_item.value" @change="handleStyleChange(_item, $event)" />
+              <text-style v-model="_item.value" @change="handleChange(_item, $event)" />
             </div>
 
             <!-- 文字装饰 -->
@@ -90,7 +90,7 @@
               <span>{{ _item.title }}</span>
               <text-decoration
                 v-model="_item.value"
-                @change="handleDecorationChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               />
             </div>
 
@@ -100,7 +100,7 @@
               <vertical-align
                 v-model="_item.value"
                 :options="_item.options"
-                @change="handleVerticalAlignChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               />
             </div>
 
@@ -110,7 +110,7 @@
               <row-align
                 v-model="_item.value"
                 :options="_item.options"
-                @change="handleAlignChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               />
             </div>
 
@@ -124,7 +124,7 @@
               <color-radio
                 :colorList="_item.options"
                 v-model="_item.value"
-                @change="haneleColorChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               ></color-radio>
             </div>
 
@@ -135,7 +135,7 @@
               class="dis-flex"
             >
               <span>{{ _item.title }}</span>
-              <color-picker v-model="_item.value" @change="handleColorChange(_item, $event)" />
+              <color-picker v-model="_item.value" @change="handleChange(_item, $event)" />
             </div>
 
             <!-- 按钮样式 -->
@@ -143,7 +143,7 @@
               <div>{{ _item.title }}</div>
               <btn-style
                 v-model="_item.value"
-                @change="handleBtnStyleChange(_item, $event)"
+                @change="handleChange(_item, $event)"
               ></btn-style>
             </div>
           </div>
@@ -253,7 +253,7 @@ export function parse(schema) {
         } else {
           // 复杂类型
           if (item.type === 'array') {
-            _def[property] = []
+            _def[property] = item.default || []
           } else {
             _def[property] = _getObjVal(item)
           }
@@ -288,8 +288,9 @@ export function parse(schema) {
             _obj.else = _schema.else
           }
         } else {
+          // debugger
           if (item.type === 'array') {
-            _obj[property] = []
+            _obj[property] = item.default || []
           } else {
             _obj[property] = _getObjVal(item)
           }
@@ -387,9 +388,11 @@ export default {
       Object.keys(ifCon).forEach(k => {
         const conItem = array.find(i => i.id === k)
         if (conItem) {
-          if (ifCon[k].const && ifCon[k].const !== conItem.value) {
+          // value 可能为对象
+          const _val = typeof conItem.value === 'object' ? conItem.value.value : conItem.value
+          if (ifCon[k].const && ifCon[k].const !== _val) {
             flag = false
-          } else if (ifCon[k].pattern && !ifCon[k].pattern.test(conItem.value)) {
+          } else if (ifCon[k].pattern && !ifCon[k].pattern.test(_val)) {
             flag = false
           }
         }
@@ -400,44 +403,7 @@ export default {
         return !item.else.properties.show
       }
     },
-    handleInputChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleSelectChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleSwitchChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleColorChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleStyleChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleDecorationChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleAlignChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleVerticalAlignChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-
-    haneleColorChange(item, val) {
-      const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
-    },
-    handleBtnStyleChange(item, val) {
+    handleChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
     }

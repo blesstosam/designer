@@ -213,7 +213,7 @@ export default {
                       enum: [
                         { label: '名称', value: 'text' },
                         { label: '图标', value: 'icon' },
-                        { label: '图标+名称', value: 'icon-text' },
+                        { label: '图标+名称', value: 'icon-text' }
                         // { label: '名称+图标', value: 'text-icon' }
                       ]
                     }
@@ -283,13 +283,13 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: 'primary', value: '#4680FF' },
+                      default: { label: '#4680FF', value: 'primary' },
                       enum: [
-                        { label: 'primary', value: '#4680FF' },
-                        { label: 'warning', value: '#FF8C31' },
-                        { label: 'success', value: '#27C540' },
-                        { label: 'danger', value: '#FF4C4C' },
-                        { label: 'default', value: '#FFFFFF' }
+                        { label: '#4680FF', value: 'primary' },
+                        { label: '#FF8C31', value: 'warning' },
+                        { label: '#27C540', value: 'success' },
+                        { label: '#FF4C4C', value: 'danger' },
+                        { label: '#FFFFFF', value: 'default' }
                       ]
                     }
                   }
