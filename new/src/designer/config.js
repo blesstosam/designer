@@ -77,7 +77,7 @@ function parseProps(attrs) {
 }
 
 // 不管是左侧的组件列表，还是画布上组件的实际渲染，还是右侧的属性面板都是从这个配置文件里获取必要信息去渲染
-// 和vue类似 一个组件即一个对象 需要有哪几个key都是规定好的
+// 和vue的option api类似 一个组件即一个对象 需要有哪几个key都是规定好的
 export const componentList = [
   {
     id: '0', // 唯一标示 绑定在标签上 在dragstart的时候通过该属性获取组件属性

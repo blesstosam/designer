@@ -8,7 +8,7 @@ import {
 import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Component'
-import { makeLogger } from './lib/util'
+import { makeLogger, randomString } from './lib/util'
 import { lookupByClassName, lookdownByAttr } from './lib/dom'
 
 const logger = makeLogger('canvas: ')
@@ -62,10 +62,7 @@ export class Canvas {
       logger(e, 'drop')
       e.preventDefault()
       const dom = this.append(state.data, this.$canvasEle)
-      this.viewModel.push({
-        ...state.data,
-        $el: dom // 记录下该data渲染出来的dom元素
-      })
+      this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
 
       // 发送全局事件
       this._dispathAppend()
@@ -80,9 +77,19 @@ export class Canvas {
   clear() {
     this.viewModel = []
     this.$canvasEle.innerHTML = ''
-    this.focusRect.remove()
-    this.focusRect = null
+    this.clearFocusRect()
     localStorage.clear('viewModel')
+    this.__designer__.emit('actions', {
+      type: ActionTypes.DELETE,
+      viewModel: []
+    })
+  }
+
+  clearFocusRect() {
+    if (this.focusRect) {
+      this.focusRect.remove()
+      this.focusRect = null
+    }
   }
 
   /**
@@ -92,7 +99,6 @@ export class Canvas {
   layout() {
     const { viewModel } = this
     if (!viewModel || !viewModel.length) return
-    // 遍历 viewModel 递归调用插入dom
     const mount = (nodeArr, container) => {
       for (const node of nodeArr) {
         // 在序列化数据的时候 =>
@@ -139,29 +145,12 @@ export class Canvas {
       _e => {
         logger(_e.target)
         _e.stopPropagation()
-        const id = _e.target.getAttribute('data-id')
 
         // 查找 node-box 节点 更新当前节点 通知属性面板更新
         const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
-        const node = this._findViewModel($nodeboxEl, this.viewModel)
+        const node = this._findVmByEl($nodeboxEl, this.viewModel)
         if (node) {
-          setCurrentViewNodeModel(node)
-          this.__attr__.vueInstance.setData(node)
-        }
-
-        // 更新 focusrect 的位置
-        const pos = {
-          width: $nodeboxEl.offsetWidth,
-          height: $nodeboxEl.offsetHeight,
-          top: $nodeboxEl.offsetTop,
-          left: $nodeboxEl.offsetLeft
-        }
-        // TODO 将 focusRect 放到 Node 类里， Node 为组件渲染的节点
-        if (this.focusRect) {
-          this.focusRect.update(pos, node)
-        } else {
-          this.focusRect = new FocusRect()
-          this.focusRect.create(pos, node)
+          this.handleNodeboxSelect(node)
         }
       },
       true
@@ -176,20 +165,50 @@ export class Canvas {
    * @param {*} val 属性值
    */
   patch(el, item, val) {
-    // debugger
-    const vm = this._findViewModel(el)
+    const vm = this._findVmByEl(el)
     // 更新attrs
     // TODO 有没有遍历 json schema 的库？
     const configCates = vm.attrs.properties.configs.items
     for (const cfgCate of configCates) {
       for (const cfg of cfgCate.properties.children.items) {
-        cfg.properties.value.default = val
+        if (cfg.properties.id.const === item.id) {
+          cfg.properties.value.default = val
+        }
       }
     }
 
     if (vm && vm.render) {
       vm.render({ [item.id]: val })
     }
+  }
+
+  handleNodeboxSelect(node) {
+    setCurrentViewNodeModel(node)
+    this.__attr__.vueInstance.setData(node)
+
+    // TODO 将 focusRect 放到 Node 类里， Node 为组件渲染的节点
+    if (this.focusRect) {
+      this.focusRect.update(node)
+    } else {
+      this.focusRect = new FocusRect(this.__designer__)
+      this.focusRect.create(node)
+    }
+    this.__designer__.on('actions', payload => {
+      const { type, data } = payload
+      if (type === ActionTypes.FOCUS_BTN_DEL) {
+        const movedVm = this._removeVmByEl(data.$el)
+        // TODO 有时候 movedVm 为 undefined ？
+        // console.log(movedVm, 'movedVm')
+        movedVm && movedVm.$el.remove()
+        this.clearFocusRect()
+        this._dispathDelete(movedVm)
+      } else if (type === ActionTypes.FOCUS_BTN_COPY) {
+        // 插入到同级的下一个节点
+        // TODO 是否在节点上加上 $parentEl 节省掉遍历的时间
+        // const com = componentList.find(i => i.name === data.name)
+        // this.append(com)
+      }
+    })
   }
 
   /**
@@ -204,7 +223,7 @@ export class Canvas {
       e.stopPropagation() // 阻止冒泡到外面的画布
     })
     wrapper.addEventListener('drop', e => {
-      console.log('nodebox drop')
+      // console.log('nodebox drop')
       e.stopPropagation() // 阻止冒泡到外面的画布
 
       // 找到node-box节点的子节点
@@ -213,18 +232,18 @@ export class Canvas {
       const targetNodeboxId = $nodeboxEl.firstChild.getAttribute('data-id')
       const component = this.__component__.findComById(targetNodeboxId)
       const { accept = [] } = component
-      console.log(component, 1, state.data, e.target)
+      // console.log(component, 1, state.data, e.target)
       // 1. 被drop的地方有组件，要判断是否可以被拖入（涉及布局组件和accept的逻辑）
       // 2. 被drop的地方没有组件，直接append
       if (accept.includes(state.data.name)) {
-        this.append(state.data, e.target)
-        const dropedVm = this._findViewModel($nodeboxEl, this.viewModel)
-        // TODO 布局组件需要记录slot name
+        const dom = this.append(state.data, e.target)
+        const dropedVm = this._findVmByEl($nodeboxEl, this.viewModel)
         if (dropedVm) {
+          const _node = { ...state.data, $el: dom, slotName, unique: randomString() }
           if (dropedVm.children) {
-            dropedVm.children.push({ ...state.data, $el: wrapper, slotName })
+            dropedVm.children.push(_node)
           } else {
-            dropedVm.children = [{ ...state.data, $el: wrapper, slotName }]
+            dropedVm.children = [_node]
           }
         }
 
@@ -236,30 +255,67 @@ export class Canvas {
   }
 
   /**
-   * 根据el 递归遍历 viewModel 找到节点
+   * 根据el 递归遍历找到节点
    * @param {HTMLElement} el
    * @param {Array} arr
    * @returns {*}
    */
-  _findViewModel(el, arr) {
+  _findVmByEl(el, arr) {
     if (!arr) arr = this.viewModel
     for (const vm of arr) {
       if (vm.$el === el) return vm
       if (vm.children && vm.children.length) {
-        const _vm = this._findViewModel(el, vm.children)
+        const _vm = this._findVmByEl(el, vm.children)
         // important: 这里一定要加if判断 否则递归会断掉
         if (_vm) return _vm
       }
     }
   }
 
+  _removeVmByEl(el, arr) {
+    if (!arr) arr = this.viewModel
+    for (let i = 0; i < arr.length; i++) {
+      const vm = arr[i]
+      if (vm.$el === el) {
+        const movedArr = arr.splice(i, 1)
+        return movedArr[0]
+      }
+      if (vm.children && vm.children.length) {
+        const moved = this._removeVmByEl(el, vm.children)
+        if (moved) return moved
+      }
+    }
+  }
+
+  _findVmByUniqueKey(key, arr) {
+    if (!arr) arr = this.viewModel
+    for (const vm of arr) {
+      if (vm.unique === key) return vm
+      if (vm.children && vm.children.length) {
+        const _vm = this._findVmByEl(key, vm.children)
+        if (_vm) return _vm
+      }
+    }
+  }
+
   /**
-   * 发送全局事件
+   * 发送全局事件-添加节点
    */
   _dispathAppend() {
     this.__designer__.emit('actions', {
       type: ActionTypes.APPEND,
       data: state.data,
+      viewModel: this.viewModel
+    })
+  }
+
+  /**
+   * 发送全局事件-删除节点
+   */
+  _dispathDelete(movedVm) {
+    this.__designer__.emit('actions', {
+      type: ActionTypes.DELETE,
+      data: movedVm,
       viewModel: this.viewModel
     })
   }

@@ -1,6 +1,6 @@
 export default {
   type: 'object',
-  title: '文字',
+  title: '分栏',
   description: '将一行划分为24等分的布局组件，用于表单分列',
   properties: {
     id: {

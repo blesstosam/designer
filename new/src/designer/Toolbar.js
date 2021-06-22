@@ -7,7 +7,10 @@ import ToolBarVue from './vue/ToolBar.vue'
 export const ActionTypes = {
   APPEND: 'append',
   DELETE: 'delete',
-  SET_ATTR: 'setAttr'
+  SET_ATTR: 'setAttr',
+
+  FOCUS_BTN_DEL: 'focusBtnDel',
+  FOCUS_BTN_COPY: 'focusBtnCopy',
 }
 
 export class Toolbar {
@@ -47,7 +50,7 @@ export class Toolbar {
     this.__designer__.on('actions', d => {
       if (this.actions.length < this.maxRecordTimes) {
         // 如果当前操作为最后一步
-        console.log(d, 'd')
+        // console.log(d, 'd')
         if (this.checkIsLastStep()) {
           this.actions.push({
             type: d.type,

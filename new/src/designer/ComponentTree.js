@@ -14,8 +14,18 @@ export class ComponentTree {
     this.$componentTreeWrapEle = document.querySelector(this.config.componentTreeWrap)
   }
 
+  get __canvas__() {
+    return this.__designer__.__canvas__
+  }
+
   init(data) {
-    const renderProps = reactive({ tree: data })
+    const handleClick = d => {
+      const node = this.__canvas__._findVmByUniqueKey(d.unique)
+      if (node) {
+        this.__canvas__.handleNodeboxSelect(node)
+      }
+    }
+    const renderProps = reactive({ tree: data, handleClick })
     const app = createApp({
       props: Object.keys(renderProps),
       render: () => h(ComponentTreeVue, renderProps)
@@ -24,9 +34,11 @@ export class ComponentTree {
     app.component(ElTree.name, ElTree)
     this.vueInstance = app.mount(this.config.componentTreeWrap)
     this.__designer__.on('actions', payload => {
-      if (payload.type === ActionTypes.APPEND) {
-        // todo 要使用...前拷贝一遍才会触发视图更新
-        renderProps.tree = [...payload.viewModel]
+      const { type, viewModel } = payload
+      const { APPEND, DELETE } = ActionTypes
+      if (type === APPEND || type === DELETE) {
+        // TODO 要使用...前拷贝一遍才会触发视图更新?
+        renderProps.tree = [...viewModel]
       }
     })
   }

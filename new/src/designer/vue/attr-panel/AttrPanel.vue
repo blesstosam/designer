@@ -88,10 +88,7 @@
             <!-- 文字装饰 -->
             <div v-else-if="_item.formType === FormTypes.TextDecoration" class="dis-flex">
               <span>{{ _item.title }}</span>
-              <text-decoration
-                v-model="_item.value"
-                @change="handleChange(_item, $event)"
-              />
+              <text-decoration v-model="_item.value" @change="handleChange(_item, $event)" />
             </div>
 
             <!-- 内容对齐 -->
@@ -141,10 +138,7 @@
             <!-- 按钮样式 -->
             <div :label="_item.title" v-else-if="_item.formType === FormTypes.BtnStyle">
               <div>{{ _item.title }}</div>
-              <btn-style
-                v-model="_item.value"
-                @change="handleChange(_item, $event)"
-              ></btn-style>
+              <btn-style v-model="_item.value" @change="handleChange(_item, $event)"></btn-style>
             </div>
           </div>
         </el-collapse-item>
@@ -155,7 +149,7 @@
 </template>
 
 <script>
-import { computed, reactive, watchEffect } from 'vue'
+import { reactive, watchEffect } from 'vue'
 import { _forEach } from '../../lib/util.js'
 import { getCurrentViewNodeModel } from '../../config.js'
 import TextStyle from './TextStyle.vue'
@@ -165,16 +159,7 @@ import TextDecoration from './TextDecoration.vue'
 import RowAlign from './RowAlign.vue'
 import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
-
-export const FormTypes = {
-  BtnStyle: 'btn-style',
-  TextStyle: 'text-style',
-  TextDecoration: 'text-decoration',
-  RowAlign: 'row-align',
-  VerticalAlign: 'vertical-align',
-  ColorRadio: 'color-radio',
-  ColorPicker: 'color-picker'
-}
+import { FormTypes } from './config'
 
 const ValidRules = {
   type: 'type',

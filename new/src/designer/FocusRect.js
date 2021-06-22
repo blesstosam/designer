@@ -1,50 +1,67 @@
-// 画布上被选中之后的选中框
+import { componentTypes } from './Component'
+import { ActionTypes } from './Toolbar'
+
 export class FocusRect {
-  constructor() {
+  constructor(desginer) {
+    this.__designer__ = desginer
+    this.node = null
     this.$recEle = null
-    this.recDotEleArr = []
     this.$recDelBtn = null
     this.$recCopyBtn = null
-    this.node = null
+    // this.$recDotEleArr = []
     this.initListener()
   }
 
+  get isLayout() {
+    return this.node.componentType === componentTypes.LAYOUT
+  }
+
   initListener() {
-    window.addEventListener('resize', () => {
-      if (this.$recEle && this.node) {
-        const $el = this.node.$el
-        const pos = {
-          width: $el.offsetWidth,
-          height: $el.offsetHeight,
-          top: $el.offsetTop,
-          left: $el.offsetLeft
-        }
-        this.update(pos)
-      }
+    this._cb = () => {
+      if (this.$recEle && this.node) this.update()
+    }
+    window.addEventListener('resize', this._cb)
+
+    this.__designer__.on('dragstart', () => {
+      this.$recEle.style.zIndex = -1
+    })
+    this.__designer__.on('dragend', () => {
+      this.$recEle.style.zIndex = 100
     })
   }
 
-  create(offset, node) {
-    node && (this.node = node)
+  create(node) {
+    this.node = node
+    const offset = this._getOffset()
     this.createFocusRect(offset)
-    // this.appendFocusRectDot(offset);
-    this.createFocusRectBtn(offset, 'delete')
-    this.createFocusRectBtn(offset, 'copy')
+    // this.appendDot(offset);
+    this.createBtn(offset, 'delete')
+    this.isLayout && this.createBtn(offset, 'copy')
   }
 
-  update(offset, node) {
+  update(node) {
     node && (this.node = node)
+    const offset = this._getOffset()
     this.updateFocusRect(offset)
     // this.updateFocusRectDot(offset);
-    this.updateFocusRectBtn(offset, 'delete')
-    this.updateFocusRectBtn(offset, 'copy')
+    this.updateBtn(offset, 'delete')
+    if (this.isLayout) {
+      if (this.$recCopyBtn) {
+        this.updateBtn(offset, 'copy')
+        this.showBtn(offset, 'copy')
+      } else {
+        this.createBtn(offset, 'copy')
+      }
+    } else {
+      this.hideBtn('copy')
+    }
   }
 
   remove() {
     this.$recEle.remove()
+    window.removeEventListener('resize', this._cb)
   }
 
-  // 创建选中框
   createFocusRect(offset) {
     const { width, height, top, left } = offset
     const div = document.createElement('div')
@@ -69,7 +86,7 @@ export class FocusRect {
     this.$recEle.style.left = left + 'px'
   }
 
-  // createFocusRectDot(offset, index) {
+  // createDot(offset, index) {
   //   const { width, height } = offset;
   //   const { left, top } = this._getTopLeftPos(index, width, height);
   //   const div = document.createElement('div');
@@ -84,17 +101,17 @@ export class FocusRect {
   //   return div;
   // }
 
-  // appendFocusRectDot(offset) {
+  // appendDot(offset) {
   //   for (let i = 0; i < 8; i++) {
-  //     const div = this.createFocusRectDot(offset, i);
-  //     this.recDotEleArr.push(div);
+  //     const div = this.createDot(offset, i);
+  //     this.$recDotEleArr.push(div);
   //     this.$recEle.appendChild(div);
   //   }
   // }
 
   // updateFocusRectDot(offset) {
   //   const { width, height } = offset;
-  //   this.recDotEleArr.forEach((item, index) => {
+  //   this.$recDotEleArr.forEach((item, index) => {
   //     const { left, top } = this._getTopLeftPos(index, width, height);
   //     item.style.left = left;
   //     item.style.top = top;
@@ -112,18 +129,17 @@ export class FocusRect {
     }
   }
 
-  createFocusRectBtn(offset, type) {
+  createBtn(offset, type) {
     const div = document.createElement('div')
     div.style.position = 'absolute'
     div.style.left = this._getBtnLeftVal(offset, type)
     div.style.top = '-27px'
     div.style.cursor = 'pointer'
-    div.style.zIndex = 101
     const img = document.createElement('img')
     img.src = `/${type}.png`
-    img.style.width = '20px'
-    img.style.background = '#409EFF'
-    img.style.padding = '3px'
+    img.style.width = '18px'
+    img.style.background = '#1989fa'
+    img.style.padding = '4px'
     div.appendChild(img)
     this.$recEle.appendChild(div)
     if (type === 'delete') {
@@ -131,10 +147,16 @@ export class FocusRect {
     } else {
       this.$recCopyBtn = div
     }
+    div.addEventListener('click', () => {
+      this.__designer__.emit('actions', {
+        type: type === 'delete' ? ActionTypes.FOCUS_BTN_DEL : ActionTypes.FOCUS_BTN_COPY,
+        data: this.node
+      })
+    })
     return div
   }
 
-  updateFocusRectBtn(offset, type) {
+  updateBtn(offset, type) {
     if (type === 'delete') {
       this.$recDelBtn.style.left = this._getBtnLeftVal(offset, type)
     } else {
@@ -142,7 +164,34 @@ export class FocusRect {
     }
   }
 
+  hideBtn(type) {
+    if (type === 'delete') {
+      this.$recDelBtn.style.display = 'none'
+    } else {
+      this.$recCopyBtn.style.display = 'none'
+    }
+  }
+
+  showBtn(type) {
+    if (type === 'delete') {
+      this.$recDelBtn.style.display = 'block'
+    } else {
+      this.$recCopyBtn.style.display = 'block'
+    }
+  }
+
   _getBtnLeftVal(offset, type) {
     return type === 'delete' ? offset.width - 26 + 'px' : offset.width - 58 + 'px'
+  }
+
+  _getOffset() {
+    const { $el } = this.node
+    const domRect = $el.getBoundingClientRect()
+    return {
+      width: domRect.width,
+      height: domRect.height,
+      top: domRect.top,
+      left: domRect.left
+    }
   }
 }

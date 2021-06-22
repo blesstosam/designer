@@ -42,12 +42,17 @@ export class Component {
   // 给组件绑定数据和事件
   bindComponentEvent(target) {
     target.addEventListener('dragstart', e => {
-      console.log(e, 'dragstart')
+      // console.log(e, 'dragstart')
+      this.__designer__.emit('dragstart')
       state.dragging = true
       state.target = e.target
       const $componentItem = lookupByClassName(e.target, COMPONENT_DOM_CLASS_NAME)
       const id = $componentItem.getAttribute('data-id')
       state.data = componentList.find(i => i.id === id) || {}
+    })
+    target.addEventListener('dragend', e => {
+      // console.log(e, 'dragend')
+      this.__designer__.emit('dragend')
     })
   }
 
