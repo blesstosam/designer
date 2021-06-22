@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { parse } from '../src/parse';
+import { parse } from '../html-test/parse';
 
 test('Parse schema by recursive', () => {
   const schema = {

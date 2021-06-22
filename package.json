@@ -1,15 +1,11 @@
 {
-  "name": "shejiqi",
+  "name": "designer",
   "version": "1.0.0",
   "description": "",
-  "main": "parse.js",
+  "main": "",
   "scripts": {
     "test": "jest parse",
-    "test-p": "jest sandbox",
-    "e": "parcel html-test/index.html",
-    "sand:server": "cd sandbox && live-server --port=5001 .",
-    "sand:mock": "cd sandbox && nodemon mockServer.js",
-    "sand": "npm-run-all --parallel sand:**"
+    "e": "parcel html-test/index.html"
   },
   "keywords": [],
   "author": "",
