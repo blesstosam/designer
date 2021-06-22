@@ -1,4 +1,4 @@
 # 设计器开发
 ```shell
-$ cd new && yarn install && yarn serve
+$ cd new && npm install && npm run serve
 ```

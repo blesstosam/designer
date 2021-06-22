@@ -4,11 +4,6 @@ import ElementUI from 'element-ui';
 Vue.use(ElementUI);
 import 'element-ui/lib/theme-chalk/index.css';
 
-import VSelect from '../src/components/VSelect.vue';
-import VInput from '../src/components/VInput.vue';
-Vue.component('VSelect', VSelect);
-Vue.component('VInput', VInput);
-
 new Vue({
   el: '#app',
   render: (h) => h(App),

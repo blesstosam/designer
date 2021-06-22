@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { parse } from '../../parse';
+import { parse } from '../src/parse'
 export default {
   // 需要递归调用自己
   name: 'GridLayout',
@@ -27,20 +27,20 @@ export default {
   // element-ui 删格布局的嵌套 => 这样可以实现树型嵌套布局
   props: {
     schema: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
       defination: [],
-      model: {},
-    };
+      model: {}
+    }
   },
   created() {
-    const { defination, model } = parse(this.schema);
-    this.defination = defination;
-    this.model = model;
-    console.log(this.defination, this.model);
-  },
-};
+    const { defination, model } = parse(this.schema)
+    this.defination = defination
+    this.model = model
+    console.log(this.defination, this.model)
+  }
+}
 </script>

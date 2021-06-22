@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import GridLayout from '../src/components/layout/GridLayout';
+import GridLayout from './GridLayout.vue';
 import Tree from './Tree';
 export default {
   name: 'App',
