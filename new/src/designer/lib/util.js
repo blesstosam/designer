@@ -43,8 +43,19 @@ export function _forEach(obj, cb) {
   Object.keys(obj).forEach(k => cb(obj[k], k))
 }
 
+export function randomString(len) {
+  len = len || 8
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const maxPos = chars.length
+  let str = ''
+  for (let i = 0; i < len; i++) {
+    str += chars.charAt(Math.floor(Math.random() * maxPos))
+  }
+  return str
+}
+
 export function makeLogger(prefix) {
   return function(...arg) {
-    console.log(`-----------${prefix}----------`, ...arg)
+    console.log(`${prefix}`, ...arg)
   }
 }

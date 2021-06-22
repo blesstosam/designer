@@ -72,7 +72,7 @@ const json = {
           id: 'textAlign',
           default: 'left',
           value: '',
-          formType: 'text-align'
+          formType: 'row-align'
         }
       ]
     }
@@ -244,7 +244,7 @@ export default {
                       const: 'textAlign'
                     },
                     formType: {
-                      const: 'text-align'
+                      const: 'row-align'
                     },
                     value: {
                       type: 'string',

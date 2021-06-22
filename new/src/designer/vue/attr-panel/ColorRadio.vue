@@ -17,7 +17,7 @@
       v-for="color in colorList"
       :key="color.value"
       :style="{
-        backgroundColor: color.value,
+        backgroundColor: color.label,
         border: defalutColor === color.value ? '1px solid #fff' : 'none'
       }"
       @click="handleChange(color.value)"
