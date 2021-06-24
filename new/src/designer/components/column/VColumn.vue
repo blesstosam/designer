@@ -2,11 +2,13 @@
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-column {
   border: dotted 1px #aaaaaa;
-  height: 50px;
+  height: 80px;
+  margin: 4px 0;
 }
 .canvas-wrapper .v-column .content {
   border: solid 1px #999;
-  height: 50px;
+  height: 72px;
+  margin-top: 4px
 }
 
 .v-column .content {

@@ -2,7 +2,8 @@
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-block {
   border: dotted 1px #aaaaaa;
-  height: 50px;
+  height: 70px;
+  box-sizing: border-box;
 }
 </style>
 
