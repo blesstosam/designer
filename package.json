@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "test": "jest parse",
-    "e": "parcel html-test/index.html"
+    "e": "parcel html-test/index.html",
+    "serve": "cd new && npm run serve"
   },
   "keywords": [],
   "author": "",

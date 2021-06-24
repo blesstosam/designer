@@ -85,7 +85,7 @@ export const componentList = [
     title: '文字',
     icon: {
       type: 'img', // icon 有 image/font-icon/等几种
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/text.png'
     },
     $el: null, // 记录组件渲染出来的dom包一层的node-box节点 在canvas渲染的时候挂载
     vm: null, // 当前vue实例
@@ -119,7 +119,7 @@ export const componentList = [
     title: '区块',
     icon: {
       type: 'img',
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/rect.png'
     },
     componentType: LAYOUT,
     $el: null,
@@ -155,7 +155,7 @@ export const componentList = [
     title: '按钮',
     icon: {
       type: 'img',
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/button.png'
     },
     $el: null,
     vm: null,
@@ -221,7 +221,7 @@ export const componentList = [
     title: '输入框',
     icon: {
       type: 'img',
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/input.png'
     },
     $el: null,
     vm: null,
@@ -255,7 +255,7 @@ export const componentList = [
     title: '分栏',
     icon: {
       type: 'img',
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/wrap.png'
     },
     componentType: LAYOUT,
     $el: null,
@@ -290,7 +290,7 @@ export const componentList = [
     title: '选项卡',
     icon: {
       type: 'img',
-      value: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg'
+      value: '/tabs.png'
     },
     componentType: LAYOUT,
     $el: null,
