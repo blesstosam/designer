@@ -1,5 +1,5 @@
 import { componentList, state } from './config.js'
-import { lookupByClassName } from './lib/dom.js'
+import { lookupByClassName, $ } from './lib/dom.js'
 const COMPONENT_DOM_CLASS_NAME = 'component-item'
 
 export const componentTypes = {
@@ -23,16 +23,11 @@ export class Component {
   }
 
   init() {
-    const header = document.createElement('div')
-    header.textContent = '布局组件'
-    header.style.marginBottom = '12px'
-    const header1 = document.createElement('div')
-    header1.textContent = '基础组件'
-    header1.style.marginBottom = '12px'
-    this.$layoutWrapEle = document.createElement('div')
-    this.$layoutWrapEle.style.marginBottom = '24px'
-    this.$basicWrapEle = document.createElement('div')
-    this.$basicWrapEle.style.marginBottom = '24px'
+    const header = $('<div>').text('布局组件').style('marginBottom', '12px').el
+    const header1 = $('<div>').text('基础组件').style('marginBottom', '12px').el
+    this.$layoutWrapEle = $('<div>').style('marginBottom', '24px').el
+    this.$basicWrapEle = $('<div>').style('marginBottom', '24px').el
+
     this.$wrapEle.appendChild(header)
     this.$wrapEle.appendChild(this.$layoutWrapEle)
     this.$wrapEle.appendChild(header1)
@@ -60,28 +55,32 @@ export class Component {
 
   // 同步注册左侧组件
   registerComponent(com) {
+    const img = $('<img>')
+      .attr('src', com.icon.value)
+      .attr('width', '20')
+      .attr('height', '20')
+      .attr('draggable', false)
+      .el
+    const div = $('<div>').text(com.title).style('marginTop', '6px').el
+
     const wrapper = document.createElement('div')
-    const img = document.createElement('img')
-    img.src = com.icon.value
-    img.width = '20'
-    img.height = '20'
-    img.setAttribute('draggable', false)
-    const div = document.createElement('div')
-    div.textContent = com.title
-    div.style.marginTop = '6px'
     wrapper.appendChild(img)
     wrapper.appendChild(div)
-    wrapper.setAttribute('draggable', true)
-    wrapper.style.borderRadius = '8px'
-    wrapper.style.display = 'inline-block'
-    wrapper.style.padding = '6px'
-    wrapper.style.width = '40px'
-    wrapper.style.marginRight = '18px'
-    wrapper.style.fontSize = '12px'
-    wrapper.style.textAlign = 'center'
-    wrapper.style.cursor = 'pointer'
-    wrapper.classList.add(COMPONENT_DOM_CLASS_NAME)
-    wrapper.setAttribute('data-id', com.id)
+    $(wrapper)
+      .attr('draggable', true)
+      .attr('data-id', com.id)
+      .style({
+        borderRadius: '8px',
+        display: 'inline-block',
+        padding: '6px',
+        width: '40px',
+        marginRight: '18px',
+        fontSize: '12px',
+        textAlign: 'center',
+        cursor: 'pointer'
+      })
+      .addClass(COMPONENT_DOM_CLASS_NAME)
+
     this.bindComponentEvent(wrapper)
     if (com.componentType === componentTypes.LAYOUT) {
       this.$layoutWrapEle.appendChild(wrapper)

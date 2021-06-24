@@ -28,3 +28,67 @@ export function lookdownByAttr(dom, attrname, attrval) {
     }
   }
 }
+
+class DomUtil {
+  constructor(selector) {
+    if (isElement(selector)) {
+      this.dom = selector
+    } else if (typeof selector === 'string') {
+      if (selector.startsWith('<') && selector.endsWith('>')) {
+        this.dom = document.createElement(selector.replace(/\<|\>/g, ''))
+      } else {
+        this.dom = document.querySelector(selector)
+      }
+    }
+  }
+
+  get el() {
+    return this.dom
+  }
+
+  style(key, val) {
+    if (typeof key === 'object') {
+      Object.keys(key).forEach(k => {
+        this.dom.style[k] = key[k]
+      })
+    } else {
+      this.dom.style[key] = val
+    }
+    return this
+  }
+
+  attr(key, val) {
+    this.dom.setAttribute(key, val)
+    return this
+  }
+
+  addClass(cls) {
+    this.dom.classList.add(cls)
+    return this
+  }
+
+  text(txt) {
+    this.dom.textContent = txt
+    return this
+  }
+
+  html(str) {
+    this.dom.innerHTML = str
+    return this
+  }
+
+}
+
+/**
+ * @param {*} selector 
+ * @returns 
+ */
+export function $(selector) {
+  return new DomUtil(selector)
+}
+
+export function isElement(obj) {
+  return (typeof HTMLElement === 'object')
+    ? (obj instanceof HTMLElement)
+    : !!(obj && typeof obj === 'object' && (obj.nodeType === 1 || obj.nodeType === 9) && typeof obj.nodeName === 'string');
+}
