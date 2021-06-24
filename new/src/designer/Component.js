@@ -43,6 +43,8 @@ export class Component {
   bindComponentEvent(target) {
     target.addEventListener('dragstart', e => {
       // console.log(e, 'dragstart')
+      // console.log(e.dataTransfer, 'event.dataTransfer')
+      e.dataTransfer.effectAllowed = 'move'
       this.__designer__.emit('dragstart')
       state.dragging = true
       state.target = e.target
@@ -63,12 +65,13 @@ export class Component {
     img.src = com.icon.value
     img.width = '20'
     img.height = '20'
+    img.setAttribute('draggable', false)
     const div = document.createElement('div')
     div.textContent = com.title
+    div.style.marginTop = '6px'
     wrapper.appendChild(img)
     wrapper.appendChild(div)
     wrapper.setAttribute('draggable', true)
-    wrapper.style.border = '1px solid #ccc'
     wrapper.style.borderRadius = '8px'
     wrapper.style.display = 'inline-block'
     wrapper.style.padding = '6px'
