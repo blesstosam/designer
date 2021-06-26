@@ -9,8 +9,9 @@ import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Component'
 import { makeLogger, randomString } from './lib/util'
-import { lookupByClassName, lookdownByAttr, $ } from './lib/dom'
+import { lookupByClassName, lookdownByAttr, $, lookdownForAttr } from './lib/dom'
 
+const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 12, NODE_BOX_PADDING = 8
 const SLOT_NAME_KEY = 'c-slot-name'
 
@@ -80,10 +81,20 @@ export class Canvas {
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
     this.$canvasEle.addEventListener('drop', e => {
       this.removeMark()
+      
+      if (state.data.componentType !== LAYOUT) {
+        const blockCom = componentList.find(i => i.name === 'VBlock')
+        const wrap = this.append(blockCom, this.$canvasEle)
+        this.viewModel.push({ ...blockCom, $el: wrap, unique: randomString() })
 
-      // TODO 当被拖入非布局元素的时候，自动加一个block布局
-      const dom = this.append(state.data, this.$canvasEle)
-      this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
+        const dom = this.append(state.data, wrap.children[0])
+        const lastNode = this.viewModel[this.viewModel.length - 1]
+        const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
+        lastNode.children = [{ ...state.data, $el: dom, slotName, unique: randomString() }]
+      } else {
+        const dom = this.append(state.data, this.$canvasEle)
+        this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
+      }
 
       this._dispathAppend()
       resetState()
@@ -185,7 +196,7 @@ export class Canvas {
         node.render = com.render
         const wrapper = node.$el = this.append(node, container)
         if (node.children && node.children.length) {
-          mount(node.children, wrapper.childNodes[0])
+          mount(node.children, wrapper.children[0])
         }
       }
     }
@@ -199,7 +210,7 @@ export class Canvas {
    * @param {Element} container 被拖入的容器（组件或最外层的画布）
    */
   append(d, container) {
-    const isLayout = d.componentType === componentTypes.LAYOUT
+    const isLayout = d.componentType === LAYOUT
     const wrapper = this.createNodebox(isLayout)
     const res = d.render()
     $(res).attr({
@@ -215,6 +226,7 @@ export class Canvas {
       const _container = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
       if (_container) _container.appendChild(wrapper)
     } else {
+      //  TODO 是否去掉该分支 明确要求布局组件要有c-slot-name属性
       container.appendChild(wrapper)
     }
 
@@ -341,6 +353,7 @@ export class Canvas {
     })
     wrapper.addEventListener('dragenter', e => {
       e.stopPropagation()
+      // 当被拖到 布局组件 slot 里才触发
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = true
       }
