@@ -119,6 +119,8 @@ export default {
           delete item.accept
           delete item.icon
           delete item.vm
+          delete item.render
+          delete item.transformProps
           if (item.children && item.children.length) {
             traverse(item.children)
           }
