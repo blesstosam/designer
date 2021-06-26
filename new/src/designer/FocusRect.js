@@ -172,7 +172,7 @@ export class FocusRect {
     if (type === 'delete') {
       this.$recDelBtn.style.display = 'none'
     } else {
-      this.$recCopyBtn.style.display = 'none'
+      this.$recCopyBtn && (this.$recCopyBtn.style.display = 'none')
     }
   }
 
@@ -180,7 +180,7 @@ export class FocusRect {
     if (type === 'delete') {
       this.$recDelBtn.style.display = 'block'
     } else {
-      this.$recCopyBtn.style.display = 'block'
+      this.$recCopyBtn && (this.$recCopyBtn.style.display = 'block')
     }
   }
 

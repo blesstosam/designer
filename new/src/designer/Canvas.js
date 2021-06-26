@@ -190,10 +190,11 @@ export class Canvas {
     const mount = (nodeArr, container) => {
       for (const node of nodeArr) {
         // 在序列化数据的时候 =>
-        // 将 render 函数丢失了 所以要从 config 里找回
+        // 将函数类型的属性丢失了 所以要从 config 里找回 有 render，transformProps
         // 将 $el 丢失了 需要重新赋值
         const com = componentList.find(i => i.name === node.name)
         node.render = com.render
+        com.transformProps && (node.transformProps = com.transformProps)
         const wrapper = node.$el = this.append(node, container)
         if (node.children && node.children.length) {
           mount(node.children, wrapper.children[0])
@@ -426,7 +427,7 @@ export class Canvas {
     for (const vm of arr) {
       if (vm.unique === key) return vm
       if (vm.children && vm.children.length) {
-        const _vm = this._findVmByEl(key, vm.children)
+        const _vm = this._findVmByUniqueKey(key, vm.children)
         if (_vm) return _vm
       }
     }
