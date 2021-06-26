@@ -1,5 +1,6 @@
 import { componentTypes } from './Component'
 import { ActionTypes } from './Toolbar'
+import { $ } from './lib/dom'
 
 export class FocusRect {
   constructor(desginer) {
@@ -64,26 +65,28 @@ export class FocusRect {
 
   createFocusRect(offset) {
     const { width, height, top, left } = offset
-    const div = document.createElement('div')
-    div.style.width = width + 'px'
-    div.style.height = height + 'px'
-    div.style.top = top + 'px'
-    div.style.left = left + 'px'
-    div.style.position = 'absolute'
-    div.style.border = '1px solid rgb(70, 128, 255)'
-    div.style.zIndex = 100
-    div.classList.add('focus-rect')
+    const div = this.$recEle = $('<div>').style({
+      width: width + 'px',
+      height: height + 'px',
+      top: top + 'px',
+      left: left + 'px',
+      position: 'absolute',
+      border: '1px solid rgb(70, 128, 255)',
+      zIndex: 100,
+      boxSizing: 'border-box'
+    }).addClass('focus-rect').el
     document.body.appendChild(div)
-    this.$recEle = div
     return div
   }
 
   updateFocusRect(offset) {
     const { width, height, top, left } = offset
-    this.$recEle.style.width = width + 'px'
-    this.$recEle.style.height = height + 'px'
-    this.$recEle.style.top = top + 'px'
-    this.$recEle.style.left = left + 'px'
+    $(this.$recEle).style({
+      width: width + 'px',
+      height: height + 'px',
+      top: top + 'px',
+      left: left + 'px',
+    })
   }
 
   // createDot(offset, index) {
@@ -123,23 +126,24 @@ export class FocusRect {
       left: [0, 3, 5].includes(index)
         ? '-3px'
         : [2, 6].includes(index)
-        ? width / 2 - 3 + 'px'
-        : width - 3 + 'px',
+          ? width / 2 - 3 + 'px'
+          : width - 3 + 'px',
       top: index < 3 ? '-3px' : index < 5 ? height / 2 - 3 + 'px' : height - 3 + 'px'
     }
   }
 
   createBtn(offset, type) {
-    const div = document.createElement('div')
-    div.style.position = 'absolute'
-    div.style.left = this._getBtnLeftVal(offset, type)
-    div.style.top = '-27px'
-    div.style.cursor = 'pointer'
-    const img = document.createElement('img')
-    img.src = `/${type}.png`
-    img.style.width = '18px'
-    img.style.background = '#1989fa'
-    img.style.padding = '4px'
+    const div = $('<div>').style({
+      position: 'absolute',
+      left: this._getBtnLeftVal(offset, type),
+      top: '-27px',
+      cursor: 'pointer'
+    }).el
+    const img = $('<img>').attr('src', `/${type}.png`).style({
+      width: '18px',
+      background: '#1989fa',
+      padding: '4px'
+    }).el
     div.appendChild(img)
     this.$recEle.appendChild(div)
     if (type === 'delete') {

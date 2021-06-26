@@ -9,7 +9,14 @@ import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Component'
 import { makeLogger, randomString } from './lib/util'
-import { lookupByClassName, lookdownByAttr } from './lib/dom'
+import { lookupByClassName, lookdownByAttr, $ } from './lib/dom'
+
+const DROP_EL_PADDING = 12, NODE_BOX_PADDING = 8
+const SLOT_NAME_KEY = 'c-slot-name'
+
+function getSlotName(el) {
+  return el.getAttribute(SLOT_NAME_KEY)
+}
 
 const logger = makeLogger('canvas: ')
 
@@ -25,7 +32,7 @@ export class Canvas {
     this.$canvasWrapEle = document.querySelector(this.config.canvasWrap)
     this.$canvasWrapEle.style.height = '100%'
     this.$markEl = null
-    this.dropToInner = false  // 是否被拖入 node-box
+    this.dropToInnerSlot = false  // 是否被拖入 node-box 的 slot 容器
   }
 
   get width() {
@@ -47,13 +54,17 @@ export class Canvas {
     this.viewModel = viewModel || []
     // ------- for debug -----------
     window.viewModel = this.viewModel
-    const div = document.createElement('div')
-    div.classList.add('drop')
-    div.style.width = config.width || window.innerWidth - 550 + 'px' // 550为左右的宽度加边距
-    div.style.minWidth = '100%'
-    div.style.height = config.height || '100%'
+    const div = this.$canvasEle = $('<div>')
+      .addClass('drop')
+      .style({
+        width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
+        height: config.height || '100%',
+        minWidth: '100%',
+        padding: DROP_EL_PADDING + 'px',
+        boxSizing: 'border-box',
+        backgroundColor: '#ddd',
+      }).el
     this.$canvasWrapEle.appendChild(div)
-    this.$canvasEle = div
     this.bindCanvasEvents()
     this.layout()
   }
@@ -66,9 +77,11 @@ export class Canvas {
     // 先拖入父容器，再到子容器 wrap enter => inner enter => wrap leave => inner leave => wrap leave
     // 只拖入子容器 inner enter => inner leave => wrap leave
     // 只拖入父容器 wrap enter => wrap leave
+    // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
     this.$canvasEle.addEventListener('drop', e => {
       this.removeMark()
 
+      // TODO 当被拖入非布局元素的时候，自动加一个block布局
       const dom = this.append(state.data, this.$canvasEle)
       this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
 
@@ -83,7 +96,7 @@ export class Canvas {
     this.$canvasEle.addEventListener('dragenter', e => {
       const pos = {}
       const children = e.target.children
-      console.log('wrapper enter...', e.target)
+      console.log('wrapper enter...')
       if (children.length) {
         const lastChild = children[children.length - 1]
         const rectPos = lastChild.getBoundingClientRect()
@@ -101,9 +114,9 @@ export class Canvas {
     })
 
     this.$canvasEle.addEventListener('dragleave', e => {
-      // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointer-events=none`
+      // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
       console.log('wraper leave...')
-      if (!this.dropToInner) {
+      if (!this.dropToInnerSlot) {
         this.removeMark()
       }
     })
@@ -112,20 +125,24 @@ export class Canvas {
   showMark(pos) {
     const { width, left, top } = pos
     if (!this.$markEl) {
-      const mark = this.$markEl = document.createElement('div')
-      mark.style.width = width + 'px'
-      mark.style.height = '20px'
-      mark.style.borderTop = '3px solid #1989fa'
-      mark.style.background = '#eef1db'
-      mark.style.position = 'absolute'
-      mark.style.left = left + 'px'
-      mark.style.top = top + 'px'
-      mark.style.pointerEvents = 'none'
+      const mark = this.$markEl = $('<div>')
+        .style({
+          width: width - DROP_EL_PADDING * 2 + 'px',
+          height: '20px',
+          borderTop: '3px solid #1989fa',
+          background: '#eef1db',
+          position: 'absolute',
+          left: left + 'px',
+          top: top + 'px',
+          pointerEvents: 'none'
+        }).el
       document.body.appendChild(mark)
     } else {
-      this.$markEl.style.width = width + 'px'
-      this.$markEl.style.left = left + 'px'
-      this.$markEl.style.top = top + 'px'
+      $(this.$markEl).style({
+        width: width + 'px',
+        left: left + 'px',
+        top: top + 'px'
+      })
     }
   }
 
@@ -185,15 +202,17 @@ export class Canvas {
     const isLayout = d.componentType === componentTypes.LAYOUT
     const wrapper = this.createNodebox(isLayout)
     const res = d.render()
-    res.setAttribute('data-id', d.id)
-    res.setAttribute('data-name', d.name)
+    $(res).attr({
+      'data-id': d.id,
+      'data-name': d.name
+    })
     wrapper.appendChild(res)
 
     // 当组件的slotname 为 default 时，直接插入到容器的末尾
     // 当组件的slotname 不为 default 时，需要查找对应的容器
     const slotName = d.slotName || 'default'
     if (slotName !== 'default') {
-      const _container = lookdownByAttr(container, 'slot-name', d.slotName)
+      const _container = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
       if (_container) _container.appendChild(wrapper)
     } else {
       container.appendChild(wrapper)
@@ -274,20 +293,29 @@ export class Canvas {
    * 在节点外包一个div 在一个drop监听
    */
   createNodebox(isLayout) {
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('node-box')
-    !isLayout && (wrapper.style.display = 'inline-block')
+    const wrapper = $('<div>').addClass('node-box')
+      .style({
+        padding: NODE_BOX_PADDING + 'px',
+        boxSizing: 'border-box',
+        backgroundColor: '#fff'
+      }).el
+
+    if (!isLayout) {
+      wrapper.style.display = 'inline-block'
+      return wrapper
+    }
+
     wrapper.addEventListener('dropover', e => {
       e.preventDefault()
       e.stopPropagation() // 阻止冒泡到外面的画布
     })
     wrapper.addEventListener('drop', e => {
       e.stopPropagation() // 阻止冒泡到外面的画布
-      this.dropToInner = false
+      this.dropToInnerSlot = false
       this.removeMark()
 
       // 找到node-box节点的子节点
-      const slotName = e.target.getAttribute('slot-name') || 'default'
+      const slotName = getSlotName(e.target) || 'default'
       const $nodeboxEl = lookupByClassName(e.target, 'node-box')
       const targetNodeboxId = $nodeboxEl.firstChild.getAttribute('data-id')
       const component = this.__component__.findComById(targetNodeboxId)
@@ -313,11 +341,13 @@ export class Canvas {
     })
     wrapper.addEventListener('dragenter', e => {
       e.stopPropagation()
-      this.dropToInner = true
+      if (getSlotName(e.target) != null) {
+        this.dropToInnerSlot = true
+      }
 
       const pos = {}
       const children = e.target.children
-      console.log('inner enter...', e.target)
+      console.log('inner enter...')
 
       if (children.length) {
         const lastChild = children[children.length - 1]
@@ -334,10 +364,12 @@ export class Canvas {
 
       this.showMark(pos)
     })
-    wrapper.addEventListener('dragleave', () => {
+    wrapper.addEventListener('dragleave', (e) => {
       console.log('inner leave...')
-      this.dropToInner = false
-      this.removeMark()
+      if (getSlotName(e.target) != null) {
+        this.dropToInnerSlot = false
+        this.removeMark()
+      }
     })
 
     return wrapper
