@@ -15,7 +15,7 @@ export class Component {
       throw new Error('[designer] 请传入组件框容器元素 componentWrap')
     }
     this.__designer__ = designer
-    // 保存已经注册过的组件呢
+    // 保存已经注册过的组件
     this.hasRegistered = []
     this.$wrapEle = document.querySelector(this.config.componentWrap)
 

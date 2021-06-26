@@ -58,7 +58,14 @@ class DomUtil {
   }
 
   attr(key, val) {
-    this.dom.setAttribute(key, val)
+    if (typeof key === 'object') {
+      Object.keys(key).forEach(k => {
+        this.dom.setAttribute(k, key[k])
+      })
+    } else {
+      this.dom.setAttribute(key, val)
+    }
+
     return this
   }
 

@@ -20,9 +20,9 @@
 <template>
   <div class="v-column" :style="{ background: this.bgColor }">
     <el-row style="width: 100%; margin-left: 0" :gutter="gutter">
-      <!-- 布局组件为容器 需要加 slot name 和 对应的 class slot-name 如果不加为 default -->
+      <!-- 布局组件为容器 需要加 c-slot-name 和 对应的 class-->
       <el-col v-for="i in colCount" :key="i" :span="span">
-        <div class="content" :style="contentStyle" :slot-name="`default${i}`">
+        <div class="content" :style="contentStyle" :c-slot-name="`default${i}`">
           <slot :name="`default${i}`"></slot>
         </div>
       </el-col>
