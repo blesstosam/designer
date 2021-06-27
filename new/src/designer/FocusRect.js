@@ -6,10 +6,9 @@ export class FocusRect {
   constructor(desginer) {
     this.__designer__ = desginer
     this.node = null
-    this.$recEle = null
+    this.$recEl = null
     this.$recDelBtn = null
     this.$recCopyBtn = null
-    // this.$recDotEleArr = []
     this.initListener()
   }
 
@@ -19,15 +18,15 @@ export class FocusRect {
 
   initListener() {
     this._cb = () => {
-      if (this.$recEle && this.node) this.update()
+      if (this.$recEl && this.node) this.update()
     }
     window.addEventListener('resize', this._cb)
 
     this.__designer__.on('dragstart', () => {
-      this.$recEle.style.zIndex = -1
+      this.$recEl.style.zIndex = -1
     })
     this.__designer__.on('dragend', () => {
-      this.$recEle.style.zIndex = 100
+      this.$recEl.style.zIndex = 100
     })
   }
 
@@ -35,7 +34,6 @@ export class FocusRect {
     this.node = node
     const offset = this._getOffset()
     this.createFocusRect(offset)
-    // this.appendDot(offset);
     this.createBtn(offset, 'delete')
     this.isLayout && this.createBtn(offset, 'copy')
   }
@@ -44,7 +42,6 @@ export class FocusRect {
     node && (this.node = node)
     const offset = this._getOffset()
     this.updateFocusRect(offset)
-    // this.updateFocusRectDot(offset);
     this.updateBtn(offset, 'delete')
     if (this.isLayout) {
       if (this.$recCopyBtn) {
@@ -59,77 +56,36 @@ export class FocusRect {
   }
 
   remove() {
-    this.$recEle.remove()
+    this.$recEl.remove()
     window.removeEventListener('resize', this._cb)
   }
 
   createFocusRect(offset) {
-    const { width, height, top, left } = offset
-    const div = this.$recEle = $('<div>').style({
+    const { width, height } = offset
+    const div = this.$recEl = $('<div>').style({
       width: width + 'px',
       height: height + 'px',
-      top: top + 'px',
-      left: left + 'px',
+      top: 0,
+      left: 0,
       position: 'absolute',
       border: '1px solid rgb(70, 128, 255)',
       zIndex: 100,
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      // pointerEvents: 'none'   
     }).addClass('focus-rect').el
-    document.body.appendChild(div)
+    this.node.$el.appendChild(div)
     return div
   }
 
   updateFocusRect(offset) {
-    const { width, height, top, left } = offset
-    $(this.$recEle).style({
+    const { width, height } = offset
+    this.node.$el.appendChild(this.$recEl)
+    $(this.$recEl).style({
       width: width + 'px',
       height: height + 'px',
-      top: top + 'px',
-      left: left + 'px',
+      top: 0,
+      left: 0,
     })
-  }
-
-  // createDot(offset, index) {
-  //   const { width, height } = offset;
-  //   const { left, top } = this._getTopLeftPos(index, width, height);
-  //   const div = document.createElement('div');
-  //   div.style.width = '6px';
-  //   div.style.height = '6px';
-  //   div.style.background = 'rgb(70, 128, 255)';
-  //   div.style.position = 'absolute';
-  //   div.style.left = left;
-  //   div.style.top = top;
-  //   div.style.zIndex = 100;
-  //   div.style.cursor = 'pointer';
-  //   return div;
-  // }
-
-  // appendDot(offset) {
-  //   for (let i = 0; i < 8; i++) {
-  //     const div = this.createDot(offset, i);
-  //     this.$recDotEleArr.push(div);
-  //     this.$recEle.appendChild(div);
-  //   }
-  // }
-
-  // updateFocusRectDot(offset) {
-  //   const { width, height } = offset;
-  //   this.$recDotEleArr.forEach((item, index) => {
-  //     const { left, top } = this._getTopLeftPos(index, width, height);
-  //     item.style.left = left;
-  //     item.style.top = top;
-  //   });
-  // }
-
-  _getTopLeftPos(index, width, height) {
-    return {
-      left: [0, 3, 5].includes(index)
-        ? '-3px'
-        : [2, 6].includes(index)
-          ? width / 2 - 3 + 'px'
-          : width - 3 + 'px',
-      top: index < 3 ? '-3px' : index < 5 ? height / 2 - 3 + 'px' : height - 3 + 'px'
-    }
   }
 
   createBtn(offset, type) {
@@ -145,13 +101,14 @@ export class FocusRect {
       padding: '4px'
     }).el
     div.appendChild(img)
-    this.$recEle.appendChild(div)
+    this.$recEl.appendChild(div)
     if (type === 'delete') {
       this.$recDelBtn = div
     } else {
       this.$recCopyBtn = div
     }
-    div.addEventListener('click', () => {
+    div.addEventListener('click', e => {
+      e.stopPropagation()
       this.__designer__.emit('actions', {
         type: type === 'delete' ? ActionTypes.FOCUS_BTN_DEL : ActionTypes.FOCUS_BTN_COPY,
         data: this.node

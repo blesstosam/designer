@@ -29,10 +29,10 @@ export class Canvas {
       throw new Error('[designer] 请传入画布容器元素 canvasWrap')
     }
     this.__designer__ = designer
-    this.focusRect = null
-    this.$canvasWrapEle = document.querySelector(this.config.canvasWrap)
-    this.$canvasWrapEle.style.height = '100%'
+    this.$canvasWrapEl = document.querySelector(this.config.canvasWrap)
+    this.$canvasEl = null
     this.$markEl = null
+    this.focusRect = null
     this.dropToInnerSlot = false  // 是否被拖入 node-box 的 slot 容器
   }
 
@@ -49,25 +49,46 @@ export class Canvas {
   get __attr__() {
     return this.__designer__.__attr__
   }
+  get __componentTree__() {
+    return this.__designer__.__componentTree__
+  }
 
   init(viewModel) {
     const { config } = this
     this.viewModel = viewModel || []
     // ------- for debug -----------
     window.viewModel = this.viewModel
-    const div = this.$canvasEle = $('<div>')
+    const div = this.$canvasEl = $('<div>')
       .addClass('drop')
       .style({
         width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
         height: config.height || '100%',
         minWidth: '100%',
         padding: DROP_EL_PADDING + 'px',
+        paddingBottom: '24px',
         boxSizing: 'border-box',
         backgroundColor: '#ddd',
+        overflowY: 'auto'
       }).el
-    this.$canvasWrapEle.appendChild(div)
+    this.$canvasWrapEl.appendChild(div)
     this.bindCanvasEvents()
     this.layout()
+    this.__designer__.on('actions', payload => {
+      const { type, data } = payload
+      if (type === ActionTypes.FOCUS_BTN_DEL) {
+        const movedVm = this._removeVmByEl(data.$el)
+        // TODO 有时候 movedVm 为 undefined ？
+        // console.log(movedVm, 'movedVm')
+        movedVm && movedVm.$el.remove()
+        this.clearFocusRect()
+        this._dispathDelete(movedVm)
+      } else if (type === ActionTypes.FOCUS_BTN_COPY) {
+        // 插入到同级的下一个节点
+        // TODO 是否在节点上加上 $parentEl 节省掉遍历的时间
+        // const com = componentList.find(i => i.name === data.name)
+        // this.append(com)
+      }
+    })
   }
 
   /**
@@ -79,12 +100,12 @@ export class Canvas {
     // 只拖入子容器 inner enter => inner leave => wrap leave
     // 只拖入父容器 wrap enter => wrap leave
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
-    this.$canvasEle.addEventListener('drop', e => {
+    this.$canvasEl.addEventListener('drop', e => {
       this.removeMark()
-      
+
       if (state.data.componentType !== LAYOUT) {
         const blockCom = componentList.find(i => i.name === 'VBlock')
-        const wrap = this.append(blockCom, this.$canvasEle)
+        const wrap = this.append(blockCom, this.$canvasEl)
         this.viewModel.push({ ...blockCom, $el: wrap, unique: randomString() })
 
         const dom = this.append(state.data, wrap.children[0])
@@ -92,7 +113,7 @@ export class Canvas {
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
         lastNode.children = [{ ...state.data, $el: dom, slotName, unique: randomString() }]
       } else {
-        const dom = this.append(state.data, this.$canvasEle)
+        const dom = this.append(state.data, this.$canvasEl)
         this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
       }
 
@@ -100,11 +121,11 @@ export class Canvas {
       resetState()
     })
 
-    this.$canvasEle.addEventListener('dragover', e => {
+    this.$canvasEl.addEventListener('dragover', e => {
       e.preventDefault()
     })
 
-    this.$canvasEle.addEventListener('dragenter', e => {
+    this.$canvasEl.addEventListener('dragenter', e => {
       const pos = {}
       const children = e.target.children
       console.log('wrapper enter...')
@@ -124,13 +145,18 @@ export class Canvas {
       this.showMark(pos)
     })
 
-    this.$canvasEle.addEventListener('dragleave', e => {
+    this.$canvasEl.addEventListener('dragleave', e => {
       // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
       console.log('wraper leave...')
       if (!this.dropToInnerSlot) {
         this.removeMark()
       }
     })
+  }
+
+  scrollToBottom() {
+    // 画布滚动到最下面
+    this.$canvasEl.scrollTop = this.$canvasEl.scrollHeight
   }
 
   showMark(pos) {
@@ -164,7 +190,7 @@ export class Canvas {
 
   clear() {
     this.viewModel = []
-    this.$canvasEle.innerHTML = ''
+    this.$canvasEl.innerHTML = ''
     this.clearFocusRect()
     localStorage.clear('viewModel')
     this.__designer__.emit('actions', {
@@ -202,7 +228,7 @@ export class Canvas {
       }
     }
 
-    mount(viewModel, this.$canvasEle)
+    mount(viewModel, this.$canvasEl)
   }
 
   /**
@@ -212,12 +238,9 @@ export class Canvas {
    */
   append(d, container) {
     const isLayout = d.componentType === LAYOUT
-    const wrapper = this.createNodebox(isLayout)
+    const wrapper = this.createNodebox(isLayout, d.isBlock)
     const res = d.render()
-    $(res).attr({
-      'data-id': d.id,
-      'data-name': d.name
-    })
+    $(res).attr({ 'data-id': d.id, 'data-name': d.name })
     wrapper.appendChild(res)
 
     // 当组件的slotname 为 default 时，直接插入到容器的末尾
@@ -230,6 +253,8 @@ export class Canvas {
       //  TODO 是否去掉该分支 明确要求布局组件要有c-slot-name属性
       container.appendChild(wrapper)
     }
+
+    this.scrollToBottom()
 
     wrapper.addEventListener(
       'click',
@@ -244,7 +269,7 @@ export class Canvas {
           this.handleNodeboxSelect(node)
         }
       },
-      true
+      // true
     )
     return wrapper
   }
@@ -284,39 +309,28 @@ export class Canvas {
       this.focusRect = new FocusRect(this.__designer__)
       this.focusRect.create(node)
     }
-    this.__designer__.on('actions', payload => {
-      const { type, data } = payload
-      if (type === ActionTypes.FOCUS_BTN_DEL) {
-        const movedVm = this._removeVmByEl(data.$el)
-        // TODO 有时候 movedVm 为 undefined ？
-        // console.log(movedVm, 'movedVm')
-        movedVm && movedVm.$el.remove()
-        this.clearFocusRect()
-        this._dispathDelete(movedVm)
-      } else if (type === ActionTypes.FOCUS_BTN_COPY) {
-        // 插入到同级的下一个节点
-        // TODO 是否在节点上加上 $parentEl 节省掉遍历的时间
-        // const com = componentList.find(i => i.name === data.name)
-        // this.append(com)
-      }
-    })
+
+    this.__componentTree__.setCurrentKey(node.unique)
   }
 
   /**
-   * 在节点外包一个div 在一个drop监听
+   * 在节点外包一个div，监听 drop 事件
    */
-  createNodebox(isLayout) {
+  createNodebox(isLayout, isBlock) {
     const wrapper = $('<div>').addClass('node-box')
       .style({
-        padding: NODE_BOX_PADDING + 'px',
+        position: 'relative',
         boxSizing: 'border-box',
-        backgroundColor: '#fff'
       }).el
 
     if (!isLayout) {
-      wrapper.style.display = 'inline-block'
+      if (!isBlock) {
+        wrapper.style.display = 'inline-block'
+      }
       return wrapper
     }
+
+    $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', backgroundColor: '#fff' })
 
     wrapper.addEventListener('dropover', e => {
       e.preventDefault()

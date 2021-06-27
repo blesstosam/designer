@@ -9,10 +9,14 @@
   <div class="component-tree">
     <div>组件树</div>
     <el-tree
+      ref='tree'
       empty-text="暂无组件"
       :data="treeData"
       node-key="unique"
       :props="defaultProps"
+      :highlight-current="true"
+      :expand-on-click-node="false"
+      :current-node-key="currentNodeKey"
       @node-click="handleNodeClick"
     ></el-tree>
   </div>
@@ -31,7 +35,8 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'title'
-      }
+      },
+      currentNodeKey: ''
     }
   },
   computed: {
@@ -55,6 +60,9 @@ export default {
   methods: {
     handleNodeClick(d) {
       this.handleClick && this.handleClick(d)
+    },
+    setCurrentKey(key) {
+      this.$refs.tree.setCurrentKey(key)
     }
   }
 }

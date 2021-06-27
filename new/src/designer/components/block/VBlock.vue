@@ -2,8 +2,9 @@
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-block {
   border: dotted 1px #aaaaaa;
-  height: 70px;
+  min-height: 70px;
   box-sizing: border-box;
+  padding: 12px 0
 }
 </style>
 

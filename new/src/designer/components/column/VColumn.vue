@@ -2,15 +2,18 @@
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-column {
   border: dotted 1px #aaaaaa;
-  height: 80px;
+  min-height: 80px;
   margin: 4px 0;
 }
 .canvas-wrapper .v-column .content {
   border: solid 1px #999;
-  height: 72px;
-  margin-top: 4px
+  min-height: 72px;
+  margin-top: 4px;
 }
 
+.v-column {
+  box-sizing: border-box;
+}
 .v-column .content {
   box-sizing: border-box;
   display: flex;
@@ -21,9 +24,9 @@
   <div class="v-column" :style="{ background: this.bgColor }">
     <el-row style="width: 100%; margin-left: 0" :gutter="gutter">
       <!-- 布局组件为容器 需要加 c-slot-name 和 对应的 class-->
-      <el-col v-for="i in colCount" :key="i" :span="span">
-        <div class="content" :style="contentStyle" :c-slot-name="`default${i}`">
-          <slot :name="`default${i}`"></slot>
+      <el-col v-for="(s, index) in spanArr" :key="index" :span="s">
+        <div class="content" :style="contentStyle" :c-slot-name="`default${index}`">
+          <slot :name="`default${index}`"></slot>
         </div>
       </el-col>
     </el-row>
@@ -40,9 +43,9 @@ export default {
     ElCol
   },
   props: {
-    colCount: {
-      type: Number,
-      default: 2
+    colRatio: {
+      type: String,
+      default: ''
     },
     gutter: {
       type: Number,
@@ -53,19 +56,14 @@ export default {
     bgColor: String // => background-color
   },
   computed: {
-    span() {
-      return this.totalSpan / this.colCount
+    spanArr() {
+      return this.colRatio.split(':').map((i) => Number(i))
     },
     contentStyle() {
       return {
         alignItems: this.align || 'flex-start',
         justifyContent: this.rowAlign || 'flex-start'
       }
-    }
-  },
-  data() {
-    return {
-      totalSpan: 24
     }
   }
 }

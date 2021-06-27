@@ -25,13 +25,17 @@ export class Component {
   init() {
     const header = $('<div>').text('布局组件').style('marginBottom', '12px').el
     const header1 = $('<div>').text('基础组件').style('marginBottom', '12px').el
-    this.$layoutWrapEle = $('<div>').style('marginBottom', '24px').el
-    this.$basicWrapEle = $('<div>').style('marginBottom', '24px').el
+    const header2 = $('<div>').text('自定义组件').style('marginBottom', '12px').el
+    this.$layoutWrapEl = $('<div>').style('marginBottom', '24px').el
+    this.$basicWrapEl = $('<div>').style('marginBottom', '24px').el
+    this.$customWrapEl = $('<div>').style('marginBottom', '24px').el
 
     this.$wrapEle.appendChild(header)
-    this.$wrapEle.appendChild(this.$layoutWrapEle)
+    this.$wrapEle.appendChild(this.$layoutWrapEl)
     this.$wrapEle.appendChild(header1)
-    this.$wrapEle.appendChild(this.$basicWrapEle)
+    this.$wrapEle.appendChild(this.$basicWrapEl)
+    this.$wrapEle.appendChild(header2)
+    this.$wrapEle.appendChild(this.$customWrapEl)
   }
 
   // 给组件绑定数据和事件
@@ -83,9 +87,9 @@ export class Component {
 
     this.bindComponentEvent(wrapper)
     if (com.componentType === componentTypes.LAYOUT) {
-      this.$layoutWrapEle.appendChild(wrapper)
+      this.$layoutWrapEl.appendChild(wrapper)
     } else {
-      this.$basicWrapEle.appendChild(wrapper)
+      this.$basicWrapEl.appendChild(wrapper)
     }
     this.hasRegistered.push(com)
     return com
