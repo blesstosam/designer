@@ -19,27 +19,34 @@ export class ComponentTree {
   }
 
   init(data) {
+    // Attr.js 里是直接使用 this.vueInstance 调用方法改变数据完成视图更新
+    // 这里使用修改props
     const handleClick = d => {
       const node = this.__canvas__._findVmByUniqueKey(d.unique)
       if (node) {
         this.__canvas__.handleNodeboxSelect(node)
       }
     }
-    const renderProps = reactive({ tree: data, handleClick })
+    const renderProps = reactive({ tree: data, handleClick, ref: 'componentTree' })
     const app = createApp({
-      props: Object.keys(renderProps),
+      props: ['tree', 'handleClick', 'ref'],
       render: () => h(ComponentTreeVue, renderProps)
     })
 
     app.component(ElTree.name, ElTree)
     this.vueInstance = app.mount(this.config.componentTreeWrap)
+    this.vueInstance.__componentTree__ = this
     this.__designer__.on('actions', payload => {
       const { type, viewModel } = payload
       const { APPEND, DELETE } = ActionTypes
       if (type === APPEND || type === DELETE) {
-        // TODO 要使用...前拷贝一遍才会触发视图更新?
+        // TODO 要使用浅拷贝一遍才会触发视图更新?
         renderProps.tree = [...viewModel]
       }
     })
+  }
+
+  setCurrentKey(key) {
+    this.vueInstance && this.vueInstance.$refs.componentTree.setCurrentKey(key)
   }
 }

@@ -13,7 +13,7 @@ const json = {
           id: 'content',
           default: '文字',
           value: '',
-          formType: 'input'
+          formType: 'textarea'
         },
         {
           title: '颜色',
@@ -112,7 +112,7 @@ export default {
                       const: 'content'
                     },
                     formType: {
-                      const: 'input'
+                      const: 'textarea'
                     },
                     value: {
                       type: 'string',

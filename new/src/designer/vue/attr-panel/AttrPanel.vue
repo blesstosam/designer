@@ -38,7 +38,7 @@
         >
           <div v-for="_item in item.children" :key="_item.id">
             <!-- input -->
-            <div v-if="_item.formType === 'input'" class="dis-flex">
+            <div v-if="_item.formType === FormTypes.Input" class="dis-flex">
               <span>{{ _item.title }}</span>
               <el-input
                 style="width: 193px"
@@ -49,8 +49,21 @@
               ></el-input>
             </div>
 
+            <!-- textarea -->
+            <div v-if="_item.formType === FormTypes.TextArea" class="dis-flex">
+              <span>{{ _item.title }}</span>
+              <el-input
+                type="textarea"
+                :rows="3"
+                style="width: 193px"
+                :placeholder="_item.description || '请输入'"
+                v-model="_item.value"
+                @input="handleChange(_item, $event)"
+              ></el-input>
+            </div>
+
             <!-- select -->
-            <div v-else-if="_item.formType === 'select'" class="dis-flex">
+            <div v-else-if="_item.formType === FormTypes.Select" class="dis-flex">
               <span>{{ _item.title }}</span>
               <el-select
                 :disabled="checkDisabled(_item, item.children)"
@@ -69,7 +82,7 @@
               </el-select>
             </div>
 
-            <div v-else-if="_item.formType === 'switch'" class="dis-flex">
+            <div v-else-if="_item.formType === FormTypes.Switch" class="dis-flex">
               <span>{{ _item.title }}</span>
               <el-switch
                 v-model="_item.value"
@@ -140,6 +153,14 @@
               <div>{{ _item.title }}</div>
               <btn-style v-model="_item.value" @change="handleChange(_item, $event)"></btn-style>
             </div>
+
+            <div :label="_item.title" v-else-if="_item.formType === FormTypes.ColumnSetting" style="margin-bottom: 12px">
+              <div>{{ _item.title }}</div>
+              <column-setting
+                v-model="_item.value"
+                @change="handleChange(_item, $event)"
+              ></column-setting>
+            </div>
           </div>
         </el-collapse-item>
       </el-collapse>
@@ -159,6 +180,7 @@ import TextDecoration from './TextDecoration.vue'
 import RowAlign from './RowAlign.vue'
 import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
+import ColumnSetting from './ColumnSetting.vue'
 import { FormTypes } from './config'
 
 const ValidRules = {
@@ -200,7 +222,7 @@ export function parse(schema) {
   function _getOpts(item) {
     if (item.value && item.value.enum) {
       const arr = []
-      item.value.enum.forEach(i => {
+      item.value.enum.forEach((i) => {
         if (i.label) {
           arr.push(i)
         } else {
@@ -305,7 +327,8 @@ export default {
     VerticalAlign,
     BtnStyle,
     ColorRadio,
-    ColorPicker
+    ColorPicker,
+    ColumnSetting
   },
   setup() {
     const data = getCurrentViewNodeModel()
@@ -318,12 +341,12 @@ export default {
       for (const k in parsed) {
         formList[k] = parsed[k]
       }
-      ;(formList.configs || []).forEach(i => {
+      ;(formList.configs || []).forEach((i) => {
         activeNames.push(i.id)
       })
     })
 
-    const setData = d => {
+    const setData = (d) => {
       console.log(d, '--------setData--------')
       for (const k in d) {
         data[k] = d[k]
@@ -370,8 +393,8 @@ export default {
 
       let flag = true
       const ifCon = item.if.properties
-      Object.keys(ifCon).forEach(k => {
-        const conItem = array.find(i => i.id === k)
+      Object.keys(ifCon).forEach((k) => {
+        const conItem = array.find((i) => i.id === k)
         if (conItem) {
           // value 可能为对象
           const _val = typeof conItem.value === 'object' ? conItem.value.value : conItem.value

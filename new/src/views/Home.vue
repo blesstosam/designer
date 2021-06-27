@@ -12,9 +12,6 @@
     padding: 0 8px;
     display: flex;
     flex-direction: row;
-    & > div
-      // height: calc(100vh - 69px)
-      // overflow-y: auto
     .left
       width: 220px;
       border-right: 1px solid #eee;
@@ -23,11 +20,15 @@
       }
     .center
       flex: 1
+      .canvas-wrapper
+        height: calc(100vh - 55px)
+        overflow-y: auto
+        background #ddd
     .right
       width: 300px
       padding: 6px
       border-left: 1px solid #eee
-      height: calc(100vh - 70px)
+      height: calc(100vh - 67px)
       overflow-y: auto
 </style>
 

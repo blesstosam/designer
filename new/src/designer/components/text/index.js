@@ -11,9 +11,10 @@ const VTextComponent = {
     type: 'img', // icon 有 image/font-icon/等几种
     value: '/text.png'
   },
+  attrs: VTextCfg,
+  isBlock: true, // 是否是块级元素
   $el: null, // 记录组件渲染出来的dom包一层的node-box节点 在canvas渲染的时候挂载
   vm: null, // 当前vue实例
-  attrs: VTextCfg,
   renderProps: null,
   accept: [],
   render(newProps) {
