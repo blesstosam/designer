@@ -1,6 +1,6 @@
 // 插件扩展机制
 const PLUGIN_SUPPORT = [
-  '__component__',
+  '__components__',
   '__attr__',
   '__canvas__',
   '__toolbar__',

@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { componentTypes } from '../../Component'
+import { componentTypes } from '../../Components'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VTabs from './VTabs.vue'
 import VTabsCfg from './config'

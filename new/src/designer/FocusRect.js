@@ -1,4 +1,5 @@
-import { componentTypes } from './Component'
+import { ResizeObserver } from '@juggle/resize-observer';
+import { componentTypes } from './Components'
 import { ActionTypes } from './Toolbar'
 import { $ } from './lib/dom'
 
@@ -10,6 +11,15 @@ export class FocusRect {
     this.$recDelBtn = null
     this.$recCopyBtn = null
     this.initListener()
+
+    // 还有一种hack方法 使用iframe的resize https://www.npmjs.com/package/simple-element-resize-detector
+    this.observer = new ResizeObserver((entries, observer) => {
+      if (this.initedOb) {
+        this.update()
+      } else {
+        this.initedOb = true
+      }
+    });
   }
 
   get isLayout() {
@@ -30,16 +40,31 @@ export class FocusRect {
     })
   }
 
+  observe() {
+    const { $el } = this.node
+    this.observer.observe($el.children[0]);
+  }
+  disconnect() {
+    this.observer.disconnect()
+  }
+
   create(node) {
     this.node = node
     const offset = this._getOffset()
     this.createFocusRect(offset)
     this.createBtn(offset, 'delete')
     this.isLayout && this.createBtn(offset, 'copy')
+    this.observe()
   }
 
   update(node) {
-    node && (this.node = node)
+    // 如果有node说明点击了不同的元素 需要重新监听
+    if (node) {
+      this.node = node
+      this.disconnect()
+      this.observe()
+    }
+
     const offset = this._getOffset()
     this.updateFocusRect(offset)
     this.updateBtn(offset, 'delete')
@@ -55,6 +80,12 @@ export class FocusRect {
     }
   }
 
+  updateSize() {
+    const { $el } = this.node
+    this.$recEl.style.width = $el.offsetWidth
+    this.$recEl.style.height = $el.offsetHeight
+  }
+
   remove() {
     this.$recEl.remove()
     window.removeEventListener('resize', this._cb)
@@ -62,17 +93,19 @@ export class FocusRect {
 
   createFocusRect(offset) {
     const { width, height } = offset
-    const div = this.$recEl = $('<div>').style({
-      width: width + 'px',
-      height: height + 'px',
-      top: 0,
-      left: 0,
-      position: 'absolute',
-      border: '1px solid rgb(70, 128, 255)',
-      zIndex: 100,
-      boxSizing: 'border-box',
-      // pointerEvents: 'none'   
-    }).addClass('focus-rect').el
+    const div = (this.$recEl = $('<div>')
+      .style({
+        width: width + 'px',
+        height: height + 'px',
+        top: 0,
+        left: 0,
+        position: 'absolute',
+        border: '1px solid rgb(70, 128, 255)',
+        zIndex: 100,
+        boxSizing: 'border-box'
+        // pointerEvents: 'none'
+      })
+      .addClass('focus-rect').el)
     this.node.$el.appendChild(div)
     return div
   }
@@ -84,7 +117,7 @@ export class FocusRect {
       width: width + 'px',
       height: height + 'px',
       top: 0,
-      left: 0,
+      left: 0
     })
   }
 
@@ -95,11 +128,13 @@ export class FocusRect {
       top: '-27px',
       cursor: 'pointer'
     }).el
-    const img = $('<img>').attr('src', `/${type}.png`).style({
-      width: '18px',
-      background: '#1989fa',
-      padding: '4px'
-    }).el
+    const img = $('<img>')
+      .attr('src', `/${type}.png`)
+      .style({
+        width: '18px',
+        background: '#1989fa',
+        padding: '4px'
+      }).el
     div.appendChild(img)
     this.$recEl.appendChild(div)
     if (type === 'delete') {
