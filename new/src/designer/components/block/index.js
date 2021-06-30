@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { componentTypes } from '../../Component'
+import { componentTypes } from '../../Components'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VBlock from './VBlock.vue'
 import VBlockCfg from './config'

@@ -7,12 +7,13 @@ import {
 } from './config.js'
 import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
-import { componentTypes } from './Component'
+import { componentTypes } from './Components'
 import { makeLogger, randomString } from './lib/util'
-import { lookupByClassName, lookdownByAttr, $, lookdownForAttr } from './lib/dom'
+import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 
 const { LAYOUT } = componentTypes
-const DROP_EL_PADDING = 12, NODE_BOX_PADDING = 8
+const DROP_EL_PADDING = 12,
+  NODE_BOX_PADDING = 8
 const SLOT_NAME_KEY = 'c-slot-name'
 
 function getSlotName(el) {
@@ -33,7 +34,7 @@ export class Canvas {
     this.$canvasEl = null
     this.$markEl = null
     this.focusRect = null
-    this.dropToInnerSlot = false  // 是否被拖入 node-box 的 slot 容器
+    this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
   }
 
   get width() {
@@ -43,8 +44,8 @@ export class Canvas {
     return this.config.height
   }
 
-  get __component__() {
-    return this.__designer__.__component__
+  get __components__() {
+    return this.__designer__.__components__
   }
   get __attr__() {
     return this.__designer__.__attr__
@@ -58,7 +59,7 @@ export class Canvas {
     this.viewModel = viewModel || []
     // ------- for debug -----------
     window.viewModel = this.viewModel
-    const div = this.$canvasEl = $('<div>')
+    const div = (this.$canvasEl = $('<div>')
       .addClass('drop')
       .style({
         width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
@@ -69,7 +70,7 @@ export class Canvas {
         boxSizing: 'border-box',
         backgroundColor: '#ddd',
         overflowY: 'auto'
-      }).el
+      }).el)
     this.$canvasWrapEl.appendChild(div)
     this.bindCanvasEvents()
     this.layout()
@@ -132,7 +133,7 @@ export class Canvas {
       if (children.length) {
         const lastChild = children[children.length - 1]
         const rectPos = lastChild.getBoundingClientRect()
-        pos.width = e.target.offsetWidth
+        pos.width = e.target.offsetWidth - DROP_EL_PADDING * 2
         pos.left = rectPos.left
         pos.top = rectPos.top + lastChild.offsetHeight + 2
       } else {
@@ -155,24 +156,22 @@ export class Canvas {
   }
 
   scrollToBottom() {
-    // 画布滚动到最下面
     this.$canvasEl.scrollTop = this.$canvasEl.scrollHeight
   }
 
   showMark(pos) {
     const { width, left, top } = pos
     if (!this.$markEl) {
-      const mark = this.$markEl = $('<div>')
-        .style({
-          width: width - DROP_EL_PADDING * 2 + 'px',
-          height: '20px',
-          borderTop: '3px solid #1989fa',
-          background: '#eef1db',
-          position: 'absolute',
-          left: left + 'px',
-          top: top + 'px',
-          pointerEvents: 'none'
-        }).el
+      const mark = (this.$markEl = $('<div>').style({
+        borderTop: '3px solid #1989fa',
+        background: '#eef1db',
+        position: 'absolute',
+        left: left + 'px',
+        top: top + 'px',
+        width: width + 'px',
+        height: '20px',
+        pointerEvents: 'none'
+      }).el)
       document.body.appendChild(mark)
     } else {
       $(this.$markEl).style({
@@ -221,7 +220,7 @@ export class Canvas {
         const com = componentList.find(i => i.name === node.name)
         node.render = com.render
         com.transformProps && (node.transformProps = com.transformProps)
-        const wrapper = node.$el = this.append(node, container)
+        const wrapper = (node.$el = this.append(node, container))
         if (node.children && node.children.length) {
           mount(node.children, wrapper.children[0])
         }
@@ -268,7 +267,7 @@ export class Canvas {
         if (node) {
           this.handleNodeboxSelect(node)
         }
-      },
+      }
       // true
     )
     return wrapper
@@ -310,17 +309,18 @@ export class Canvas {
       this.focusRect.create(node)
     }
 
-    this.__componentTree__.setCurrentKey(node.unique)
+    this.__componentTree__ && this.__componentTree__.setCurrentKey(node.unique)
   }
 
   /**
    * 在节点外包一个div，监听 drop 事件
    */
   createNodebox(isLayout, isBlock) {
-    const wrapper = $('<div>').addClass('node-box')
+    const wrapper = $('<div>')
+      .addClass('node-box')
       .style({
         position: 'relative',
-        boxSizing: 'border-box',
+        boxSizing: 'border-box'
       }).el
 
     if (!isLayout) {
@@ -344,11 +344,11 @@ export class Canvas {
       // 找到node-box节点的子节点
       const slotName = getSlotName(e.target) || 'default'
       const $nodeboxEl = lookupByClassName(e.target, 'node-box')
-      const targetNodeboxId = $nodeboxEl.firstChild.getAttribute('data-id')
-      const component = this.__component__.findComById(targetNodeboxId)
+      const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
+      const component = this.__components__.findComByName(targetNodeboxName)
       const { accept = [] } = component
 
-      // 1. 被drop的地方有组件，要判断是否可以被拖入（涉及布局组件和accept的逻辑）
+      // 1. 被drop的地方有组件，要判断是否可以被拖入
       // 2. 被drop的地方没有组件，直接append
       if (accept.includes(state.data.name)) {
         const dom = this.append(state.data, e.target)
@@ -380,19 +380,37 @@ export class Canvas {
       if (children.length) {
         const lastChild = children[children.length - 1]
         const rectPos = lastChild.getBoundingClientRect()
-        pos.width = e.target.offsetWidth
-        pos.left = rectPos.left
-        pos.top = rectPos.top + lastChild.offsetHeight + 2
+        if (state.data.isBlock) {
+          const wrapPos = e.target.getBoundingClientRect()
+          pos.width = e.target.offsetWidth - NODE_BOX_PADDING * 2
+          pos.left = wrapPos.left
+          pos.top = rectPos.top + lastChild.offsetHeight + 2
+        } else {
+          pos.width = 100
+          if (getStyle(lastChild, 'display') === 'block') {
+            pos.left = rectPos.left
+            pos.top = rectPos.top + lastChild.offsetHeight + 2
+          } else {
+            pos.left = rectPos.left + rectPos.width
+            pos.top = rectPos.top
+          }
+        }
       } else {
         const rectPos = e.target.getBoundingClientRect()
-        pos.width = e.target.offsetWidth
-        pos.left = rectPos.left
-        pos.top = rectPos.top + 2
+        if (state.data.isBlock) {
+          pos.width = e.target.offsetWidth - NODE_BOX_PADDING * 2
+          pos.left = rectPos.left
+          pos.top = rectPos.top + 2
+        } else {
+          pos.width = 100
+          pos.left = rectPos.left
+          pos.top = rectPos.top + 2
+        }
       }
 
       this.showMark(pos)
     })
-    wrapper.addEventListener('dragleave', (e) => {
+    wrapper.addEventListener('dragleave', e => {
       console.log('inner leave...')
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = false

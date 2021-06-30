@@ -2,7 +2,7 @@ import { Event } from './Event.js'
 import { componentList } from './config.js'
 import { Canvas } from './Canvas.js'
 import { Attr } from './Attr.js'
-import { Component } from './Component.js'
+import { Components } from './Components.js'
 import { ComponentTree } from './ComponentTree.js'
 import { Toolbar } from './Toolbar.js'
 
@@ -27,16 +27,39 @@ class Designer extends Event {
   init() {
     this.__canvas__ = new Canvas(this.config, this)
     this.__canvas__.init(viewModel)
-    this.__attr__ = new Attr(this.config, this)
-    this.__attr__.init()
-    this.__component__ = new Component(this.config, this)
-    this.__toolbar__ = new Toolbar(this.config, this)
-    this.__toolbar__.init()
-    this.__componentTree__ = new ComponentTree(this.config, this)
-    this.__componentTree__.init(viewModel)
+
+    // TODO 处理 plugins
+
+    this.initAttr()
+
+    this.initComponents()
+
+    this.initToolbar()
+
     this.on('drop', (ctx, params) => {
       console.log(ctx, params)
     })
+  }
+
+  initAttr() {
+    this.__attr__ = new Attr(this.config, this)
+    this.__attr__.init()
+  }
+
+  initComponents() {
+    this.__components__ = new Components(this.config, this)
+    this.__components__.init()
+  }
+
+  initToolbar() {
+    this.__toolbar__ = new Toolbar(this.config, this)
+    this.__toolbar__.init()
+  }
+
+  initComponentTree(wrap) {
+    this.config.componentTreeWrap = wrap
+    this.__componentTree__ = new ComponentTree(this.config, this)
+    this.__componentTree__.init(viewModel)
   }
 }
 

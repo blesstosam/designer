@@ -97,19 +97,31 @@ class DomUtil {
     this.dom.innerHTML = str
     return this
   }
-
 }
 
 /**
- * @param {*} selector 
- * @returns 
+ * @param {*} selector
+ * @returns
  */
 export function $(selector) {
   return new DomUtil(selector)
 }
 
 export function isElement(obj) {
-  return (typeof HTMLElement === 'object')
-    ? (obj instanceof HTMLElement)
-    : !!(obj && typeof obj === 'object' && (obj.nodeType === 1 || obj.nodeType === 9) && typeof obj.nodeName === 'string');
+  return typeof HTMLElement === 'object'
+    ? obj instanceof HTMLElement
+    : !!(
+        obj &&
+        typeof obj === 'object' &&
+        (obj.nodeType === 1 || obj.nodeType === 9) &&
+        typeof obj.nodeName === 'string'
+      )
+}
+
+export function getStyle(el, attr) {
+  if (el.currentStyle) {
+    return el.currentStyle[attr]
+  } else {
+    return window.getComputedStyle(el, false)[attr]
+  }
 }

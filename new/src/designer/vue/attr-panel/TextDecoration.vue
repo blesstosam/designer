@@ -55,7 +55,11 @@ export default {
   emits: ['change', 'update:modelValue'],
   methods: {
     handleChange(type) {
-      this.type = type
+      if (this.type === type) {
+        this.type = 'none'
+      } else {
+        this.type = type
+      }
       this.$emit('change', this.type)
       this.$emit('update:modelValue', this.type)
     }
