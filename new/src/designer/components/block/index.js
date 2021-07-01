@@ -19,13 +19,13 @@ const VBlockComponent = {
   $el: null,
   vm: null,
   attrs: VBlockCfg,
-  renderProps: null,
+  props: null,
   render(newProps) {
     if (newProps) {
-      changeProps(newProps, this.renderProps)
+      changeProps(newProps, this.props)
     } else {
-      this.renderProps = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VBlock, this.renderProps)
+      this.props = reactive(parseProps(this.attrs))
+      this.vm = genVueInstance(VBlock, this.props)
       return this.vm.$el
     }
   },

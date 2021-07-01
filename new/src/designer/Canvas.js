@@ -8,6 +8,7 @@ import {
 import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Components'
+import { Node } from './Node'
 import { makeLogger, randomString } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 
@@ -107,15 +108,17 @@ export class Canvas {
       if (state.data.componentType !== LAYOUT) {
         const blockCom = componentList.find(i => i.name === 'VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
-        this.viewModel.push({ ...blockCom, $el: wrap, unique: randomString() })
+        this.viewModel.push(new Node({ ...blockCom, $el: wrap, unique: randomString() }))
 
         const dom = this.append(state.data, wrap.children[0])
         const lastNode = this.viewModel[this.viewModel.length - 1]
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
-        lastNode.children = [{ ...state.data, $el: dom, slotName, unique: randomString() }]
+        lastNode.children.push(
+          new Node({ ...state.data, $el: dom, slotName, unique: randomString() }, lastNode)
+        )
       } else {
         const dom = this.append(state.data, this.$canvasEl)
-        this.viewModel.push({ ...state.data, $el: dom, unique: randomString() })
+        this.viewModel.push(new Node({ ...state.data, $el: dom, unique: randomString() }))
       }
 
       this._dispathAppend()
@@ -212,17 +215,23 @@ export class Canvas {
   layout() {
     const { viewModel } = this
     if (!viewModel || !viewModel.length) return
-    const mount = (nodeArr, container) => {
-      for (const node of nodeArr) {
+    const mount = (nodeArr, container, parent) => {
+      for (let i = 0; i < nodeArr.length; i++) {
+        const node = nodeArr[i]
         // 在序列化数据的时候 =>
         // 将函数类型的属性丢失了 所以要从 config 里找回 有 render，transformProps
         // 将 $el 丢失了 需要重新赋值
         const com = componentList.find(i => i.name === node.name)
+        node.accept = com.accept
         node.render = com.render
         com.transformProps && (node.transformProps = com.transformProps)
         const wrapper = (node.$el = this.append(node, container))
+        nodeArr[i] = new Node(node, parent)
+        if (parent) {
+          parent.children.push(nodeArr[i])
+        }
         if (node.children && node.children.length) {
-          mount(node.children, wrapper.children[0])
+          mount(node.children, wrapper.children[0], nodeArr[i])
         }
       }
     }
@@ -301,7 +310,6 @@ export class Canvas {
     setCurrentViewNodeModel(node)
     this.__attr__.vueInstance.setData(node)
 
-    // TODO 将 focusRect 放到 Node 类里， Node 为组件渲染的节点
     if (this.focusRect) {
       this.focusRect.update(node)
     } else {
@@ -355,11 +363,7 @@ export class Canvas {
         const dropedVm = this._findVmByEl($nodeboxEl, this.viewModel)
         if (dropedVm) {
           const _node = { ...state.data, $el: dom, slotName, unique: randomString() }
-          if (dropedVm.children) {
-            dropedVm.children.push(_node)
-          } else {
-            dropedVm.children = [_node]
-          }
+          dropedVm.children.push(new Node(_node, dropedVm))
         }
 
         this._dispathAppend()

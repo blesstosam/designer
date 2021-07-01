@@ -16,13 +16,13 @@ const VTabsComponent = {
   $el: null,
   vm: null,
   attrs: VTabsCfg,
-  renderProps: null,
+  props: null,
   render(newProps) {
     if (newProps) {
-      changeProps(newProps, this.renderProps)
+      changeProps(newProps, this.props)
     } else {
-      this.renderProps = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VTabs, this.renderProps)
+      this.props = reactive(parseProps(this.attrs))
+      this.vm = genVueInstance(VTabs, this.props)
       return this.vm.$el
     }
   },

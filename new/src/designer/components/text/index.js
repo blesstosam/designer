@@ -15,14 +15,14 @@ const VTextComponent = {
   isBlock: true, // 是否是块级元素
   $el: null, // 记录组件渲染出来的dom包一层的node-box节点 在canvas渲染的时候挂载
   vm: null, // 当前vue实例
-  renderProps: null,
+  props: null,
   accept: [],
   render(newProps) {
     if (newProps) {
-      changeProps(newProps, this.renderProps)
+      changeProps(newProps, this.props)
     } else {
-      this.renderProps = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VText, this.renderProps)
+      this.props = reactive(parseProps(this.attrs))
+      this.vm = genVueInstance(VText, this.props)
       return this.vm.$el
     }
   }

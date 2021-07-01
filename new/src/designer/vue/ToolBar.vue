@@ -121,6 +121,7 @@ export default {
           delete item.vm
           delete item.render
           delete item.transformProps
+          delete item.parent
           if (item.children && item.children.length) {
             traverse(item.children)
           }

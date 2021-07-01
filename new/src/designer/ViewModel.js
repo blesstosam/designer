@@ -1,7 +1,6 @@
 export class ViewModel {
-  // TODO 封装data的各种操作
-  get data() {
-    return []
+  constructor(data) {
+    this.data = data
   }
 
   add() {}

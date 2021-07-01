@@ -41,10 +41,10 @@ export default {
         slots[key] = () =>
           arr.map(child => {
             const c = resolveComponent(child.name)
-            return h(c, child.renderProps, { default: () => genRender(child) })
+            return h(c, child.props, { default: () => genRender(child) })
           })
       })
-      return h(resolveComponent(item.name), item.renderProps, slots)
+      return h(resolveComponent(item.name), item.props, slots)
     }
 
     return genRender(_item)
