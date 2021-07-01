@@ -15,7 +15,7 @@ const VButtonComponent = {
   $el: null,
   vm: null,
   attrs: VButtonCfg,
-  renderProps: null,
+  props: null,
   transformProps(p) {
     p.type = p.__bgcolor
     p.round = p.__btnstyle === 'round'
@@ -32,13 +32,13 @@ const VButtonComponent = {
   },
   render(newProps) {
     if (newProps) {
-      changeProps(newProps, this.renderProps)
-      this.transformProps(this.renderProps)
+      changeProps(newProps, this.props)
+      this.transformProps(this.props)
     } else {
       const p = parseProps(this.attrs)
       this.transformProps(p)
-      this.renderProps = reactive(p)
-      this.vm = genVueInstance(VButton, this.renderProps)
+      this.props = reactive(p)
+      this.vm = genVueInstance(VButton, this.props)
       return this.vm.$el
     }
   }

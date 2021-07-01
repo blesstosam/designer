@@ -19,13 +19,13 @@ const VColumnComponent = {
   $el: null,
   vm: null,
   attrs: VColumnCfg,
-  renderProps: null,
+  props: null,
   render(newProps) {
     if (newProps) {
-      changeProps(newProps, this.renderProps)
+      changeProps(newProps, this.props)
     } else {
-      this.renderProps = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VColumn, this.renderProps)
+      this.props = reactive(parseProps(this.attrs))
+      this.vm = genVueInstance(VColumn, this.props)
       return this.vm.$el
     }
   },

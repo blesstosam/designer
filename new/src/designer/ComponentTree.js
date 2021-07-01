@@ -27,10 +27,10 @@ export class ComponentTree {
         this.__canvas__.handleNodeboxSelect(node)
       }
     }
-    const renderProps = reactive({ tree: data, handleClick, ref: 'componentTree' })
+    const props = reactive({ tree: data, handleClick, ref: 'componentTree' })
     const app = createApp({
       props: ['tree', 'handleClick', 'ref'],
-      render: () => h(ComponentTreeVue, renderProps)
+      render: () => h(ComponentTreeVue, props)
     })
 
     app.component(ElTree.name, ElTree)
@@ -41,7 +41,7 @@ export class ComponentTree {
       const { APPEND, DELETE } = ActionTypes
       if (type === APPEND || type === DELETE) {
         // TODO 要使用浅拷贝一遍才会触发视图更新?
-        renderProps.tree = [...viewModel]
+        props.tree = [...viewModel]
       }
     })
   }
