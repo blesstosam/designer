@@ -5,7 +5,6 @@ import VBlock from './VBlock.vue'
 import VBlockCfg from './config'
 
 const VBlockComponent = {
-  id: '1',
   name: 'VBlock',
   title: '区块',
   icon: {

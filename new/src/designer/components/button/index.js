@@ -4,7 +4,6 @@ import VButton from './VButton.vue'
 import VButtonCfg from './config'
 
 const VButtonComponent = {
-  id: '2',
   name: 'VButton',
   title: '按钮',
   icon: {

@@ -4,8 +4,7 @@ import VText from './VText.vue'
 import VTextCfg from './config'
 
 const VTextComponent = {
-  id: '0', // 唯一标示 绑定在标签上 在dragstart的时候通过该属性获取组件属性
-  name: 'VText',
+  name: 'VText', // 唯一标示 绑定在标签上 在dragstart的时候通过该属性获取组件属性
   title: '文字',
   icon: {
     type: 'img', // icon 有 image/font-icon/等几种

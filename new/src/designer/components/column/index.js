@@ -7,7 +7,6 @@ import VColumn from './VColumn.vue'
 import VColumnCfg from './config'
 
 const VColumnComponent = {
-  id: '4',
   name: 'VColumn',
   title: '分栏',
   icon: {

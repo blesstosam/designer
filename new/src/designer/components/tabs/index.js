@@ -5,7 +5,6 @@ import VTabs from './VTabs.vue'
 import VTabsCfg from './config'
 
 const VTabsComponent = {
-  id: '5',
   name: 'VTabs',
   title: '选项卡',
   icon: {
