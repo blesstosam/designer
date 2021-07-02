@@ -31,6 +31,10 @@ export class Components {
     return this.__designer__.__componentTree__
   }
 
+  get componentList() {
+    return this._hasRegistered
+  }
+
   init(com) {
     const app = createApp(com || ComponentsVue)
     app.component(ElTabs.name, ElTabs)
@@ -49,8 +53,8 @@ export class Components {
       state.dragging = true
       state.target = e.target
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLASS_NAME)
-      const id = $componentItem.getAttribute('data-id')
-      state.data = componentList.find(i => i.id === id) || {}
+      const name = $componentItem.getAttribute('data-name')
+      state.data = componentList.find(i => i.name === name) || {}
     })
     target.addEventListener('dragend', e => {
       // console.log(e, 'dragend')
@@ -68,7 +72,6 @@ export class Components {
   registerComponent(comEl, com) {
     $(comEl)
       .attr('draggable', true)
-      .attr('data-id', com.id)
       .attr('is-block', !!com.isBlock)
       .attr('component-type', com.componentType)
       .addClass(COMPONENT_EL_CLASS_NAME)

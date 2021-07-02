@@ -248,7 +248,7 @@ export class Canvas {
     const isLayout = d.componentType === LAYOUT
     const wrapper = this.createNodebox(isLayout, d.isBlock)
     const res = d.render()
-    $(res).attr({ 'data-id': d.id, 'data-name': d.name })
+    $(res).attr({ 'data-name': d.name })
     wrapper.appendChild(res)
 
     // 当组件的slotname 为 default 时，直接插入到容器的末尾

@@ -4,7 +4,6 @@ import VInput from './VInput.vue'
 import VInputCfg from './config'
 
 const VInputComponent = {
-  id: '3',
   name: 'VInput',
   title: '输入框',
   icon: {

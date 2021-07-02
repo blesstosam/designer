@@ -1,7 +1,6 @@
 // 组件节点
 export class Node {
   constructor(node, parent) {
-    this.id = node.id
     this.name = node.name
     this.title = node.title
     this.unique = node.unique
