@@ -1,6 +1,6 @@
 # 预览图
 
-![Preview](https://raw.githubusercontent.com/blesstosam/designer/master/resource/preview.png)
+![Preview](https://static01.imgkr.com/temp/6194a12b297c4218aba90e3720efe059.png)
 
 # 设计器开发
 
