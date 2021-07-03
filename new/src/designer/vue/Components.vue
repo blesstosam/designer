@@ -23,6 +23,16 @@
   cursor: pointer;
 }
 
+.custom-com-item {
+  display: inline-block;
+  padding: 6px;
+  width: 40px;
+  margin-right: 12px;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
 .component-tree-wrap {
   width: 100%;
   padding: 0 4px;
@@ -110,7 +120,17 @@
           </div>
 
           <div style="margin-bottom: 12px">自定义组件</div>
-          <div ref="customWrapEl" style="marginBottom: 24px"></div>
+          <div ref="customWrapEl" style="marginBottom: 24px">
+            <div
+              class="custom-com-item"
+              v-for="(item, index) in customComList"
+              :key="index"
+              :com-name="item.name"
+            >
+              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
+              <div style="margin-top: 6px">{{ item.title }}</div>
+            </div>
+          </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="模板" name="template">模板</el-tab-pane>
@@ -122,7 +142,8 @@
 
 <script>
 import { componentTypes } from '../Components'
-import { componentList } from '../config'
+import { componentList, customComList } from '../config'
+import { EVENT_TYPES } from '../Event'
 
 export default {
   name: 'Components',
@@ -130,7 +151,8 @@ export default {
     return {
       activeMenu: 'com', // com|tree
       activeName: 'component', // component|template
-      componentList
+      componentList,
+      customComList
     }
   },
   computed: {
@@ -145,16 +167,32 @@ export default {
     }
   },
   mounted() {
-    const comItems = document.querySelectorAll('.com-item')
-    for (const el of comItems) {
-      const comName = el.getAttribute('com-name')
-      const com = componentList.find(i => i.name === comName)
-      this.__components__.registerComponent(el, com)
-    }
-
+    this.registerCom()
+    this.registerCustomCom()
     this.__designer__.initComponentTree('.component-tree-wrap')
   },
   methods: {
+    registerCom() {
+      const comItems = document.querySelectorAll('.com-item')
+      for (const el of comItems) {
+        const comName = el.getAttribute('com-name')
+        const com = componentList.find(i => i.name === comName)
+        this.__components__.registerComponent(el, com)
+      }
+    },
+    registerCustomCom() {
+      const comItems = document.querySelectorAll('.custom-com-item')
+      const modArr = []
+      for (const el of comItems) {
+        const comName = el.getAttribute('com-name')
+        const com = customComList.find(i => i.name === comName)
+        modArr.push({ comEl: el, com })
+      }
+      this.__components__.registerAsyncComponents(modArr).then(res => {
+        // 分发全局事件 组件面板初始化
+        this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+      })
+    },
     handleMenuClick(menu) {
       this.activeMenu = menu
     },

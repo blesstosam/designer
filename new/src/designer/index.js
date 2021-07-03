@@ -1,4 +1,4 @@
-import { Event } from './Event.js'
+import { Event, EVENT_TYPES } from './Event.js'
 import { componentList } from './config.js'
 import { Canvas } from './Canvas.js'
 import { Attr } from './Attr.js'
@@ -25,16 +25,19 @@ class Designer extends Event {
   }
 
   init() {
-    this.__canvas__ = new Canvas(this.config, this)
-    this.__canvas__.init(viewModel)
+    this.initComponents()
 
-    // TODO 处理 plugins
+    this.on(EVENT_TYPES.COMPONENTS_INITED, () => {
+      // 画布里的组件依赖左侧组件的注册，有先后关系
+      this.__canvas__ = new Canvas(this.config, this)
+      this.__canvas__.init(viewModel)
+    })
 
     this.initAttr()
 
-    this.initComponents()
-
     this.initToolbar()
+
+    // TODO 处理 plugins
 
     this.on('drop', (ctx, params) => {
       console.log(ctx, params)

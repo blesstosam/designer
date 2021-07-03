@@ -1,8 +1,9 @@
-import { componentList, state } from './config.js'
+import { state } from './config.js'
 import { lookupByClassName, $ } from './lib/dom.js'
 import ComponentsVue from './vue/Components.vue'
 import { ElTabs, ElTabPane } from 'element-plus'
 import { createApp } from 'vue'
+import { FetchLoader } from '@qpaas/loader'
 
 const COMPONENT_EL_CLASS_NAME = 'component-item'
 
@@ -25,13 +26,14 @@ export class Components {
     this.__designer__ = designer
     this._hasRegistered = []
     this.$wrapEl = document.querySelector(this.config.componentsWrap)
+    this.loader = null
   }
 
   get __componentTree__() {
     return this.__designer__.__componentTree__
   }
 
-  get componentList() {
+  get registeredComponents() {
     return this._hasRegistered
   }
 
@@ -53,8 +55,8 @@ export class Components {
       state.dragging = true
       state.target = e.target
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLASS_NAME)
-      const name = $componentItem.getAttribute('data-name')
-      state.data = componentList.find(i => i.name === name) || {}
+      const comName = $componentItem.getAttribute('com-name')
+      state.data = this.registeredComponents.find(i => i.name === comName) || {}
     })
     target.addEventListener('dragend', e => {
       // console.log(e, 'dragend')
@@ -83,18 +85,55 @@ export class Components {
 
   /**
    * 异步注册组件
-   * @param {Promise} p
-   * @param {Promise}
+   * @param {Array} modArr
+   *   comEl 组件所在dom
+   *   com   组件
    */
-  registerAsyncComponent(p) {
-    if (Object.prototype.toString.call(p) !== '[object Promise]') {
-      const err = new Error('[registerAsyncComponent] param must be promise!')
-      Promise.reject(err)
+  registerAsyncComponents(modArr) {
+    const _pArr = []
+    for (const mod of modArr) {
+      const {
+        comEl,
+        com: { name, version, url, title, icon }
+      } = mod
+      this.loader = this.loader || new FetchLoader({ styleIsolation: true })
+      _pArr.push(
+        new Promise((reslove, reject) => {
+          this.loader.fetch(
+            {
+              [`${name}_${version}`]: url
+            },
+            mod => {
+              const realCom = {
+                name,
+                title,
+                icon,
+                accept: [],
+                // TODO 属性面板怎么处理
+                attrs: {},
+                render() {
+                  // vm 是指微组件实例
+                  const { el, vm } = mod.mount(document.createElement('div'))
+                  this.vm = vm
+                  return el
+                }
+              }
+              this.registerComponent(comEl, realCom)
+              reslove({
+                comEl,
+                com: realCom
+              })
+            },
+            err => {
+              console.log('fectch custom plugin errror: ', err)
+              reject(err)
+            }
+          )
+        })
+      )
     }
-    p.then(res => {
-      // TODO 需求修改
-      Promise.resolve(this.registerComponent(res))
-    })
+
+    return Promise.resolve(Promise.all(_pArr))
   }
 
   findComByName(name) {

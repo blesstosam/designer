@@ -43,3 +43,28 @@ export const componentList = [
   VButtonComponent,
   VInputComponent
 ]
+
+export const customComList = [
+  {
+    name: '123',
+    title: '插件1',
+    version: '0.0.1',
+    icon: {
+      type: 'img',
+      value: '/custom.png'
+    },
+    url: 'http://127.0.0.1:5001/123_0.0.1/index.js',
+    preview: []
+  },
+  {
+    name: '345',
+    title: '插件2',
+    version: '0.0.1',
+    icon: {
+      type: 'img',
+      value: '/custom.png'
+    },
+    url: 'http://127.0.0.1:5001/345_0.0.1/index.js',
+    preview: []
+  }
+]

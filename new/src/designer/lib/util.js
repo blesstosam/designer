@@ -15,30 +15,6 @@ function typeOf(obj) {
   return map[toString.call(obj)]
 }
 
-export function cloneDeep(data) {
-  const t = typeOf(data)
-  let o
-
-  if (t === 'array') {
-    o = []
-  } else if (t === 'object') {
-    o = {}
-  } else {
-    return data
-  }
-
-  if (t === 'array') {
-    for (let i = 0; i < data.length; i++) {
-      o.push(cloneDeep(data[i]))
-    }
-  } else if (t === 'object') {
-    for (let i in data) {
-      o[i] = cloneDeep(data[i])
-    }
-  }
-  return o
-}
-
 export function _forEach(obj, cb) {
   Object.keys(obj).forEach(k => cb(obj[k], k))
 }
