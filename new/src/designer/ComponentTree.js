@@ -22,7 +22,7 @@ export class ComponentTree {
     // Attr.js 里是直接使用 this.vueInstance 调用方法改变数据完成视图更新
     // 这里使用修改props
     const handleClick = d => {
-      const node = this.__canvas__._findVmByUniqueKey(d.unique)
+      const node = this.__canvas__.model.findVmByKey('unique', d.unique)
       if (node) {
         this.__canvas__.handleNodeboxSelect(node)
       }

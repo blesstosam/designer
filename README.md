@@ -35,3 +35,14 @@ class Components {
 
 this.__components__.init(MyComponentsView)
 ```
+
+# TODO
+
+| todo | 状态 |
+| --- | --- |
+| 自定义组件集成 |  √ |
+| 自定义组件预览页面集成 | - |
+| 自定义组件的属性面板 | - |
+| 扩展机制，参考bpmn.js | - |
+| viewModel 抽象类 | √ |
+| 定义事件类型，每一个操作都对应一种操作，进行全局分发，各插件可以通过event模块监听。事件类型参考bpmn.js | - |

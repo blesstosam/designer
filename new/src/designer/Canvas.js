@@ -10,6 +10,7 @@ import { componentTypes } from './Components'
 import { Node } from './Node'
 import { makeLogger, randomString } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
+import { ViewModel } from './ViewModel.js'
 
 const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 12,
@@ -35,6 +36,7 @@ export class Canvas {
     this.$markEl = null
     this.focusRect = null
     this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
+    this.model = null
   }
 
   get width() {
@@ -57,9 +59,13 @@ export class Canvas {
     return this.__designer__.__componentTree__
   }
 
+  get viewModel() {
+    return this.model.data
+  }
+
   init(viewModel) {
     const { config } = this
-    this.viewModel = viewModel || []
+    this.model = new ViewModel(viewModel)
     // ------- for debug -----------
     window.viewModel = this.viewModel
     const div = (this.$canvasEl = $('<div>')
@@ -80,7 +86,7 @@ export class Canvas {
     this.__designer__.on('actions', payload => {
       const { type, data } = payload
       if (type === ActionTypes.FOCUS_BTN_DEL) {
-        const movedVm = this._removeVmByEl(data.$el)
+        const movedVm = this.model.removeVmByKey('$el', data.$el)
         // TODO 有时候 movedVm 为 undefined ？
         // console.log(movedVm, 'movedVm')
         movedVm && movedVm.$el.remove()
@@ -88,7 +94,6 @@ export class Canvas {
         this._dispathDelete(movedVm)
       } else if (type === ActionTypes.FOCUS_BTN_COPY) {
         // 插入到同级的下一个节点
-        // TODO 是否在节点上加上 $parentEl 节省掉遍历的时间
         // const com = this.registeredComponents.find(i => i.name === data.name)
         // this.append(com)
       }
@@ -110,17 +115,17 @@ export class Canvas {
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.registeredComponents.find(i => i.name === 'VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
-        this.viewModel.push(new Node({ ...blockCom, $el: wrap, unique: randomString() }))
+        this.model.append(new Node({ ...blockCom, $el: wrap, unique: randomString() }))
 
         const dom = this.append(state.data, wrap.children[0])
-        const lastNode = this.viewModel[this.viewModel.length - 1]
+        const lastNode = this.model.getLastNode()
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
         lastNode.children.push(
           new Node({ ...state.data, $el: dom, slotName, unique: randomString() }, lastNode)
         )
       } else {
         const dom = this.append(state.data, this.$canvasEl)
-        this.viewModel.push(new Node({ ...state.data, $el: dom, unique: randomString() }))
+        this.model.append(new Node({ ...state.data, $el: dom, unique: randomString() }))
       }
 
       this._dispathAppend()
@@ -193,7 +198,7 @@ export class Canvas {
   }
 
   clear() {
-    this.viewModel = []
+    this.model.clear()
     this.$canvasEl.innerHTML = ''
     this.clearFocusRect()
     localStorage.clear('viewModel')
@@ -274,7 +279,7 @@ export class Canvas {
 
         // 查找 node-box 节点 更新当前节点 通知属性面板更新
         const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
-        const node = this._findVmByEl($nodeboxEl, this.viewModel)
+        const node = this.model.findVmByKey('$el', $nodeboxEl)
         if (node) {
           this.handleNodeboxSelect(node)
         }
@@ -291,7 +296,7 @@ export class Canvas {
    * @param {*} val 属性值
    */
   patch(el, item, val) {
-    const vm = this._findVmByEl(el)
+    const vm = this.model.findVmByKey('$el', el)
     // 更新attrs
     // TODO 有没有遍历 json schema 的库？
     const configCates = vm.attrs.properties.configs.items
@@ -362,7 +367,7 @@ export class Canvas {
       // 2. 被drop的地方没有组件，直接append
       if (accept.includes(state.data.name)) {
         const dom = this.append(state.data, e.target)
-        const dropedVm = this._findVmByEl($nodeboxEl, this.viewModel)
+        const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
         if (dropedVm) {
           const _node = { ...state.data, $el: dom, slotName, unique: randomString() }
           dropedVm.children.push(new Node(_node, dropedVm))
@@ -425,50 +430,6 @@ export class Canvas {
     })
 
     return wrapper
-  }
-
-  /**
-   * 根据el 递归遍历找到节点
-   * @param {HTMLElement} el
-   * @param {Array} arr
-   * @returns {*}
-   */
-  _findVmByEl(el, arr) {
-    if (!arr) arr = this.viewModel
-    for (const vm of arr) {
-      if (vm.$el === el) return vm
-      if (vm.children && vm.children.length) {
-        const _vm = this._findVmByEl(el, vm.children)
-        // important: 这里一定要加if判断 否则递归会断掉
-        if (_vm) return _vm
-      }
-    }
-  }
-
-  _removeVmByEl(el, arr) {
-    if (!arr) arr = this.viewModel
-    for (let i = 0; i < arr.length; i++) {
-      const vm = arr[i]
-      if (vm.$el === el) {
-        const movedArr = arr.splice(i, 1)
-        return movedArr[0]
-      }
-      if (vm.children && vm.children.length) {
-        const moved = this._removeVmByEl(el, vm.children)
-        if (moved) return moved
-      }
-    }
-  }
-
-  _findVmByUniqueKey(key, arr) {
-    if (!arr) arr = this.viewModel
-    for (const vm of arr) {
-      if (vm.unique === key) return vm
-      if (vm.children && vm.children.length) {
-        const _vm = this._findVmByUniqueKey(key, vm.children)
-        if (_vm) return _vm
-      }
-    }
   }
 
   /**
