@@ -1,5 +1,4 @@
-// 工具栏
-import { cloneDeep } from './lib/util.js'
+import cloneDeep from 'lodash.clonedeep'
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import ToolBarVue from './vue/ToolBar.vue'

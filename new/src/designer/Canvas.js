@@ -3,7 +3,6 @@ import {
   setCurrentViewNodeModel,
   state,
   resetState,
-  componentList
 } from './config.js'
 import { FocusRect } from './FocusRect.js'
 import { ActionTypes } from './Toolbar.js'
@@ -48,6 +47,9 @@ export class Canvas {
   get __components__() {
     return this.__designer__.__components__
   }
+  get registeredComponents() {
+    return this.__components__.registeredComponents
+  }
   get __attr__() {
     return this.__designer__.__attr__
   }
@@ -87,7 +89,7 @@ export class Canvas {
       } else if (type === ActionTypes.FOCUS_BTN_COPY) {
         // 插入到同级的下一个节点
         // TODO 是否在节点上加上 $parentEl 节省掉遍历的时间
-        // const com = componentList.find(i => i.name === data.name)
+        // const com = this.registeredComponents.find(i => i.name === data.name)
         // this.append(com)
       }
     })
@@ -106,7 +108,7 @@ export class Canvas {
       this.removeMark()
 
       if (state.data.componentType !== LAYOUT) {
-        const blockCom = componentList.find(i => i.name === 'VBlock')
+        const blockCom = this.registeredComponents.find(i => i.name === 'VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
         this.viewModel.push(new Node({ ...blockCom, $el: wrap, unique: randomString() }))
 
@@ -221,7 +223,7 @@ export class Canvas {
         // 在序列化数据的时候 =>
         // 将函数类型的属性丢失了 所以要从 config 里找回 有 render，transformProps
         // 将 $el 丢失了 需要重新赋值
-        const com = componentList.find(i => i.name === node.name)
+        const com = this.registeredComponents.find(i => i.name === node.name)
         node.accept = com.accept
         node.render = com.render
         com.transformProps && (node.transformProps = com.transformProps)
