@@ -12,7 +12,7 @@ import { Toolbar } from './Toolbar.js'
 // 然后把 tag 换成 componentName，把布局 css 换成特定的约定 比如 column span 等
 let viewModel = null
 try {
-  viewModel = JSON.parse(localStorage.getItem('viewModel'))
+  viewModel = JSON.parse(localStorage.getItem('viewModel')) || []
 } catch (e) {
   viewModel = []
 }

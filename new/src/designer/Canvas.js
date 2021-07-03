@@ -67,7 +67,7 @@ export class Canvas {
     const { config } = this
     this.model = new ViewModel(viewModel)
     // ------- for debug -----------
-    window.viewModel = this.viewModel
+    window.model = this.model
     const div = (this.$canvasEl = $('<div>')
       .addClass('drop')
       .style({
