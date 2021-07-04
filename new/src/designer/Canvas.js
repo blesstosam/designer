@@ -1,16 +1,20 @@
-import {
-  getCurrentViewNodeModel,
-  setCurrentViewNodeModel,
-  state,
-  resetState,
-} from './config.js'
+import { getCurrentViewNodeModel, setCurrentViewNodeModel, state, resetState } from './config.js'
 import { FocusRect } from './FocusRect.js'
-import { ActionTypes } from './Toolbar.js'
 import { componentTypes } from './Components'
 import { Node } from './Node'
 import { makeLogger, randomString } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { ViewModel } from './ViewModel.js'
+import { EVENT_TYPES } from './Event.js'
+
+const {
+  FOCUS_DEL_CLICK: F_D_C,
+  FOCUS_COPY_CLICK: F_C_C,
+  CANVAS_ACTIONS_APPEND: C_A_A,
+  CANVAS_ACTIONS_DELETE: C_A_D,
+  COMPONENTS_INITED,
+  CANVAS_INITED
+} = EVENT_TYPES
 
 const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 12,
@@ -40,10 +44,10 @@ export class Canvas {
   }
 
   get width() {
-    return this.config.width
+    return getStyle(this.$canvasEl, 'width')
   }
   get height() {
-    return this.config.height
+    return getStyle(this.$canvasEl, 'heighht')
   }
 
   get __components__() {
@@ -64,35 +68,43 @@ export class Canvas {
   }
 
   init(viewModel) {
-    const { config } = this
-    this.model = new ViewModel(viewModel)
-    // ------- for debug -----------
-    window.model = this.model
-    const div = (this.$canvasEl = $('<div>')
-      .addClass('drop')
-      .style({
-        width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
-        height: config.height || '100%',
-        minWidth: '100%',
-        padding: DROP_EL_PADDING + 'px',
-        paddingBottom: '24px',
-        boxSizing: 'border-box',
-        backgroundColor: '#ddd',
-        overflowY: 'auto'
-      }).el)
-    this.$canvasWrapEl.appendChild(div)
-    this.bindCanvasEvents()
-    this.layout()
-    this.__designer__.on('actions', payload => {
+    // canvas 的 init 依赖 components插件
+    this.__designer__.on(COMPONENTS_INITED, () => {
+      const { config } = this
+      this.model = new ViewModel(viewModel)
+      // ------- for debug -----------
+      window.model = this.model
+      const div = (this.$canvasEl = $('<div>')
+        .addClass('drop')
+        .style({
+          width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
+          height: config.height || '100%',
+          minWidth: '100%',
+          padding: DROP_EL_PADDING + 'px',
+          paddingBottom: '24px',
+          boxSizing: 'border-box',
+          backgroundColor: '#ddd',
+          overflowY: 'auto'
+        }).el)
+      this.$canvasWrapEl.appendChild(div)
+      this.bindCanvasEvents()
+      this.layout()
+      this.initListener()
+      this.__designer__.emit(CANVAS_INITED)
+    })
+  }
+
+  initListener() {
+    this.__designer__.on([F_D_C, F_C_C], payload => {
       const { type, data } = payload
-      if (type === ActionTypes.FOCUS_BTN_DEL) {
+      if (type === F_D_C) {
         const movedVm = this.model.removeVmByKey('$el', data.$el)
         // TODO 有时候 movedVm 为 undefined ？
         // console.log(movedVm, 'movedVm')
         movedVm && movedVm.$el.remove()
         this.clearFocusRect()
         this._dispathDelete(movedVm)
-      } else if (type === ActionTypes.FOCUS_BTN_COPY) {
+      } else if (type === F_C_C) {
         // 插入到同级的下一个节点
         // const com = this.registeredComponents.find(i => i.name === data.name)
         // this.append(com)
@@ -202,8 +214,8 @@ export class Canvas {
     this.$canvasEl.innerHTML = ''
     this.clearFocusRect()
     localStorage.clear('viewModel')
-    this.__designer__.emit('actions', {
-      type: ActionTypes.DELETE,
+    this.__designer__.emit(C_A_D, {
+      type: C_A_D,
       viewModel: []
     })
   }
@@ -436,8 +448,8 @@ export class Canvas {
    * 发送全局事件-添加节点
    */
   _dispathAppend() {
-    this.__designer__.emit('actions', {
-      type: ActionTypes.APPEND,
+    this.__designer__.emit(C_A_A, {
+      type: C_A_A,
       data: state.data,
       viewModel: this.viewModel
     })
@@ -447,8 +459,8 @@ export class Canvas {
    * 发送全局事件-删除节点
    */
   _dispathDelete(movedVm) {
-    this.__designer__.emit('actions', {
-      type: ActionTypes.DELETE,
+    this.__designer__.emit(C_A_D, {
+      type: C_A_D,
       data: movedVm,
       viewModel: this.viewModel
     })

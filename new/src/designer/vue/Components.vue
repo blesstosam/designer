@@ -7,10 +7,13 @@
   width: 60px;
   border-right: 1px solid #eee;
   text-align: center;
-  padding: 12px 0;
 }
 .component-left .menu-item {
-  margin-bottom: 12px;
+  padding: 12px 0;
+}
+
+.active-menu-item {
+  border-left: 2px solid #1989fa
 }
 
 .com-item {
@@ -42,7 +45,7 @@
 <template>
   <div class="component">
     <div class="component-left">
-      <div class="menu-item">
+      <div :class="{ 'menu-item': true, 'active-menu-item': activeMenu === 'com' }">
         <svg
           t="1624967050998"
           class="icon"
@@ -63,7 +66,7 @@
         </svg>
       </div>
 
-      <div class="menu-item">
+      <div :class="{ 'menu-item': true, 'active-menu-item': activeMenu === 'tree' }">
         <svg
           t="1624966999151"
           class="icon"

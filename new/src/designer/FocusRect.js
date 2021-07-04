@@ -1,7 +1,7 @@
-import { ResizeObserver } from '@juggle/resize-observer';
+import { ResizeObserver } from '@juggle/resize-observer'
 import { componentTypes } from './Components'
-import { ActionTypes } from './Toolbar'
 import { $ } from './lib/dom'
+import { EVENT_TYPES } from './Event'
 
 export class FocusRect {
   constructor(desginer) {
@@ -19,7 +19,7 @@ export class FocusRect {
       } else {
         this.initedOb = true
       }
-    });
+    })
   }
 
   get isLayout() {
@@ -42,7 +42,7 @@ export class FocusRect {
 
   observe() {
     const { $el } = this.node
-    this.observer.observe($el.children[0]);
+    this.observer.observe($el.children[0])
   }
   disconnect() {
     this.observer.disconnect()
@@ -144,8 +144,9 @@ export class FocusRect {
     }
     div.addEventListener('click', e => {
       e.stopPropagation()
-      this.__designer__.emit('actions', {
-        type: type === 'delete' ? ActionTypes.FOCUS_BTN_DEL : ActionTypes.FOCUS_BTN_COPY,
+      const eType = type === 'delete' ? EVENT_TYPES.FOCUS_DEL_CLICK : EVENT_TYPES.FOCUS_COPY_CLICK
+      this.__designer__.emit(eType, {
+        type: eType,
         data: this.node
       })
     })
