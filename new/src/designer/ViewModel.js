@@ -61,6 +61,10 @@ export class ViewModel {
     this.data.push(d)
   }
 
+  prepend(d) {
+    this.data.unshift(d)
+  }
+
   remove() {}
 
   clear() {

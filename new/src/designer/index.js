@@ -27,11 +27,7 @@ class Designer extends Event {
   init() {
     this.initComponents()
 
-    this.on(EVENT_TYPES.COMPONENTS_INITED, () => {
-      // 画布里的组件依赖左侧组件的注册，有先后关系
-      this.__canvas__ = new Canvas(this.config, this)
-      this.__canvas__.init(viewModel)
-    })
+    this.initCanvas()
 
     this.initAttr()
 
@@ -42,6 +38,12 @@ class Designer extends Event {
     this.on('drop', (ctx, params) => {
       console.log(ctx, params)
     })
+  }
+
+  initCanvas() {
+    // 画布里的组件依赖左侧组件的注册，有先后关系
+    this.__canvas__ = new Canvas(this.config, this)
+    this.__canvas__.init(viewModel)
   }
 
   initAttr() {

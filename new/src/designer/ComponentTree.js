@@ -1,7 +1,9 @@
 import { createApp, reactive, h } from 'vue'
 import { ElTree } from 'element-plus'
 import ComponentTreeVue from './vue/ComponentTree.vue'
-import { ActionTypes } from './Toolbar'
+import { EVENT_TYPES } from './Event'
+
+const { CANVAS_ACTIONS_DELETE: C_A_D, CANVAS_ACTIONS_APPEND: C_A_A } = EVENT_TYPES
 
 export class ComponentTree {
   constructor(config, designer) {
@@ -36,10 +38,9 @@ export class ComponentTree {
     app.component(ElTree.name, ElTree)
     this.vueInstance = app.mount(this.config.componentTreeWrap)
     this.vueInstance.__componentTree__ = this
-    this.__designer__.on('actions', payload => {
+    this.__designer__.on([C_A_D, C_A_A], payload => {
       const { type, viewModel } = payload
-      const { APPEND, DELETE } = ActionTypes
-      if (type === APPEND || type === DELETE) {
+      if (type === C_A_D || type === C_A_A) {
         // TODO 要使用浅拷贝一遍才会触发视图更新?
         props.tree = [...viewModel]
       }

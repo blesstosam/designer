@@ -2,15 +2,11 @@ import cloneDeep from 'lodash.clonedeep'
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import ToolBarVue from './vue/ToolBar.vue'
+import { EVENT_TYPES } from './Event'
 
-export const ActionTypes = {
-  APPEND: 'append',
-  DELETE: 'delete',
-  SET_ATTR: 'setAttr',
+const { CANVAS_ACTIONS_APPEND, CANVAS_ACTIONS_DELETE, ATTRPANEL_SET_ATTR } = EVENT_TYPES
 
-  FOCUS_BTN_DEL: 'focusBtnDel',
-  FOCUS_BTN_COPY: 'focusBtnCopy',
-}
+const NeedRecordEvents = [CANVAS_ACTIONS_APPEND, CANVAS_ACTIONS_DELETE, ATTRPANEL_SET_ATTR]
 
 export class Toolbar {
   constructor(config, designer) {
@@ -43,10 +39,11 @@ export class Toolbar {
     this.vueInstance.__toolbar__ = this
 
     this.initListener()
+    this.__designer__.emit(EVENT_TYPES.TOOLBAR_INITED)
   }
 
   initListener() {
-    this.__designer__.on('actions', d => {
+    this.__designer__.on(NeedRecordEvents, d => {
       if (this.actions.length < this.maxRecordTimes) {
         // 如果当前操作为最后一步
         // console.log(d, 'd')
@@ -90,11 +87,12 @@ export class Toolbar {
     if (this.actions.length && this._index > -1) {
       const currentAction = this.actions[this._index]
       console.log(currentAction, 'in doLastStep')
-      if (currentAction.type === ActionTypes.APPEND) {
-        // 删除元素
-        console.log('remove element')
-      } else if (currentAction.type === ActionTypes.DELETE) {
-      } else if (currentAction.type === ActionTypes.SET_ATTR) {
+      if (currentAction.type === CANVAS_ACTIONS_APPEND) {
+        // todo
+      } else if (currentAction.type === CANVAS_ACTIONS_DELETE) {
+        // todo
+      } else if (currentAction.type === ATTRPANEL_SET_ATTR) {
+        // todo
       }
       this._index--
       if (this._index === -1) {
@@ -112,11 +110,9 @@ export class Toolbar {
     if (this.actions.length && this._index < this.actions.length - 1) {
       console.log(this._index, 'in doNextStep')
       const currentAction = this.actions[this._index]
-      if (currentAction.type === ActionTypes.APPEND) {
-        // 删除元素
-        console.log('remove element')
-      } else if (currentAction.type === ActionTypes.DELETE) {
-      } else if (currentAction.type === ActionTypes.SET_ATTR) {
+      if (currentAction.type === CANVAS_ACTIONS_APPEND) {
+      } else if (currentAction.type === CANVAS_ACTIONS_DELETE) {
+      } else if (currentAction.type === ATTRPANEL_SET_ATTR) {
       }
       this._index++
     }

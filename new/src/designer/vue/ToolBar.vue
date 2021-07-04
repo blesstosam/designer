@@ -6,6 +6,10 @@
   width: 100%;
   font-size: 12px;
 }
+.logo img {
+  padding-top: 5px;
+  width: 96px;
+}
 .toolbar .logo {
   font-size: 20px;
 }
@@ -44,7 +48,9 @@
 
 <template>
   <div class="toolbar">
-    <div class="logo">设计器</div>
+    <div class="logo">
+      <img src="/logo.jpg" alt="">
+    </div>
     <div class="toolbar-content">
       <span class="tool-item" :class="{ disabled: !prevStatus }">
         <i class="el-icon-back"></i>
