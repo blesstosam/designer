@@ -13,7 +13,7 @@
 }
 
 .active-menu-item {
-  border-left: 2px solid #1989fa
+  border-left: 2px solid #1989fa;
 }
 
 .com-item {
@@ -191,10 +191,15 @@ export default {
         const com = customComList.find(i => i.name === comName)
         modArr.push({ comEl: el, com })
       }
-      this.__components__.registerAsyncComponents(modArr).then(res => {
-        // 分发全局事件 组件面板初始化
-        this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
-      })
+      this.__components__
+        .registerAsyncComponents(modArr)
+        .then(res => {
+          // 分发全局事件 组件面板初始化
+          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+        })
+        .catch(err => {
+          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+        })
     },
     handleMenuClick(menu) {
       this.activeMenu = menu

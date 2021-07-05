@@ -13,6 +13,19 @@ describe('test event', () => {
     event.emit('click', '1')
   })
 
+  test('test `once`', (done) => {
+    let count = 0
+    const cb = (p) => {
+      count++
+      expect(p).toBe('1')
+      done()
+    }
+    event.once('click', cb)
+    event.emit('click', '1')
+    event.emit('click', '1')
+    expect(count).toBe(1)
+  })
+
   test('test `on` twice', done => {
     let count = 0
     event.on('click', p => {
@@ -27,7 +40,7 @@ describe('test event', () => {
     expect(count).toBe(2)
   })
 
-  test('test `on` pass a array ', (done) => {
+  test('test `on` with a array ', (done) => {
     let count = 0
     event.on(['click', 'click2'], p => {
       count++
@@ -83,6 +96,20 @@ describe('test event', () => {
     expect(count).toBe(0)
   })
 
+  test('test `off` with a array', () => {
+    let count = 0
+    const cb = () => {
+      count++
+    }
+    event.on(['click', 'click1'], cb)
+    event.off(['click', 'click1'], cb)
+
+    event.emit('click', '1')
+    event.emit('click1', '1')
+
+    expect(count).toBe(0)
+  })
+
   test('test `off` all subs', () => {
     let count = 0
     const cb = () => {
@@ -92,8 +119,6 @@ describe('test event', () => {
       count++
     }
     event.on('click', cb)
-    event.on('click', cb2)
-
     event.off('click')
     event.emit('click', '1')
 
