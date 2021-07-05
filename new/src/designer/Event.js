@@ -1,4 +1,3 @@
-// 封装消息总线 发布订阅模式
 export class Event {
   constructor(name) {
     this.name = name
@@ -14,7 +13,7 @@ export class Event {
         this.onSingle(t, cb)
       }
     } else {
-      console.error(`Event.on: ${type} invalid, please pass a string or a array`)
+      throw new Error(`Event.on: ${type} invalid, please pass a string or a array`)
     }
   }
 
@@ -27,9 +26,31 @@ export class Event {
     }
   }
 
+  once(type, cb) {
+    const wrappedCb = (...args) => {
+      const res = cb.call(null, ...args)
+      this.off(type, wrappedCb)
+      return res
+    }
+    this.on(type, wrappedCb)
+  }
+
+  // type can be a array
   off(type, cb) {
+    if (typeof type === 'string') {
+      this.offSingle(type, cb)
+    } else if (Array.isArray(type)) {
+      for (const t of type) {
+        this.offSingle(t, cb)
+      }
+    } else {
+      throw new Error(`Event.off: ${type} invalid, please pass a string or a array`)
+    }
+  }
+
+  offSingle(type, cb) {
     const origin = this.subs.get(type)
-    if (cb) {
+    if (cb != undefined) {
       const index = origin.findIndex(i => i === cb)
       if (index > -1) {
         origin.splice(index, 1)
@@ -43,7 +64,7 @@ export class Event {
     const origin = this.subs.get(type)
     if (origin && origin.length) {
       for (const fn of origin) {
-        fn.call(this, ...args)
+        fn.call(null, ...args)
       }
     }
   }
@@ -60,7 +81,7 @@ export const EVENT_TYPES = {
   CANVAS_INITED: 'canvas.inited',
   CANVAS_DESTROYED: 'canvas.destroyed',
   CANVAS_ACTIONS_APPEND: 'canvas.actions.append',
-  CANVAS_ACTIONS_DELETE: 'canvas.actions:.elete',
+  CANVAS_ACTIONS_DELETE: 'canvas.actions.delete',
 
   ATTRPANEL_INITED: 'attrpanel.inited',
   ATTRPANEL_DESTROYED: 'attrpanel.destroyed',
@@ -73,5 +94,5 @@ export const EVENT_TYPES = {
   FOCUS_UPDATED: 'focus.updated',
   FOCUS_DESTROYED: 'focus.destroyed',
   FOCUS_DEL_CLICK: 'focus.delClick',
-  FOCUS_COPY_CLICK: 'focus.copyClick',
+  FOCUS_COPY_CLICK: 'focus.copyClick'
 }

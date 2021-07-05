@@ -125,7 +125,7 @@ export class Components {
               })
             },
             err => {
-              console.log('fectch custom plugin errror: ', err)
+              console.error('fetch custom plugin errror: ', err)
               reject(err)
             }
           )
