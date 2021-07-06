@@ -1,4 +1,3 @@
-// 组件节点
 export class Node {
   constructor(node, parent) {
     this.name = node.name
@@ -16,6 +15,10 @@ export class Node {
     this.isBlock = !!node.isBlock
     node.slotName && (this.slotName = node.slotName)
     this.vm = node.vm
+
+    // 是否是自定义组件
+    this.isCustom = !!node.isCustom
+    this.customData = node.customData
 
     // function
     this.render = node.render

@@ -109,6 +109,12 @@ export class Components {
                 title,
                 icon,
                 accept: [],
+                isCustom: true,
+                customData: {
+                  name,
+                  version,
+                  url
+                },
                 // TODO 属性面板怎么处理
                 attrs: {},
                 render() {
