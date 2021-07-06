@@ -132,7 +132,6 @@ export class Canvas {
         const dom = this.append(state.data, wrap.children[0])
         const lastNode = this.model.getLastNode()
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
-        debugger
         lastNode.children.push(
           new Node({ ...state.data, $el: dom, slotName, unique: randomString() }, lastNode)
         )
