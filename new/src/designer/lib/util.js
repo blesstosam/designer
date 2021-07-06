@@ -1,4 +1,4 @@
-function typeOf(obj) {
+export function typeOf(obj) {
   const toString = Object.prototype.toString
   const map = {
     '[object Boolean]': 'boolean',
@@ -34,4 +34,8 @@ export function makeLogger(prefix) {
   return function(...arg) {
     console.log(`${prefix}`, ...arg)
   }
+}
+
+export function isPlainObject(obj) {
+  return Object.prototype.toString.call(obj) === '[object Object]'
 }
