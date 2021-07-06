@@ -43,9 +43,6 @@ export default {
       error: null
     }
   },
-  created() {
-    console.log(this.$props)
-  },
   mounted() {
     this.load()
       .then(mod => {
