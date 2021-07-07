@@ -13,7 +13,7 @@
 }
 
 .active-menu-item {
-  border-left: 2px solid #1989fa;
+  border-left: 3px solid #1989fa;
 }
 
 .com-item {
@@ -38,7 +38,6 @@
 
 .component-tree-wrap {
   width: 100%;
-  padding: 0 4px;
 }
 </style>
 

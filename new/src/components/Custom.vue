@@ -1,14 +1,11 @@
 <template>
   <div>
     <div v-if="loading">
-      <slot name="loading">
-        <div style="color: #ccc">loading...</div>
-      </slot>
+      <slot name="loading"><div style="color: #ccc">loading...</div></slot>
     </div>
     <div v-else-if="error">
       <slot name="error">{{ error }}</slot>
     </div>
-
     <div ref="content"></div>
   </div>
 </template>
@@ -63,7 +60,7 @@ export default {
         this.loading = true
         this.delaying = false
       }, DELAY_LOADING_TIME)
-      
+
       return new Promise((resolve, reject) => {
         const cb = mod => {
           this.loading = false

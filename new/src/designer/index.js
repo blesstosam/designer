@@ -5,6 +5,7 @@ import { Attr } from './Attr.js'
 import { Components } from './Components.js'
 import { ComponentTree } from './ComponentTree.js'
 import { Toolbar } from './Toolbar.js'
+import { KeyBoard } from './Keyboard'
 
 // 页面模型数据 应该是一个 json 或 json schema
 // 参考 virtual dom 树型数据结构 =>
@@ -32,6 +33,8 @@ class Designer extends Event {
     this.initAttr()
 
     this.initToolbar()
+
+    this.initKeyboard()
 
     // TODO 处理 plugins
 
@@ -65,6 +68,19 @@ class Designer extends Event {
     this.config.componentTreeWrap = wrap
     this.__componentTree__ = new ComponentTree(this.config, this)
     this.__componentTree__.init(viewModel)
+  }
+
+  initKeyboard() {
+    this.__keyboard__ = new KeyBoard()
+    this.__keyboard__.bind('keydown')
+    this.__keyboard__.add(EVENT_TYPES.KEYBOARD_UNDO, e => {
+      console.log('keyboard.undo')
+      this.emit(EVENT_TYPES.KEYBOARD_REDO)
+    })
+    this.__keyboard__.add(EVENT_TYPES.KEYBOARD_REDO, e => {
+      console.log('keyboard.redo')
+      this.emit(EVENT_TYPES.KEYBOARD_REDO)
+    })
   }
 }
 

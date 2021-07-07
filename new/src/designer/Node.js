@@ -3,6 +3,7 @@ export class Node {
     this.name = node.name
     this.title = node.title
     this.unique = node.unique
+    this.icon = node.icon
     node.componentType && (this.componentType = node.componentType)
     this.props = node.props
     this.attrs = node.attrs

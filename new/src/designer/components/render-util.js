@@ -1,7 +1,6 @@
 import { createApp, h } from 'vue'
 import { cssProperty } from '../cssProperty'
-import { parse } from '../vue/attr-panel/AttrPanel.vue'
-
+import { parse } from '../lib/parse-schema'
 
 // 使用vue生成vue实例挂载
 export function genVueInstance(appOpt, props) {
