@@ -68,7 +68,7 @@ export class Canvas {
   }
 
   init(viewModel) {
-    // canvas 的 init 依赖 components插件
+    // canvas 的 init 依赖 components 插件
     this.__designer__.on(COMPONENTS_INITED, () => {
       const { config } = this
       this.model = new ViewModel(viewModel)

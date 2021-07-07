@@ -13,19 +13,7 @@
 .toolbar .logo {
   font-size: 20px;
 }
-.toolbar .el-icon-back {
-  font-size: 20px;
-}
-.toolbar .el-icon-right {
-  font-size: 20px;
-}
-.toolbar .el-icon-upload {
-  font-size: 20px;
-}
-.toolbar .el-icon-monitor {
-  font-size: 20px;
-}
-.toolbar .el-icon-delete {
+.toolbar i {
   font-size: 20px;
 }
 .toolbar .toolbar-content {
@@ -49,7 +37,7 @@
 <template>
   <div class="toolbar">
     <div class="logo">
-      <img src="/logo.jpg" alt="">
+      <img src="/logo.jpg" alt="" />
     </div>
     <div class="toolbar-content">
       <span class="tool-item" :class="{ disabled: !prevStatus }">
@@ -59,6 +47,10 @@
       <span class="tool-item" :class="{ disabled: !nextStatus }">
         <i class="el-icon-right"></i>
         <span>下一步</span>
+      </span>
+      <span class="tool-item" @click="save">
+        <i class="el-icon-camera-solid"></i>
+        <span>导出</span>
       </span>
       <span class="tool-item" @click="clear">
         <i class="el-icon-delete"></i>

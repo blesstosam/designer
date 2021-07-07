@@ -1,84 +1,3 @@
-const json = {
-  title: '文字',
-  description: '用于显示一段文字',
-  id: 'text',
-  icon: 'icon-text',
-  configs: [
-    {
-      title: '基础',
-      id: 'basic',
-      children: [
-        {
-          title: '内容',
-          id: 'content',
-          default: '文字',
-          value: '',
-          formType: 'textarea'
-        },
-        {
-          title: '颜色',
-          id: 'color',
-          default: '#000',
-          value: '',
-          formType: 'color-picker'
-        },
-        {
-          title: '背景颜色',
-          id: 'backgroundColor',
-          default: '',
-          value: '',
-          formType: 'color-picker'
-        },
-        {
-          title: '字高',
-          id: 'fontSize',
-          default: '14px',
-          value: '',
-          formType: 'select',
-          options: [
-            { label: '14px', value: '14px' },
-            { label: '16px', value: '16px' },
-            { label: '18px', value: '18px' }
-          ]
-        },
-        {
-          title: '字重',
-          id: 'fontWeight',
-          default: '400',
-          value: '',
-          formType: 'select',
-          options: [
-            { label: '400', value: '400' },
-            { label: '700', value: '700' },
-            { label: '900', value: '900' }
-          ]
-        },
-        {
-          title: '文字样式',
-          id: 'fontStyle',
-          default: 'normal',
-          value: '',
-          formType: 'text-style'
-        },
-        {
-          title: '文字装饰',
-          id: 'textDecoration',
-          default: 'none',
-          value: '',
-          formType: 'text-decoration'
-        },
-        {
-          title: '文字对齐',
-          id: 'textAlign',
-          default: 'left',
-          value: '',
-          formType: 'row-align'
-        }
-      ]
-    }
-  ]
-}
-
 export default {
   type: 'object',
   title: '文字',
@@ -93,13 +12,12 @@ export default {
     configs: {
       type: 'array',
       items: [
-        // 基础
         {
           type: 'object',
-          title: '基础',
+          title: '属性',
           properties: {
             id: {
-              const: 'basic'
+              const: '_props'
             },
             children: {
               type: 'array',

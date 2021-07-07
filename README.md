@@ -10,6 +10,7 @@ $ cd new && npm install && npm run serve
 
 # Core
 1. 依赖注入
+2. 视图使用vue3渲染，和设计器核心类可以通过**props传递回调函数**，**vue实例调用方法** 来交互
 
 # 扩展机制
 

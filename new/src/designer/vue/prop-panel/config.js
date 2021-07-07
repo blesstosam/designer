@@ -1,5 +1,6 @@
 export const FormTypes = {
   Input: 'input',
+  InputNumber: 'input-number',
   Select: 'select',
   TextArea: 'textarea',
   Switch: 'switch',

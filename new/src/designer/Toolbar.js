@@ -4,9 +4,13 @@ import ElementPlus from 'element-plus'
 import ToolBarVue from './vue/ToolBar.vue'
 import { EVENT_TYPES } from './Event'
 
-const { CANVAS_ACTIONS_APPEND, CANVAS_ACTIONS_DELETE, ATTRPANEL_SET_ATTR } = EVENT_TYPES
+const {
+  CANVAS_ACTIONS_APPEND: C_A_A,
+  CANVAS_ACTIONS_DELETE: C_A_D,
+  ATTRPANEL_SET_ATTR: A_S_A
+} = EVENT_TYPES
 
-const NeedRecordEvents = [CANVAS_ACTIONS_APPEND, CANVAS_ACTIONS_DELETE, ATTRPANEL_SET_ATTR]
+const NeedRecordEvents = [C_A_A, C_A_D, A_S_A]
 
 export class Toolbar {
   constructor(config, designer) {
@@ -87,11 +91,11 @@ export class Toolbar {
     if (this.actions.length && this._index > -1) {
       const currentAction = this.actions[this._index]
       console.log(currentAction, 'in doLastStep')
-      if (currentAction.type === CANVAS_ACTIONS_APPEND) {
+      if (currentAction.type === C_A_A) {
         // todo
-      } else if (currentAction.type === CANVAS_ACTIONS_DELETE) {
+      } else if (currentAction.type === C_A_D) {
         // todo
-      } else if (currentAction.type === ATTRPANEL_SET_ATTR) {
+      } else if (currentAction.type === A_S_A) {
         // todo
       }
       this._index--
@@ -110,9 +114,9 @@ export class Toolbar {
     if (this.actions.length && this._index < this.actions.length - 1) {
       console.log(this._index, 'in doNextStep')
       const currentAction = this.actions[this._index]
-      if (currentAction.type === CANVAS_ACTIONS_APPEND) {
-      } else if (currentAction.type === CANVAS_ACTIONS_DELETE) {
-      } else if (currentAction.type === ATTRPANEL_SET_ATTR) {
+      if (currentAction.type === C_A_A) {
+      } else if (currentAction.type === C_A_D) {
+      } else if (currentAction.type === A_S_A) {
       }
       this._index++
     }

@@ -1,125 +1,3 @@
-const json = {
-  title: '按钮',
-  description: '用于触发业务事件，支持按钮样式设置',
-  id: 'button',
-  icon: 'icon-button',
-  configs: [
-    {
-      title: '基础',
-      id: 'basic',
-      children: [
-        {
-          title: '按钮名称',
-          id: 'content',
-          default: '按钮',
-          value: '',
-          formType: 'input'
-          // props: {
-          //   maxLength: 6
-          // }
-        },
-        {
-          title: '事件',
-          id: '__eventname',
-          default: '打印',
-          value: '',
-          formType: 'select',
-          options: ['打印', '编辑', '共享']
-        },
-        {
-          title: '悬停时显示',
-          id: '__hovercontent',
-          default: '',
-          value: '',
-          formType: 'input',
-          props: {}
-        },
-        {
-          title: '显示方式',
-          id: '__displayway',
-          default: 'text',
-          value: '',
-          formType: 'select',
-          options: [
-            { label: '名称', value: 'text' },
-            { label: '图标', value: 'icon' },
-            { label: '图标+名称', value: 'icon-text' },
-            { label: '名称+图标', value: 'text-icon' }
-          ]
-        },
-        {
-          title: '选择图标',
-          id: '__chooseicon',
-          default: '',
-          value: '',
-          formType: 'select'
-        },
-        {
-          title: '按钮尺寸',
-          id: '__buttonsize',
-          default: '',
-          value: '',
-          formType: 'select',
-          options: [
-            { label: '大', value: 'big' },
-            { label: '标准', value: 'medium' },
-            { label: '小', value: 'small' }
-          ]
-        },
-        {
-          title: '按钮色',
-          id: '__bgcolor',
-          default: '#4680FF',
-          value: '',
-          formType: 'color-radio',
-          options: ['#4680FF', '#FF8C31', '#27C540', '#FF4C4C', '#FFFFFF']
-        }
-      ]
-    },
-
-    {
-      title: '样式',
-      id: '_style',
-      children: [
-        {
-          title: '字高',
-          id: 'fontSize',
-          default: '14px',
-          value: '',
-          formType: 'select',
-          options: [
-            { label: '14px', value: '14px' },
-            { label: '16px', value: '16px' },
-            { label: '18px', value: '18px' }
-          ]
-        },
-        {
-          title: '样式',
-          id: 'fontStyle',
-          default: 'normal',
-          value: '',
-          formType: 'text-style'
-        }
-      ]
-    },
-
-    {
-      title: '样式库',
-      id: '_stylerepo',
-      children: [
-        {
-          title: '按钮样式',
-          id: '__btnstyle',
-          default: '',
-          value: '',
-          formType: 'btn-style',
-          options: ['', 'round', 'plain']
-        }
-      ]
-    }
-  ]
-}
-
 export default {
   type: 'object',
   title: '按钮',
@@ -134,13 +12,12 @@ export default {
     configs: {
       type: 'array',
       items: [
-        // 基础
         {
           type: 'object',
-          title: '基础',
+          title: '属性',
           properties: {
             id: {
-              const: 'basic'
+              const: '_props'
             },
             children: {
               type: 'array',
@@ -305,7 +182,7 @@ export default {
           title: '文字样式',
           properties: {
             id: {
-              const: '_style'
+              const: '_styles'
             },
             children: {
               type: 'array',

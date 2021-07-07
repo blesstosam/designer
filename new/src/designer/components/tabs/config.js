@@ -12,13 +12,12 @@ export default {
     configs: {
       type: 'array',
       items: [
-        // 基础
         {
           type: 'object',
-          title: '基础',
+          title: '属性',
           properties: {
             id: {
-              const: 'basic'
+              const: '_props'
             },
             children: {
               type: 'array',
@@ -174,7 +173,7 @@ export default {
         //   title: '文字样式',
         //   properties: {
         //     id: {
-        //       const: '_style'
+        //       const: '_styles'
         //     },
         //     children: {
         //       type: 'array',

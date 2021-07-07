@@ -95,5 +95,9 @@ export const EVENT_TYPES = {
   FOCUS_UPDATED: 'focus.updated',
   FOCUS_DESTROYED: 'focus.destroyed',
   FOCUS_DEL_CLICK: 'focus.delClick',
-  FOCUS_COPY_CLICK: 'focus.copyClick'
+  FOCUS_COPY_CLICK: 'focus.copyClick',
+
+  KEYBOARD_UNDO: 'keyboard.undo',
+  KEYBOARD_REDO: 'keyboard.redo',
+  KEYBOARD_SAVE: 'keyboard.save'
 }

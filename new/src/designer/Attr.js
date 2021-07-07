@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
-import AttrPanel from './vue/attr-panel/AttrPanel.vue'
+import AttrPanel from './vue/AttrPanel.vue'
 import { EVENT_TYPES } from './Event'
 
 export class Attr {
