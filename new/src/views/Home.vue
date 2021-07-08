@@ -1,34 +1,50 @@
 <style lang="stylus" scoped>
-.home
-  height 100%;
-  .header
-    border-bottom : 1px solid #eee;
+.home {
+  height: 100%;
+
+  .header {
+    border-bottom: 1px solid #eee;
     padding: 0 8px;
     display: flex;
-    .toolbar-wrap
+
+    .toolbar-wrap {
       // line-height 64px
-      width: 100%
-  .content
+      width: 100%;
+    }
+  }
+
+  .content {
     display: flex;
     flex-direction: row;
-    .left
+
+    .left {
       width: 280px;
       border-right: 1px solid #eee;
+
       .component-tepl {
-        height 100%
+        height: 100%;
       }
-    .center
-      flex: 1
-      .canvas-wrapper
-        height: calc(100vh - 55px)
-        overflow-y: auto
-        background #ddd
-    .right
-      width: 300px
-      padding: 6px
-      border-left: 1px solid #eee
-      height: calc(100vh - 67px)
-      overflow-y: auto
+    }
+
+    .center {
+      flex: 1;
+
+      .canvas-wrapper {
+        height: calc(100vh - 55px);
+        overflow-y: auto;
+        background: #ddd;
+      }
+    }
+
+    .right {
+      width: 300px;
+      padding: 6px;
+      border-left: 1px solid #eee;
+      height: calc(100vh - 67px);
+      overflow-y: auto;
+    }
+  }
+}
 </style>
 
 <template>
@@ -55,6 +71,7 @@
 
 <script>
 import { Designer } from '../designer/index'
+import { LoggerPlugin } from '../designer/plugins/LoggerPlugin'
 
 export default {
   name: 'Home',
@@ -64,7 +81,8 @@ export default {
       componentsWrap: '.component-tepl',
       canvasWrap: '.canvas-wrapper',
       toolbarWrap: '.toolbar-wrap',
-      attrWrap: '#attr'
+      attrWrap: '#attr',
+      plugins: [LoggerPlugin]
     })
     this.designer.__vueApp__ = this
     // for debug

@@ -4,7 +4,6 @@ export class Event {
     this.subs = new Map()
   }
 
-  // type can be a array
   // TODO 目前监听是按照监听的先后来插入数组的，可以通过权重参数来实现插队，即权重大的监听先执行
   on(type, cb) {
     if (typeof type === 'string') {
@@ -36,7 +35,6 @@ export class Event {
     this.on(type, wrappedCb)
   }
 
-  // type can be a array
   off(type, cb) {
     if (typeof type === 'string') {
       this.offSingle(type, cb)
@@ -80,6 +78,7 @@ export const EVENT_TYPES = {
   COMPONENT_TREE_DESTROYED: 'componentTree.destroyed',
 
   CANVAS_INITED: 'canvas.inited',
+  CANVAS_LAYOUTED: 'canvas.layouted',
   CANVAS_DESTROYED: 'canvas.destroyed',
   CANVAS_ACTIONS_APPEND: 'canvas.actions.append',
   CANVAS_ACTIONS_DELETE: 'canvas.actions.delete',

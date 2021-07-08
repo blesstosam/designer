@@ -19,7 +19,7 @@ export class Node {
 
     // 是否是自定义组件
     this.isCustom = !!node.isCustom
-    this.customData = node.customData
+    node.customData && (this.customData = node.customData)
 
     // function
     this.render = node.render

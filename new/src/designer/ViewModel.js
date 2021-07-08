@@ -1,10 +1,14 @@
 export class ViewModel {
-  constructor(data) {
-    this.data = data
+  constructor(_data) {
+    this._data = _data
+  }
+
+  get data() {
+    return this._data
   }
 
   get size() {
-    return this.data.length
+    return this._data.length
   }
 
   get depth() {
@@ -13,7 +17,7 @@ export class ViewModel {
 
   getLastNode(depth = 0) {
     if (depth === 0) {
-      return this.data[this.size - 1]
+      return this._data[this.size - 1]
     }
     // todo
   }
@@ -26,7 +30,7 @@ export class ViewModel {
    * @returns {*}
    */
   findVmByKey(key, val, arr) {
-    if (!arr) arr = this.data
+    if (!arr) arr = this._data
     for (const vm of arr) {
       if (vm[key] === val) return vm
       if (vm.children && vm.children.length) {
@@ -43,7 +47,7 @@ export class ViewModel {
    * @returns {*} 被删除的节点
    */
   removeVmByKey(key, val, arr) {
-    if (!arr) arr = this.data
+    if (!arr) arr = this._data
     for (let i = 0; i < arr.length; i++) {
       const vm = arr[i]
       if (vm[key] === val) {
@@ -58,16 +62,14 @@ export class ViewModel {
   }
 
   append(d) {
-    this.data.push(d)
+    this._data.push(d)
   }
 
   prepend(d) {
-    this.data.unshift(d)
+    this._data.unshift(d)
   }
 
-  remove() {}
-
   clear() {
-    this.data = []
+    this._data = []
   }
 }
