@@ -50,7 +50,7 @@
       <template #default="{ data }">
         <span class="custom-tree-node">
           <img
-            :src="data.icon.value"
+            :src="data.icon && data.icon.value"
             style="width: 14px; margin-right: 6px; vertical-align: middle"
           />
           <span style="color: #333">{{ data.title }}</span>

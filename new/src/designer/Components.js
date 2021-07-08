@@ -1,9 +1,9 @@
-import { state } from './config.js'
-import { lookupByClassName, $ } from './lib/dom.js'
-import ComponentsVue from './vue/Components.vue'
-import { ElTabs, ElTabPane } from 'element-plus'
 import { createApp } from 'vue'
 import { FetchLoader } from '@qpaas/loader'
+import { ElTabs, ElTabPane } from 'element-plus'
+import ComponentsVue from './vue/Components.vue'
+import { state } from './config.js'
+import { lookupByClassName, $ } from './lib/dom.js'
 
 const COMPONENT_EL_CLASS_NAME = 'component-item'
 

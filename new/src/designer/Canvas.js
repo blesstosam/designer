@@ -1,11 +1,11 @@
-import { getCurrentViewNodeModel, setCurrentViewNodeModel, state, resetState } from './config.js'
-import { FocusRect } from './FocusRect.js'
-import { componentTypes } from './Components'
-import { Node } from './Node'
+import { setCurrentViewNodeModel, state, resetState } from './config'
 import { makeLogger, randomString } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
-import { ViewModel } from './ViewModel.js'
-import { EVENT_TYPES } from './Event.js'
+import { FocusRect } from './FocusRect'
+import { componentTypes } from './Components'
+import { Node } from './Node'
+import { ViewModel } from './ViewModel'
+import { EVENT_TYPES } from './Event'
 
 const {
   FOCUS_DEL_CLICK: F_D_C,
@@ -13,7 +13,8 @@ const {
   CANVAS_ACTIONS_APPEND: C_A_A,
   CANVAS_ACTIONS_DELETE: C_A_D,
   COMPONENTS_INITED,
-  CANVAS_INITED
+  CANVAS_INITED,
+  CANVAS_LAYOUTED
 } = EVENT_TYPES
 
 const { LAYOUT } = componentTypes
@@ -50,6 +51,7 @@ export class Canvas {
     return getStyle(this.$canvasEl, 'heighht')
   }
 
+  // TODO 没有使用di的时候 只能一层层的找依赖
   get __components__() {
     return this.__designer__.__components__
   }
@@ -242,9 +244,11 @@ export class Canvas {
         // 将 $el 丢失了 需要重新赋值
         const com = this.registeredComponents.find(i => i.name === node.name)
         node.accept = com.accept
+        node.icon = com.icon
         node.render = com.render
         com.transformProps && (node.transformProps = com.transformProps)
         const wrapper = (node.$el = this.append(node, container))
+        // debugger
         nodeArr[i] = new Node(node, parent)
         if (parent) {
           parent.children.push(nodeArr[i])
@@ -256,6 +260,7 @@ export class Canvas {
     }
 
     mount(viewModel, this.$canvasEl)
+    this.__designer__.emit(CANVAS_LAYOUTED)
   }
 
   /**
