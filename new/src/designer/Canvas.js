@@ -1,7 +1,7 @@
 import { setCurrentViewNodeModel, state, resetState } from './config'
 import { makeLogger } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
-import { FocusRect } from './FocusRect'
+import { Selection } from './Selection'
 import { componentTypes } from './Components'
 import { Node } from './Node'
 import { ViewModel } from './ViewModel'
@@ -39,7 +39,7 @@ export class Canvas {
     this.$canvasWrapEl = document.querySelector(this.config.canvasWrap)
     this.$canvasEl = null
     this.$markEl = null
-    this.focusRect = null
+    this.selection = null
     this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
     this.model = null
   }
@@ -102,7 +102,7 @@ export class Canvas {
       if (type === F_D_C) {
         const movedVm = this.model.removeVmByKey('$el', data.$el)
         movedVm && movedVm.$el.remove()
-        this.clearFocusRect()
+        this.clearSelection()
         this._dispathDelete(movedVm)
       } else if (type === F_C_C) {
         const mount = (nodeArr, container, parent) => {
@@ -224,7 +224,7 @@ export class Canvas {
   clear() {
     this.model.clear()
     this.$canvasEl.innerHTML = ''
-    this.clearFocusRect()
+    this.clearSelection()
     localStorage.clear('viewModel')
     this.__designer__.emit(C_A_D, {
       type: C_A_D,
@@ -232,10 +232,10 @@ export class Canvas {
     })
   }
 
-  clearFocusRect() {
-    if (this.focusRect) {
-      this.focusRect.remove()
-      this.focusRect = null
+  clearSelection() {
+    if (this.selection) {
+      this.selection.remove()
+      this.selection = null
     }
   }
 
@@ -344,11 +344,11 @@ export class Canvas {
     setCurrentViewNodeModel(node)
     this.__attr__.vueInstance.setData(node)
 
-    if (this.focusRect) {
-      this.focusRect.update(node)
+    if (this.selection) {
+      this.selection.update(node)
     } else {
-      this.focusRect = new FocusRect(this.__designer__)
-      this.focusRect.create(node)
+      this.selection = new Selection(this.__designer__)
+      this.selection.create(node)
     }
 
     this.__componentTree__ && this.__componentTree__.setCurrentKey(node.unique)
