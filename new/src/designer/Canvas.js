@@ -1,5 +1,5 @@
 import { setCurrentViewNodeModel, state, resetState } from './config'
-import { makeLogger, randomString } from './lib/util'
+import { makeLogger } from './lib/util'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { FocusRect } from './FocusRect'
 import { componentTypes } from './Components'
@@ -101,15 +101,27 @@ export class Canvas {
       const { type, data } = payload
       if (type === F_D_C) {
         const movedVm = this.model.removeVmByKey('$el', data.$el)
-        // TODO 有时候 movedVm 为 undefined ？
-        // console.log(movedVm, 'movedVm')
         movedVm && movedVm.$el.remove()
         this.clearFocusRect()
         this._dispathDelete(movedVm)
       } else if (type === F_C_C) {
-        // 插入到同级的下一个节点
-        // const com = this.registeredComponents.find(i => i.name === data.name)
-        // this.append(com)
+        const mount = (nodeArr, container, parent) => {
+          for (const node of nodeArr) {
+            const com = this.registeredComponents.find(i => i.name === node.name)
+            const wrapper = this.append(com, container)
+            const _node = new Node({ ...com, $el: wrapper }, parent)
+            if (parent) {
+              parent.children.push(_node)
+            } else {
+              this.model.append(_node)
+            }
+            if (node.children && node.children.length) {
+              mount(node.children, wrapper.children[0], _node)
+            }
+          }
+        }
+        mount([data], this.$canvasEl)
+        this._dispathAppend()
       }
     })
   }
@@ -129,17 +141,15 @@ export class Canvas {
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.registeredComponents.find(i => i.name === 'VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
-        this.model.append(new Node({ ...blockCom, $el: wrap, unique: randomString() }))
+        this.model.append(new Node({ ...blockCom, $el: wrap }))
 
         const dom = this.append(state.data, wrap.children[0])
         const lastNode = this.model.getLastNode()
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
-        lastNode.children.push(
-          new Node({ ...state.data, $el: dom, slotName, unique: randomString() }, lastNode)
-        )
+        lastNode.children.push(new Node({ ...state.data, $el: dom, slotName }, lastNode))
       } else {
         const dom = this.append(state.data, this.$canvasEl)
-        this.model.append(new Node({ ...state.data, $el: dom, unique: randomString() }))
+        this.model.append(new Node({ ...state.data, $el: dom }))
       }
 
       this._dispathAppend()
@@ -248,7 +258,6 @@ export class Canvas {
         node.render = com.render
         com.transformProps && (node.transformProps = com.transformProps)
         const wrapper = (node.$el = this.append(node, container))
-        // debugger
         nodeArr[i] = new Node(node, parent)
         if (parent) {
           parent.children.push(nodeArr[i])
@@ -303,6 +312,7 @@ export class Canvas {
       }
       // true
     )
+
     return wrapper
   }
 
@@ -386,8 +396,7 @@ export class Canvas {
         const dom = this.append(state.data, e.target)
         const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
         if (dropedVm) {
-          const _node = { ...state.data, $el: dom, slotName, unique: randomString() }
-          dropedVm.children.push(new Node(_node, dropedVm))
+          dropedVm.children.push(new Node({ ...state.data, $el: dom, slotName }, dropedVm))
         }
 
         this._dispathAppend()
