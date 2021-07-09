@@ -1,9 +1,9 @@
 import { ResizeObserver } from '@juggle/resize-observer'
 import { componentTypes } from './Components'
-import { $ } from './lib/dom'
 import { EVENT_TYPES } from './Event'
+import { $ } from './lib/dom'
 
-export class FocusRect {
+export class Selection {
   constructor(desginer) {
     this.__designer__ = desginer
     this.node = null
@@ -51,7 +51,7 @@ export class FocusRect {
   create(node) {
     this.node = node
     const offset = this._getOffset()
-    this.createFocusRect(offset)
+    this.createSelection(offset)
     this.createBtn(offset, 'delete')
     this.isLayout && this.createBtn(offset, 'copy')
     this.observe()
@@ -66,7 +66,7 @@ export class FocusRect {
     }
 
     const offset = this._getOffset()
-    this.updateFocusRect(offset)
+    this.updateSelection(offset)
     this.updateBtn(offset, 'delete')
     if (this.isLayout) {
       if (this.$recCopyBtn) {
@@ -91,7 +91,7 @@ export class FocusRect {
     window.removeEventListener('resize', this._cb)
   }
 
-  createFocusRect(offset) {
+  createSelection(offset) {
     const { width, height } = offset
     const div = (this.$recEl = $('<div>')
       .style({
@@ -110,7 +110,7 @@ export class FocusRect {
     return div
   }
 
-  updateFocusRect(offset) {
+  updateSelection(offset) {
     const { width, height } = offset
     this.node.$el.appendChild(this.$recEl)
     $(this.$recEl).style({
