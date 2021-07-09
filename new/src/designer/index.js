@@ -78,7 +78,7 @@ class Designer extends Event {
     this.__keyboard__.bind('keydown')
     this.__keyboard__.add(EVENT_TYPES.KEYBOARD_UNDO, e => {
       console.log('keyboard.undo')
-      this.emit(EVENT_TYPES.KEYBOARD_REDO)
+      this.emit(EVENT_TYPES.KEYBOARD_UNDO)
     })
     this.__keyboard__.add(EVENT_TYPES.KEYBOARD_REDO, e => {
       console.log('keyboard.redo')

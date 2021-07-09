@@ -105,7 +105,7 @@ export class Selection {
         boxSizing: 'border-box'
         // pointerEvents: 'none'
       })
-      .addClass('focus-rect').el)
+      .addClass('selection').el)
     this.node.$el.appendChild(div)
     return div
   }
