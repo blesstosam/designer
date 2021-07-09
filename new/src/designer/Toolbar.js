@@ -19,7 +19,24 @@ export class Toolbar {
       throw new Error('[designer] 请传入工具栏的容器元素')
     }
     this.$toolbarWrapEle = document.querySelector(this.config.toolbarWrap)
-    this.commander = new Command({ OptTypes: [C_A_A, C_A_D, A_S_A] }, this.__designer__)
+    this.commander = new Command(
+      {
+        OptTypes: [C_A_A, C_A_D, A_S_A],
+        onChange: ({ canRedo, canUndo }) => {
+          if (canRedo) {
+            this.vueInstance.activeNext()
+          } else {
+            this.vueInstance.deactiveNext()
+          }
+          if (canUndo) {
+            this.vueInstance.activePrev()
+          } else {
+            this.vueInstance.deactivePrev()
+          }
+        }
+      },
+      this.__designer__
+    )
   }
 
   init() {
@@ -33,6 +50,9 @@ export class Toolbar {
         this.vueInstance.activePrev()
       }
     })
+
+    this.__designer__.on(EVENT_TYPES.KEYBOARD_REDO, this.redo.bind(this))
+    this.__designer__.on(EVENT_TYPES.KEYBOARD_UNDO, this.undo.bind(this))
 
     this.__designer__.emit(EVENT_TYPES.TOOLBAR_INITED)
   }
@@ -49,7 +69,7 @@ export class Toolbar {
 
   redo() {
     this.commander.redo(idx => {
-      if (idx === this._actions.size - 1) {
+      if (idx === this.commander.size - 1) {
         this.vueInstance.deactiveNext()
       }
     })

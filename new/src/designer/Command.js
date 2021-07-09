@@ -13,6 +13,8 @@ export class Command {
     this.maxRecordLength = config.maxRecordLength || DEFAULT_MAX_LENGTH
     // 需要操作的事件类型
     this.OptTypes = config.OptTypes
+    // 每次redo和undo触发的时候调用
+    this.onChange = config.onChange
   }
 
   get size() {
@@ -76,6 +78,7 @@ export class Command {
       // }
       this._actionIdx--
       cb && cb(this._actions)
+      this.emitChange()
     }
   }
 
@@ -89,5 +92,10 @@ export class Command {
       this._actionIdx++
     }
     cb && cb(this._actionIdx)
+    this.emitChange()
+  }
+
+  emitChange() {
+    this.onChange && this.onChange({ canRedo: this.canRedo, canUndo: this.canUndo })
   }
 }
