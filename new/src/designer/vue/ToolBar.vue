@@ -40,11 +40,11 @@
       <img src="/logo.jpg" alt="" />
     </div>
     <div class="toolbar-content">
-      <span class="tool-item" :class="{ disabled: !prevStatus }">
+      <span class="tool-item" :class="{ disabled: !prevStatus }" @click="undo">
         <i class="el-icon-back"></i>
         <span>上一步</span>
       </span>
-      <span class="tool-item" :class="{ disabled: !nextStatus }">
+      <span class="tool-item" :class="{ disabled: !nextStatus }" @click="redo">
         <i class="el-icon-right"></i>
         <span>下一步</span>
       </span>
@@ -108,6 +108,12 @@ export default {
     }
   },
   methods: {
+    undo() {
+      this.__toolbar__.undo()
+    },
+    redo() {
+      this.__toolbar__.redo()
+    },
     transform(_arr) {
       // 将组件数据的一些字段处理一下
       const traverse = arr => {

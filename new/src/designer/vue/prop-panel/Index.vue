@@ -183,6 +183,7 @@ import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
 import ColumnSetting from './ColumnSetting.vue'
 import { FormTypes } from './config'
+import { EVENT_TYPES } from '../../Event.js'
 
 export default {
   name: 'PropPanel',
@@ -201,7 +202,7 @@ export default {
     const activeNames = reactive([])
 
     watchEffect(() => {
-      ;(props.formList.configs || []).forEach((i) => {
+      ;(props.formList.configs || []).forEach(i => {
         activeNames.push(i.id)
       })
     })
@@ -260,6 +261,10 @@ export default {
     handleChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
+      this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {
+        type: EVENT_TYPES.ATTRPANEL_SET_ATTR,
+        data: { item, val, currentNode }
+      })
     }
   }
 }
