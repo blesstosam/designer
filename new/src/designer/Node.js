@@ -1,8 +1,10 @@
+import { randomString } from "./lib/util"
+
 export class Node {
   constructor(node, parent) {
     this.name = node.name
     this.title = node.title
-    this.unique = node.unique
+    this.unique = node.unique || randomString()
     this.icon = node.icon
     node.componentType && (this.componentType = node.componentType)
     this.props = node.props
