@@ -15,12 +15,11 @@ describe('test event', () => {
 
   test('test `once`', (done) => {
     let count = 0
-    const cb = (p) => {
+    event.once('click', (p) => {
       count++
       expect(p).toBe('1')
       done()
-    }
-    event.once('click', cb)
+    })
     event.emit('click', '1')
     event.emit('click', '1')
     expect(count).toBe(1)

@@ -36,6 +36,7 @@
       </svg>
       <span>组件树</span>
     </div>
+    
     <el-tree
       ref="tree"
       empty-text="暂无组件"

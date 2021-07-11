@@ -102,6 +102,10 @@ export default {
       for (const k in d.attrs) {
         this.attrs[k] = d.attrs[k]
       }
+    },
+    resetData() {
+      this.icon = {}
+      this.attrs = {}
     }
   }
 }

@@ -54,9 +54,9 @@ export default {
         const arr = cats[key]
         slots[key] = () =>
           arr.map(child => {
-            if (child.isCustom) return h(Custom, { moduleData: this.getModuleData(child.customData) })
-            const c = resolveComponent(child.name)
-            return h(c, child.props, { default: () => genRender(child) })
+            if (child.isCustom)
+              return h(Custom, { moduleData: this.getModuleData(child.customData) })
+            return h(resolveComponent(child.name), child.props, { default: () => genRender(child) })
           })
       })
 

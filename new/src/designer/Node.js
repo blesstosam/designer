@@ -1,4 +1,4 @@
-import { randomString } from "./lib/util"
+import { randomString } from './lib/util'
 
 export class Node {
   constructor(node, parent) {
@@ -10,9 +10,10 @@ export class Node {
     this.props = node.props
     this.attrs = node.attrs
     this.$el = node.$el
+    node.isRoot && (this.isRoot = node.isRoot)
+
     this.children = []
     parent && (this.parent = parent)
-    // this.root =
 
     this.accept = node.accept
     this.isBlock = !!node.isBlock
@@ -26,5 +27,22 @@ export class Node {
     // function
     this.render = node.render
     node.transformProps && (this.transformProps = node.transformProps)
+  }
+
+  get index() {
+    if (this.parent) {
+      return this.parent.children.indexOf(this)
+    }
+    return 0
+  }
+
+  get previous() {
+    if (this.parent) return this.parent.children[this.index - 1]
+    return null
+  }
+
+  get next() {
+    if (this.parent) return this.parent.children[this.index + 1]
+    return null
   }
 }

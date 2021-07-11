@@ -138,7 +138,7 @@ export default {
     },
     save() {
       const { viewModel } = this.designer.__canvas__
-      this.transform(viewModel)
+      this.transform(viewModel.children)
       localStorage.setItem('viewModel', JSON.stringify(viewModel))
       ElMessage.success({
         duration: 1000,

@@ -28,8 +28,9 @@ export class Event {
 
   once(type, cb) {
     const wrappedCb = (...args) => {
-      const res = cb.call(null, ...args)
+      // 先调用off是因为cb有可能执行报错 导致后面代码不能执行
       this.off(type, wrappedCb)
+      const res = cb(...args)
       return res
     }
     this.on(type, wrappedCb)
@@ -63,7 +64,7 @@ export class Event {
     const origin = this.subs.get(type)
     if (origin && origin.length) {
       for (const fn of origin) {
-        fn.call(null, ...args)
+        fn(...args)
       }
     }
   }

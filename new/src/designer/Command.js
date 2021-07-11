@@ -69,6 +69,7 @@ export class Command {
     if (this.canUndo) {
       const currentAction = this._actions[this._actionIdx]
       console.log(currentAction, 'in undo')
+      // TODO 使用策略模式进行不同的操作
       // if (currentAction.type === C_A_A) {
       //   // todo
       // } else if (currentAction.type === C_A_D) {

@@ -70,27 +70,44 @@ export class Canvas {
   }
 
   init(viewModel) {
-    // canvas 的 init 依赖 components 插件
-    this.__designer__.on(COMPONENTS_INITED, () => {
+    const getDefaultCanvasStyle = () => {
       const { config } = this
-      this.model = new ViewModel(viewModel)
-      // ------- for debug -----------
-      window.model = this.model
+      return {
+        width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
+        height: config.height || '100%',
+        minWidth: '100%',
+        padding: DROP_EL_PADDING + 'px',
+        paddingBottom: '24px',
+        boxSizing: 'border-box',
+        backgroundColor: '#ddd',
+        overflowY: 'auto'
+      }
+    }
+    // canvas 的 init 依赖 components 插件
+    // 防止多次触发使用once
+    this.__designer__.once(COMPONENTS_INITED, () => {
+      const canvasStyle = (viewModel && viewModel.props.style) || getDefaultCanvasStyle()
       const div = (this.$canvasEl = $('<div>')
         .addClass('drop')
-        .style({
-          width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
-          height: config.height || '100%',
-          minWidth: '100%',
-          padding: DROP_EL_PADDING + 'px',
-          paddingBottom: '24px',
-          boxSizing: 'border-box',
-          backgroundColor: '#ddd',
-          overflowY: 'auto'
-        }).el)
+        .style(canvasStyle).el)
       this.$canvasWrapEl.appendChild(div)
+      if (viewModel != null) {
+        this.model = new ViewModel(new Node({ ...viewModel, $el: div }))
+      } else {
+        this.model = new ViewModel(
+          new Node({
+            name: 'canvas',
+            $el: div,
+            children: [],
+            isRoot: true,
+            props: { style: canvasStyle }
+          })
+        )
+      }
+      // ------- for debug -----------
+      window.model = this.model
       this.bindCanvasEvents()
-      this.layout()
+      this.layout(viewModel)
       this.initListener()
       this.__designer__.emit(CANVAS_INITED)
     })
@@ -103,6 +120,7 @@ export class Canvas {
         const movedVm = this.model.removeVmByKey('$el', data.$el)
         movedVm && movedVm.$el.remove()
         this.clearSelection()
+        setCurrentViewNodeModel(null)
         this._dispathDelete(movedVm)
       } else if (type === F_C_C) {
         const mount = (nodeArr, container, parent) => {
@@ -110,17 +128,13 @@ export class Canvas {
             const com = this.registeredComponents.find(i => i.name === node.name)
             const wrapper = this.append(com, container)
             const _node = new Node({ ...com, $el: wrapper }, parent)
-            if (parent) {
-              parent.children.push(_node)
-            } else {
-              this.model.append(_node)
-            }
+            parent.children.push(_node)
             if (node.children && node.children.length) {
               mount(node.children, wrapper.children[0], _node)
             }
           }
         }
-        mount([data], this.$canvasEl)
+        mount([data], this.$canvasEl, this.viewModel)
         this._dispathAppend()
       }
     })
@@ -141,15 +155,15 @@ export class Canvas {
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.registeredComponents.find(i => i.name === 'VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
-        this.model.append(new Node({ ...blockCom, $el: wrap }))
+        this.model.appendTo(new Node({ ...blockCom, $el: wrap }))
 
         const dom = this.append(state.data, wrap.children[0])
         const lastNode = this.model.getLastNode()
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
-        lastNode.children.push(new Node({ ...state.data, $el: dom, slotName }, lastNode))
+        this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, lastNode), lastNode)
       } else {
         const dom = this.append(state.data, this.$canvasEl)
-        this.model.append(new Node({ ...state.data, $el: dom }))
+        this.model.appendTo(new Node({ ...state.data, $el: dom }))
       }
 
       this._dispathAppend()
@@ -236,6 +250,7 @@ export class Canvas {
     if (this.selection) {
       this.selection.remove()
       this.selection = null
+      this.__attr__.vueInstance.resetData()
     }
   }
 
@@ -243,9 +258,8 @@ export class Canvas {
    * 根据 viewModel 来渲染页面
    * @returns {*} void
    */
-  layout() {
-    const { viewModel } = this
-    if (!viewModel || !viewModel.length) return
+  layout(viewModel) {
+    if (!viewModel || !viewModel.children) return
     const mount = (nodeArr, container, parent) => {
       for (let i = 0; i < nodeArr.length; i++) {
         const node = nodeArr[i]
@@ -259,16 +273,14 @@ export class Canvas {
         com.transformProps && (node.transformProps = com.transformProps)
         const wrapper = (node.$el = this.append(node, container))
         nodeArr[i] = new Node(node, parent)
-        if (parent) {
-          parent.children.push(nodeArr[i])
-        }
+        parent.children.push(nodeArr[i])
         if (node.children && node.children.length) {
           mount(node.children, wrapper.children[0], nodeArr[i])
         }
       }
     }
 
-    mount(viewModel, this.$canvasEl)
+    mount(viewModel.children, this.$canvasEl, this.viewModel)
     this.__designer__.emit(CANVAS_LAYOUTED)
   }
 
@@ -396,7 +408,7 @@ export class Canvas {
         const dom = this.append(state.data, e.target)
         const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
         if (dropedVm) {
-          dropedVm.children.push(new Node({ ...state.data, $el: dom, slotName }, dropedVm))
+          this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, dropedVm), dropedVm)
         }
 
         this._dispathAppend()
