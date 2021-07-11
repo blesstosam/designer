@@ -29,7 +29,11 @@ export class ComponentTree {
         this.__canvas__.handleNodeboxSelect(node)
       }
     }
-    const props = reactive({ tree: data, handleClick, ref: 'componentTree' })
+    const props = reactive({
+      tree: (data && data.children) || [],
+      handleClick,
+      ref: 'componentTree'
+    })
     const app = createApp({
       props: ['tree', 'handleClick', 'ref'],
       render: () => h(ComponentTreeVue, props)
@@ -39,10 +43,13 @@ export class ComponentTree {
     this.vueInstance = app.mount(this.config.componentTreeWrap)
     this.vueInstance.__componentTree__ = this
     this.__designer__.on([C_A_D, C_A_A], payload => {
-      const { type, viewModel } = payload
+      const {
+        type,
+        viewModel: { children = [] }
+      } = payload
       if (type === C_A_D || type === C_A_A) {
         // TODO 要使用浅拷贝一遍才会触发视图更新?
-        props.tree = [...viewModel]
+        props.tree = [...children]
       }
     })
   }

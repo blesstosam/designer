@@ -8,7 +8,7 @@ export class ViewModel {
   }
 
   get size() {
-    return this._data.length
+    return this._data.children.length
   }
 
   get depth() {
@@ -17,7 +17,7 @@ export class ViewModel {
 
   getLastNode(depth = 0) {
     if (depth === 0) {
-      return this._data[this.size - 1]
+      return this._data.children[this.size - 1]
     }
     // todo
   }
@@ -30,7 +30,7 @@ export class ViewModel {
    * @returns {*}
    */
   findVmByKey(key, val, arr) {
-    if (!arr) arr = this._data
+    if (!arr) arr = this._data.children
     for (const vm of arr) {
       if (vm[key] === val) return vm
       if (vm.children && vm.children.length) {
@@ -47,7 +47,7 @@ export class ViewModel {
    * @returns {*} 被删除的节点
    */
   removeVmByKey(key, val, arr) {
-    if (!arr) arr = this._data
+    if (!arr) arr = this._data.children
     for (let i = 0; i < arr.length; i++) {
       const vm = arr[i]
       if (vm[key] === val) {
@@ -61,15 +61,23 @@ export class ViewModel {
     }
   }
 
-  append(d) {
-    this._data.push(d)
+  appendTo(node, parentNode) {
+    if (parentNode) {
+      parentNode.children.push(node)
+    } else {
+      this._data.children.push(node)
+    }
   }
 
-  prepend(d) {
-    this._data.unshift(d)
+  prependTo(node, parentNode) {
+    if (parentNode) {
+      parentNode.children.unshift(node)
+    } else {
+      this._data.children.push(node)
+    }
   }
 
   clear() {
-    this._data = []
+    this._data = null
   }
 }
