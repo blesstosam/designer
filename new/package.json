@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
+    "@qpaas/loader": "^0.1.16",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.53",
     "lodash.clonedeep": "^4.5.0",
