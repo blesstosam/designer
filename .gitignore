@@ -25,3 +25,4 @@ pnpm-debug.log*
 
 /execl
 /new/src/designer/Injector.js
+/new/dist
