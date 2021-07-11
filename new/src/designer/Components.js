@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { FetchLoader } from '@qpaas/loader'
+import { FetchLoader } from './lib/temp'
 import { ElTabs, ElTabPane } from 'element-plus'
 import ComponentsVue from './vue/Components.vue'
 import { state } from './config.js'
