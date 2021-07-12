@@ -144,7 +144,7 @@ export class Selection {
     }
     div.addEventListener('click', e => {
       e.stopPropagation()
-      const eType = type === 'delete' ? EVENT_TYPES.FOCUS_DEL_CLICK : EVENT_TYPES.FOCUS_COPY_CLICK
+      const eType = type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
       this.__designer__.emit(eType, {
         type: eType,
         data: this.node

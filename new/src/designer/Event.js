@@ -91,13 +91,19 @@ export const EVENT_TYPES = {
   TOOLBAR_INITED: 'toolbar.inited',
   TOOLBAR_DESTROYED: 'toolbar.destroyed',
 
-  FOCUS_INITED: 'focus.inited',
-  FOCUS_UPDATED: 'focus.updated',
-  FOCUS_DESTROYED: 'focus.destroyed',
-  FOCUS_DEL_CLICK: 'focus.delClick',
-  FOCUS_COPY_CLICK: 'focus.copyClick',
+  SELECTION_INITED: 'selection.inited',
+  SELECTION_UPDATED: 'selection.updated',
+  SELECTION_DESTROYED: 'selection.destroyed',
+  SELECTION_DEL_CLICK: 'selection.delClick',
+  SELECTION_COPY_CLICK: 'selection.copyClick',
 
   KEYBOARD_UNDO: 'keyboard.undo',
   KEYBOARD_REDO: 'keyboard.redo',
-  KEYBOARD_SAVE: 'keyboard.save'
+  KEYBOARD_SAVE: 'keyboard.save',
+
+  DRAG_START: 'drag.start',
+  DRAG_END: 'drag.end',
+  DRAG_ENTER: 'drag.enter',
+  DRAG_LEAVE: 'drag.leave',
+  DRAG_DROPED: 'drag.droped'
 }

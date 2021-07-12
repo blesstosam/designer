@@ -1,4 +1,4 @@
-<style lang="stylus" scoped>
+<style lang="stylus">
 .home {
   height: 100%;
 
@@ -33,6 +33,10 @@
         height: calc(100vh - 55px);
         overflow-y: auto;
         background: #ddd;
+
+        // .dragenter-actived {
+        //   border: 1px solid red
+        // }
       }
     }
 
