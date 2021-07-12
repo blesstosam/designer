@@ -2,8 +2,9 @@ import { createApp } from 'vue'
 import { FetchLoader } from '@qpaas/loader'
 import { ElTabs, ElTabPane } from 'element-plus'
 import ComponentsVue from './vue/Components.vue'
-import { state } from './config.js'
+import { resetState, state } from './config.js'
 import { lookupByClassName, $ } from './lib/dom.js'
+import { EVENT_TYPES } from './Event'
 
 const COMPONENT_EL_CLASS_NAME = 'component-item'
 
@@ -48,19 +49,16 @@ export class Components {
   // 给组件绑定数据和事件
   bindComponentEvent(target) {
     target.addEventListener('dragstart', e => {
-      // console.log(e, 'dragstart')
-      // console.log(e.dataTransfer, 'event.dataTransfer')
       e.dataTransfer.effectAllowed = 'move'
-      this.__designer__.emit('dragstart')
       state.dragging = true
       state.target = e.target
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLASS_NAME)
-      const comName = $componentItem.getAttribute('com-name')
-      state.data = this.registeredComponents.find(i => i.name === comName) || {}
+      state.data = this.findComByName($componentItem.getAttribute('com-name')) || {}
+      this.__designer__.emit(EVENT_TYPES.DRAG_START)
     })
     target.addEventListener('dragend', e => {
-      // console.log(e, 'dragend')
-      this.__designer__.emit('dragend')
+      resetState()
+      this.__designer__.emit(EVENT_TYPES.DRAG_END)
     })
   }
 

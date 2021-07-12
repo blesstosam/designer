@@ -8,8 +8,8 @@ import { ViewModel } from './ViewModel'
 import { EVENT_TYPES } from './Event'
 
 const {
-  FOCUS_DEL_CLICK: F_D_C,
-  FOCUS_COPY_CLICK: F_C_C,
+  SELECTION_DEL_CLICK: F_D_C,
+  SELECTION_COPY_CLICK: F_C_C,
   CANVAS_ACTIONS_APPEND: C_A_A,
   CANVAS_ACTIONS_DELETE: C_A_D,
   COMPONENTS_INITED,
@@ -21,6 +21,7 @@ const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 12,
   NODE_BOX_PADDING = 8
 const SLOT_NAME_KEY = 'c-slot-name'
+const DRAG_ENTER_CONTAINER_CLS = 'dragenter-actived'
 
 function getSlotName(el) {
   return el.getAttribute(SLOT_NAME_KEY)
@@ -54,9 +55,6 @@ export class Canvas {
   // TODO 没有使用di的时候 只能一层层的找依赖
   get __components__() {
     return this.__designer__.__components__
-  }
-  get registeredComponents() {
-    return this.__components__.registeredComponents
   }
   get __attr__() {
     return this.__designer__.__attr__
@@ -125,7 +123,7 @@ export class Canvas {
       } else if (type === F_C_C) {
         const mount = (nodeArr, container, parent) => {
           for (const node of nodeArr) {
-            const com = this.registeredComponents.find(i => i.name === node.name)
+            const com = this.__components__.findComByName(node.name)
             const wrapper = this.append(com, container)
             const _node = new Node({ ...com, $el: wrapper }, parent)
             parent.children.push(_node)
@@ -150,10 +148,11 @@ export class Canvas {
     // 只拖入父容器 wrap enter => wrap leave
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
     this.$canvasEl.addEventListener('drop', e => {
+      state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
       this.removeMark()
 
       if (state.data.componentType !== LAYOUT) {
-        const blockCom = this.registeredComponents.find(i => i.name === 'VBlock')
+        const blockCom = this.__components__.findComByName('VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
         this.model.appendTo(new Node({ ...blockCom, $el: wrap }))
 
@@ -175,6 +174,9 @@ export class Canvas {
     })
 
     this.$canvasEl.addEventListener('dragenter', e => {
+      state.dropEnterTarget = e.target
+      // 用户可以使用该类写拖入效果
+      e.target.classList.add(DRAG_ENTER_CONTAINER_CLS)
       const pos = {}
       const children = e.target.children
       console.log('wrapper enter...')
@@ -195,9 +197,9 @@ export class Canvas {
     })
 
     this.$canvasEl.addEventListener('dragleave', e => {
-      // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
       console.log('wraper leave...')
       if (!this.dropToInnerSlot) {
+        state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
         this.removeMark()
       }
     })
@@ -218,6 +220,7 @@ export class Canvas {
         top: top + 'px',
         width: width + 'px',
         height: '20px',
+        // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
         pointerEvents: 'none'
       }).el)
       document.body.appendChild(mark)
@@ -266,7 +269,7 @@ export class Canvas {
         // 在序列化数据的时候 =>
         // 将函数类型的属性丢失了 所以要从 config 里找回 有 render，transformProps
         // 将 $el 丢失了 需要重新赋值
-        const com = this.registeredComponents.find(i => i.name === node.name)
+        const com = this.__components__.findComByName(node.name)
         node.accept = com.accept
         node.icon = com.icon
         node.render = com.render
@@ -386,12 +389,10 @@ export class Canvas {
 
     $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', backgroundColor: '#fff' })
 
-    wrapper.addEventListener('dropover', e => {
-      e.preventDefault()
-      e.stopPropagation() // 阻止冒泡到外面的画布
-    })
     wrapper.addEventListener('drop', e => {
       e.stopPropagation() // 阻止冒泡到外面的画布
+
+      state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
       this.dropToInnerSlot = false
       this.removeMark()
 
@@ -400,11 +401,10 @@ export class Canvas {
       const $nodeboxEl = lookupByClassName(e.target, 'node-box')
       const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
       const component = this.__components__.findComByName(targetNodeboxName)
-      const { accept = [] } = component
 
       // 1. 被drop的地方有组件，要判断是否可以被拖入
       // 2. 被drop的地方没有组件，直接append
-      if (accept.includes(state.data.name)) {
+      if (component.accept.includes(state.data.name)) {
         const dom = this.append(state.data, e.target)
         const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
         if (dropedVm) {
@@ -415,17 +415,23 @@ export class Canvas {
         resetState()
       }
     })
+    wrapper.addEventListener('dropover', e => {
+      e.preventDefault()
+      e.stopPropagation() // 阻止冒泡到外面的画布
+    })
     wrapper.addEventListener('dragenter', e => {
       e.stopPropagation()
+
       // 当被拖到 布局组件 slot 里才触发
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = true
+        state.dropEnterTarget = e.target
+        e.target.classList.add(DRAG_ENTER_CONTAINER_CLS)
       }
 
+      console.log('inner enter...')
       const pos = {}
       const children = e.target.children
-      console.log('inner enter...')
-
       if (children.length) {
         const lastChild = children[children.length - 1]
         const rectPos = lastChild.getBoundingClientRect()
@@ -463,6 +469,7 @@ export class Canvas {
       console.log('inner leave...')
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = false
+        state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
         this.removeMark()
       }
     })
