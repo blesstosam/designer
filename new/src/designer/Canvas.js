@@ -114,25 +114,25 @@ export class Canvas {
     this.__designer__.on([F_D_C, F_C_C], payload => {
       const { type, data } = payload
       if (type === F_D_C) {
-        const movedVm = this.model.removeVmByKey('$el', data.$el)
-        movedVm && movedVm.$el.remove()
+        const movedNode = this.model.removeVmByKey('$el', data.$el)
+        movedNode && movedNode.$el.remove()
         this.clearSelection()
         setCurrentViewNodeModel(null)
-        this._dispathDelete(movedVm)
+        this._dispathDelete(movedNode)
       } else if (type === F_C_C) {
         const mount = (nodeArr, container, parent) => {
           for (const node of nodeArr) {
             const com = this.__components__.findComByName(node.name)
             const wrapper = this.append(com, container)
-            const _node = new Node({ ...com, $el: wrapper }, parent)
-            parent.children.push(_node)
+            const newNode = new Node({ ...com, $el: wrapper }, parent)
+            parent.children.push(newNode)
+            this._dispathAppend(newNode)
             if (node.children && node.children.length) {
-              mount(node.children, wrapper.children[0], _node)
+              mount(node.children, wrapper.children[0], newNode)
             }
           }
         }
         mount([data], this.$canvasEl, this.viewModel)
-        this._dispathAppend()
       }
     })
   }
@@ -149,21 +149,21 @@ export class Canvas {
     this.__dragDrop__.bindDrop(this.$canvasEl, ({ getData }) => {
       this.removeMark()
       const state = getData()
+      let newNode = null
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
         const wrap = this.append(blockCom, this.$canvasEl)
-        this.model.appendTo(new Node({ ...blockCom, $el: wrap }))
+        this.model.appendTo((newNode = new Node({ ...blockCom, $el: wrap })))
 
         const dom = this.append(state.data, wrap.children[0])
-        const lastNode = this.model.getLastNode()
         const slotName = lookdownForAttr(wrap, SLOT_NAME_KEY)
-        this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, lastNode), lastNode)
+        this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, newNode), newNode)
       } else {
         const dom = this.append(state.data, this.$canvasEl)
-        this.model.appendTo(new Node({ ...state.data, $el: dom }))
+        this.model.appendTo((newNode = new Node({ ...state.data, $el: dom })))
       }
 
-      this._dispathAppend()
+      this._dispathAppend(newNode)
     })
 
     this.__dragDrop__.bindDragOver(this.$canvasEl)
@@ -402,9 +402,10 @@ export class Canvas {
           const dom = this.append(state.data, e.target)
           const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
           if (dropedVm) {
-            this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, dropedVm), dropedVm)
+            const newNode = new Node({ ...state.data, $el: dom, slotName }, dropedVm)
+            this.model.appendTo(newNode, dropedVm)
+            this._dispathAppend(newNode)
           }
-          this._dispathAppend()
         }
       },
       { stop: true }
@@ -475,10 +476,10 @@ export class Canvas {
   /**
    * 发送全局事件-添加节点
    */
-  _dispathAppend() {
+  _dispathAppend(node) {
     this.__designer__.emit(C_A_A, {
       type: C_A_A,
-      data: state.data,
+      data: node,
       viewModel: this.viewModel
     })
   }
@@ -486,10 +487,10 @@ export class Canvas {
   /**
    * 发送全局事件-删除节点
    */
-  _dispathDelete(movedVm) {
+  _dispathDelete(movedNode) {
     this.__designer__.emit(C_A_D, {
       type: C_A_D,
-      data: movedVm,
+      data: movedNode,
       viewModel: this.viewModel
     })
   }
