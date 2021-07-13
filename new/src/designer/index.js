@@ -6,6 +6,7 @@ import { ComponentTree } from './ComponentTree.js'
 import { Toolbar } from './Toolbar.js'
 import { KeyBoard } from './Keyboard'
 import { Plugin } from './Plugin.js'
+import { DragDrop } from './DragDrop.js'
 
 // 页面模型数据 应该是一个 json 或 json schema
 // 参考 virtual dom 树型数据结构 =>
@@ -54,6 +55,7 @@ class Designer extends Event {
   }
 
   initComponents() {
+    this.__dragDrop__ = new DragDrop({}, this)
     this.__components__ = new Components(this.config, this)
     this.__components__.init()
   }

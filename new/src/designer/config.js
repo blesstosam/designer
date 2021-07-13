@@ -5,26 +5,6 @@ import { VButtonComponent } from './components/button/index'
 import { VTextComponent } from './components/text/index'
 import { VInputComponent } from './components/input/index'
 
-export const state = {
-  dragging: false, // 是否在拖拽
-  target: null, // 当前被拖拽的组件dom
-  dropEnterTarget: null, // 拖入目标触发dropEnter的dom
-  data: null, // 当前组件的描述对象 每次在drop之后重置
-  dropPos: {
-    // drop后的位置
-    // 参考api https://developer.mozilla.org/zh-CN/docs/Web/API/MouseEvent
-    x: 0,
-    y: 0
-  }
-}
-window.state = state
-export function resetState() {
-  state.dragging = false
-  state.target = null
-  state.dropEnterTarget = null
-  state.data = null
-}
-
 // 当前被选中的dom节点所在数据
 let currentViewNodeModel = {}
 export function getCurrentViewNodeModel() {

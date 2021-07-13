@@ -18,7 +18,8 @@
     flex-direction: row;
 
     .left {
-      width: 280px;
+      width: 265px;
+      flex: none;
       border-right: 1px solid #eee;
 
       .component-tepl {
