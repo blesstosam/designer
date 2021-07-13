@@ -36,6 +36,7 @@ export class Canvas {
     this.$canvasWrapEl = document.querySelector(this.config.canvasWrap)
     this.$canvasEl = null
     this.$markEl = null
+    this.$tipEl = null
     this.selection = null
     this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
     this.model = null
@@ -91,6 +92,7 @@ export class Canvas {
       if (viewModel != null) {
         this.model = new ViewModel(new Node({ ...viewModel, $el: div }))
       } else {
+        this.showTip()
         this.model = new ViewModel(
           new Node({
             name: 'canvas',
@@ -147,6 +149,7 @@ export class Canvas {
     // 只拖入父容器 wrap enter => wrap leave
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
     this.__dragDrop__.bindDrop(this.$canvasEl, ({ getData }) => {
+      console.log('drop...')
       this.removeMark()
       const state = getData()
       let newNode = null
@@ -170,6 +173,7 @@ export class Canvas {
 
     this.__dragDrop__.bindDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
+      this.hideTip()
 
       console.log('wrapper enter...')
       const pos = {}
@@ -195,12 +199,30 @@ export class Canvas {
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
         this.removeMark()
+        this.showTip()
       }
     })
   }
 
   scrollToBottom() {
     this.$canvasEl.scrollTop = this.$canvasEl.scrollHeight
+  }
+
+  showTip() {
+    if (!this.$tipEl) {
+      const span = (this.$tipEl = $('<div>')
+        .text('请将组件拖入这里')
+        .style({
+          textAlign: 'center',
+          paddingTop: '200px'
+        }).el)
+      this.$canvasEl.appendChild(span)
+    }
+  }
+
+  hideTip() {
+    this.$tipEl && this.$tipEl.remove()
+    this.$tipEl = null
   }
 
   showMark(pos) {
@@ -236,6 +258,7 @@ export class Canvas {
     this.model.clear()
     this.$canvasEl.innerHTML = ''
     this.clearSelection()
+    this.showTip()
     localStorage.clear('viewModel')
     this.__designer__.emit(C_A_D, {
       type: C_A_D,

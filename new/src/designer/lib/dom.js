@@ -97,6 +97,21 @@ class DomUtil {
     this.dom.innerHTML = str
     return this
   }
+
+  show() {
+    const display = this.dom.style['display']
+    if (display === 'none') {
+      this.dom.style.display = this._oldDisplay || 'block'
+    }
+  }
+
+  hide() {
+    const display = this.dom.style['display']
+    if (display !== 'none') {
+      this._oldDisplay = this.dom.style.display
+      this.dom.style.display = 'none'
+    }
+  }
 }
 
 /**
