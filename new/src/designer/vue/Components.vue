@@ -122,7 +122,7 @@
           </div>
 
           <div style="margin-bottom: 12px">自定义组件</div>
-          <div ref="customWrapEl" style="marginBottom: 24px">
+          <div ref="customWrapEl" style="marginBottom: 24px" v-if="asyncComRegisterSuccess">
             <div
               class="custom-com-item"
               v-for="(item, index) in customComList"
@@ -133,6 +133,7 @@
               <div style="margin-top: 6px">{{ item.title }}</div>
             </div>
           </div>
+          <div v-else style="color: #f56c6c">组件加载失败！</div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="模板" name="template">模板</el-tab-pane>
@@ -151,6 +152,7 @@ export default {
   name: 'Components',
   data() {
     return {
+      asyncComRegisterSuccess: true,
       activeMenu: 'com', // com|tree
       activeName: 'component', // component|template
       componentList,
@@ -197,6 +199,7 @@ export default {
           this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
         })
         .catch(err => {
+          this.asyncComRegisterSuccess = false
           this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
         })
     },

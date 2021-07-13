@@ -73,6 +73,8 @@ export class Event {
 // 定义好各个插件要分发的事件
 export const EVENT_TYPES = {
   COMPONENTS_INITED: 'components.inited',
+  COMPONENTS_DRAG: 'components.drag',
+  COMPONENTS_DROPED: 'components.droped',
   COMPONENTS_DESTROYED: 'components.destroyed',
 
   COMPONENT_TREE_INITED: 'componentTree.inited',
@@ -103,6 +105,7 @@ export const EVENT_TYPES = {
 
   DRAG_START: 'drag.start',
   DRAG_END: 'drag.end',
+  DRAG_OVER: 'drag.over',
   DRAG_ENTER: 'drag.enter',
   DRAG_LEAVE: 'drag.leave',
   DRAG_DROPED: 'drag.droped'

@@ -71,8 +71,6 @@
 <script>
 import { computed, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-// import { _forEach } from '../lib/util.js'
-// import { getCurrentViewNodeModel } from '../config.js'
 
 export default {
   name: 'ToolBar',

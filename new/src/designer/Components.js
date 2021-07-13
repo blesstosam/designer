@@ -2,11 +2,9 @@ import { createApp } from 'vue'
 import { FetchLoader } from '@qpaas/loader'
 import { ElTabs, ElTabPane } from 'element-plus'
 import ComponentsVue from './vue/Components.vue'
-import { resetState, state } from './config.js'
-import { lookupByClassName, $ } from './lib/dom.js'
-import { EVENT_TYPES } from './Event'
+import { lookupByClassName, $ } from './lib/dom'
 
-const COMPONENT_EL_CLASS_NAME = 'component-item'
+const COMPONENT_EL_CLS = 'component-item'
 
 export const componentTypes = {
   LAYOUT: 'layout',
@@ -30,6 +28,10 @@ export class Components {
     this.loader = null
   }
 
+  get __dragDrop__() {
+    return this.__designer__.__dragDrop__
+  }
+
   get __componentTree__() {
     return this.__designer__.__componentTree__
   }
@@ -47,21 +49,15 @@ export class Components {
   }
 
   // 给组件绑定数据和事件
-  bindComponentEvent(target) {
-    target.addEventListener('dragstart', e => {
-      e.dataTransfer.effectAllowed = 'move'
-      state.dragging = true
-      state.target = e.target
-      const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLASS_NAME)
-      state.data = this.findComByName($componentItem.getAttribute('com-name')) || {}
-      this.__designer__.emit(EVENT_TYPES.DRAG_START)
+  bindEvent(target) {
+    this.__dragDrop__.bindDragStart(target, ({ $event: e, setData }) => {
+      const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLS)
+      setData('data', this.findComByName($componentItem.getAttribute('com-name')) || {})
     })
-    target.addEventListener('dragend', e => {
-      resetState()
-      this.__designer__.emit(EVENT_TYPES.DRAG_END)
-    })
-  }
 
+    this.__dragDrop__.bindDragEnd(target)
+  }
+ 
   /**
    * 同步注册左侧组件
    * 主要是给组件dom绑定一些属性和事件
@@ -74,9 +70,9 @@ export class Components {
       .attr('draggable', true)
       .attr('is-block', !!com.isBlock)
       .attr('component-type', com.componentType)
-      .addClass(COMPONENT_EL_CLASS_NAME)
+      .addClass(COMPONENT_EL_CLS)
 
-    this.bindComponentEvent(comEl)
+    this.bindEvent(comEl)
     this._hasRegistered.push(com)
     return com
   }
@@ -88,14 +84,14 @@ export class Components {
    *   com   组件
    */
   registerAsyncComponents(modArr) {
-    const _pArr = []
+    const pArr = []
     for (const mod of modArr) {
       const {
         comEl,
         com: { name, version, url, title, icon }
       } = mod
       this.loader = this.loader || new FetchLoader({ styleIsolation: true })
-      _pArr.push(
+      pArr.push(
         new Promise((reslove, reject) => {
           this.loader.fetch(
             {
@@ -137,7 +133,7 @@ export class Components {
       )
     }
 
-    return Promise.resolve(Promise.all(_pArr))
+    return Promise.resolve(Promise.all(pArr))
   }
 
   findComByName(name) {
