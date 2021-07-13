@@ -93,11 +93,14 @@ export const EVENT_TYPES = {
   TOOLBAR_INITED: 'toolbar.inited',
   TOOLBAR_DESTROYED: 'toolbar.destroyed',
 
-  SELECTION_INITED: 'selection.inited',
+  SELECTION_ACTIVED: 'selection.actived',
   SELECTION_UPDATED: 'selection.updated',
-  SELECTION_DESTROYED: 'selection.destroyed',
+  SELECTION_DEACTIVED: 'selection.deactived',
   SELECTION_DEL_CLICK: 'selection.delClick',
   SELECTION_COPY_CLICK: 'selection.copyClick',
+
+  HOVER_ACTIVED: 'hover.actived',
+  HOVER_DEACTIVED: 'hover.deactived',
 
   KEYBOARD_UNDO: 'keyboard.undo',
   KEYBOARD_REDO: 'keyboard.redo',
