@@ -71,6 +71,10 @@ class DomUtil {
     return this
   }
 
+  getStyle(key) {
+    return this.dom.style[key]
+  }
+
   attr(key, val) {
     if (typeof key === 'object') {
       Object.keys(key).forEach(k => {

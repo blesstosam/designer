@@ -51,11 +51,12 @@ export class Components {
   // 给组件绑定数据和事件
   bindEvent(target) {
     this.__dragDrop__.bindDragStart(target, ({ $event: e, setData }) => {
+      console.log('drag start...')
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLS)
       setData('data', this.findComByName($componentItem.getAttribute('com-name')) || {})
     })
 
-    this.__dragDrop__.bindDragEnd(target)
+    this.__dragDrop__.bindDragEnd(target, () => { console.log('drag end...') })
   }
  
   /**

@@ -32,10 +32,10 @@ export class Selection {
     }
     window.addEventListener('resize', this._cb)
 
-    this.__designer__.on('dragstart', () => {
+    this.__designer__.on(EVENT_TYPES.COMPONENTS_DRAG, () => {
       this.$recEl.style.zIndex = -1
     })
-    this.__designer__.on('dragend', () => {
+    this.__designer__.on(EVENT_TYPES.COMPONENTS_DROPED, () => {
       this.$recEl.style.zIndex = 100
     })
   }
@@ -55,6 +55,7 @@ export class Selection {
     this.createBtn(offset, 'delete')
     this.isLayout && this.createBtn(offset, 'copy')
     this.observe()
+    this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED)
   }
 
   update(node) {
@@ -78,17 +79,20 @@ export class Selection {
     } else {
       this.hideBtn('copy')
     }
+    this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED)
   }
 
   updateSize() {
     const { $el } = this.node
     this.$recEl.style.width = $el.offsetWidth
     this.$recEl.style.height = $el.offsetHeight
+    this.__designer__.emit(EVENT_TYPES.SELECTION_RESIZE)
   }
 
   remove() {
     this.$recEl.remove()
     window.removeEventListener('resize', this._cb)
+    this.__designer__.emit(EVENT_TYPES.SELECTION_DEACTIVED)
   }
 
   createSelection(offset) {
@@ -144,7 +148,8 @@ export class Selection {
     }
     div.addEventListener('click', e => {
       e.stopPropagation()
-      const eType = type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
+      const eType =
+        type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
       this.__designer__.emit(eType, {
         type: eType,
         data: this.node

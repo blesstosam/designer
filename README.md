@@ -57,3 +57,4 @@ this.__components__.init(MyComponentsView)
 | 改成lerna管理，分为核心库和应用层 |  - | 2021/7/7 |
 | 使用vercel部署 |  √  | 2021/7/7 |
 | viewModel 数据结构增加根节点 | √ | 2021/7/11 |
+| 增加 hover效果 | √ | 2021/7/13 |
