@@ -5,6 +5,7 @@ import { componentTypes } from './Components'
 import { Node } from './Node'
 import { ViewModel } from './ViewModel'
 import { EVENT_TYPES } from './Event'
+import { Hover } from './Hover'
 
 const {
   SELECTION_DEL_CLICK: F_D_C,
@@ -37,9 +38,10 @@ export class Canvas {
     this.$canvasEl = null
     this.$markEl = null
     this.$tipEl = null
-    this.selection = null
     this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
     this.model = null
+    this.selection = null
+    this.hover = null
   }
 
   get width() {
@@ -173,7 +175,7 @@ export class Canvas {
 
     this.__dragDrop__.bindDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
-      this.hideTip()
+      this.removeTip()
 
       console.log('wrapper enter...')
       const pos = {}
@@ -199,7 +201,7 @@ export class Canvas {
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
         this.removeMark()
-        this.showTip()
+        !this.viewModel && this.showTip()
       }
     })
   }
@@ -220,11 +222,12 @@ export class Canvas {
     }
   }
 
-  hideTip() {
+  removeTip() {
     this.$tipEl && this.$tipEl.remove()
     this.$tipEl = null
   }
 
+  // TODO 是否用mousemove/mouseup来计算marker位置？
   showMark(pos) {
     const { width, left, top } = pos
     if (!this.$markEl) {
@@ -344,6 +347,19 @@ export class Canvas {
       }
       // true
     )
+    
+    wrapper.addEventListener('mouseenter', (e) => {
+      const node = this.model.findVmByKey('$el', e.target)
+      if (this.hover) {
+        this.hover.update(node)
+      } else {
+        this.hover = new Hover({}, this.__designer__)
+        this.hover.create(node)
+      }
+    })
+    wrapper.addEventListener('mouseleave', (e) => {
+      this.hover && this.hover.remove(this.model.findVmByKey('$el', e.target))
+    })
 
     return wrapper
   }
@@ -418,8 +434,6 @@ export class Canvas {
         const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
         const component = this.__components__.findComByName(targetNodeboxName)
 
-        // 1. 被drop的地方有组件，要判断是否可以被拖入
-        // 2. 被drop的地方没有组件，直接append
         const state = getData()
         if (component.accept.includes(state.data.name)) {
           const dom = this.append(state.data, e.target)

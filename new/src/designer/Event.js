@@ -73,9 +73,9 @@ export class Event {
 // 定义好各个插件要分发的事件
 export const EVENT_TYPES = {
   COMPONENTS_INITED: 'components.inited',
+  COMPONENTS_DESTROYED: 'components.destroyed',
   COMPONENTS_DRAG: 'components.drag',
   COMPONENTS_DROPED: 'components.droped',
-  COMPONENTS_DESTROYED: 'components.destroyed',
 
   COMPONENT_TREE_INITED: 'componentTree.inited',
   COMPONENT_TREE_DESTROYED: 'componentTree.destroyed',
@@ -98,8 +98,10 @@ export const EVENT_TYPES = {
   SELECTION_DEACTIVED: 'selection.deactived',
   SELECTION_DEL_CLICK: 'selection.delClick',
   SELECTION_COPY_CLICK: 'selection.copyClick',
+  SELECTION_RESIZE: 'selection.resize',
 
   HOVER_ACTIVED: 'hover.actived',
+  HOVER_UPDATED: 'hover.updated',
   HOVER_DEACTIVED: 'hover.deactived',
 
   KEYBOARD_UNDO: 'keyboard.undo',
