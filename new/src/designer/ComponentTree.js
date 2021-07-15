@@ -47,10 +47,9 @@ export class ComponentTree {
         type,
         viewModel: { children = [] }
       } = payload
-      if (type === C_A_D || type === C_A_A) {
-        // TODO 要使用浅拷贝一遍才会触发视图更新?
-        props.tree = [...children]
-      }
+
+      // TODO 要使用浅拷贝一遍才会触发视图更新?
+      props.tree = [...children]
     })
   }
 
