@@ -30,7 +30,10 @@ export class ViewModel {
    * @returns {*}
    */
   findVmByKey(key, val, arr) {
-    if (!arr) arr = this._data.children
+    if (!arr) {
+      if (this._data[key] === val) return this._data
+      arr = this._data.children
+    }
     for (const vm of arr) {
       if (vm[key] === val) return vm
       if (vm.children && vm.children.length) {
@@ -75,6 +78,10 @@ export class ViewModel {
     } else {
       this._data.children.push(node)
     }
+  }
+
+  init(data) {
+    this._data = data
   }
 
   clear() {

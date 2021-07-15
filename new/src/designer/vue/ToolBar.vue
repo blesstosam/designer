@@ -71,6 +71,7 @@
 <script>
 import { computed, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   name: 'ToolBar',
@@ -136,6 +137,8 @@ export default {
     },
     save() {
       const { viewModel } = this.designer.__canvas__
+      // TODO need to fix! cloneDeep 对循环依赖没有处理 找找其他的库
+      // this.transform(cloneDeep(viewModel.children))
       this.transform(viewModel.children)
       localStorage.setItem('viewModel', JSON.stringify(viewModel))
       ElMessage.success({
