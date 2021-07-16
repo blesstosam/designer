@@ -111,10 +111,6 @@ export class Canvas {
           for (const node of nodeArr) {
             const com = this.__components__.findComByName(node.name)
             const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-            // const wrapper = this.appendDom(com, targetEl)
-            // const newNode = new Node({ ...com, $el: wrapper }, parent)
-            // this.model.appendTo(newNode, parent)
-            // this._dispathAppend(newNode)
             const newNode = this.append(com, targetEl, parent)
             if (node.children && node.children.length) {
               mount(node.children, newNode)
@@ -136,24 +132,15 @@ export class Canvas {
       console.log('drop...')
       this.removeMark()
       const state = getData()
-      let newNode = null
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
         const wrapNode = this.append(blockCom, this.$canvasEl, this.viewModel)
-        // const wrap = this.appendDom(blockCom, this.$canvasEl)
-        // this.model.appendTo((newNode = new Node({ ...blockCom, $el: wrap })))
 
-        // const dom = this.appendDom(state.data, wrapNode.$el.children[0])
         const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
         this.append({...state.data, slotName}, wrapNode.$el.children[0], wrapNode)
-        // this.model.appendTo(new Node({ ...state.data, $el: dom, slotName }, newNode), newNode)
       } else {
         this.append(state.data, this.$canvasEl, this.viewModel)
-        // const dom = this.appendDom(state.data, this.$canvasEl)
-        // this.model.appendTo((newNode = new Node({ ...state.data, $el: dom })))
       }
-
-      // this._dispathAppend(newNode)
     })
 
     this.__dragDrop__.bindDragOver(this.$canvasEl)
@@ -307,9 +294,6 @@ export class Canvas {
         com.transformProps && (node.transformProps = com.transformProps)
 
         const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-        // node.$el = this.appendDom(node, targetEl)
-        // nodeArr[i] = new Node(node, parent)
-        // this.model.appendTo(nodeArr[i], parent)
         nodeArr[i] = this.append(node, targetEl, parent, false)
         if (node.children && node.children.length) {
           mount(node.children, nodeArr[i])
@@ -320,7 +304,6 @@ export class Canvas {
     mount(viewModel.children, this.viewModel)
     this.__designer__.emit(CANVAS_LAYOUTED)
   }
-
 
   append(com, container, parent, cancelDispatch = false) {
     const wrap = this.appendDom(com, container)
@@ -470,10 +453,6 @@ export class Canvas {
           const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
           if (dropedVm) {
             this.append({...state.data, slotName}, e.target, dropedVm)
-            // const dom = this.appendDom(state.data, e.target)
-            // const newNode = new Node({ ...state.data, $el: dom, slotName }, dropedVm)
-            // this.model.appendTo(newNode, dropedVm)
-            // this._dispathAppend(newNode)
           }
         }
       },
