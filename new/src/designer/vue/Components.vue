@@ -40,6 +40,14 @@
   width: 100%;
 }
 </style>
+<style>
+  .component .el-tabs__item.is-active {
+    color: #1989fa;
+  }
+  .component .el-tabs__active-bar {
+    background-color: #1989fa;
+  }
+</style>
 
 <template>
   <div class="component">

@@ -51,9 +51,10 @@ export class Selection {
   create(node) {
     this.node = node
     const offset = this._getOffset()
-    this.createSelection(offset)
-    this.createBtn(offset, 'delete')
-    this.isLayout && this.createBtn(offset, 'copy')
+    this._createSelection(offset)
+    this._createTitle(offset)
+    this._createBtn(offset, 'delete')
+    this.isLayout && this._createBtn(offset, 'copy')
     this.observe()
     this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED)
   }
@@ -67,17 +68,18 @@ export class Selection {
     }
 
     const offset = this._getOffset()
-    this.updateSelection(offset)
-    this.updateBtn(offset, 'delete')
+    this._updateSelection(offset)
+    this._updateBtn(offset, 'delete')
+    this._updateTitle(offset)
     if (this.isLayout) {
       if (this.$recCopyBtn) {
-        this.updateBtn(offset, 'copy')
-        this.showBtn(offset, 'copy')
+        this._updateBtn(offset, 'copy')
+        this._showBtn(offset, 'copy')
       } else {
-        this.createBtn(offset, 'copy')
+        this._createBtn(offset, 'copy')
       }
     } else {
-      this.hideBtn('copy')
+      this._hideBtn('copy')
     }
     this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED)
   }
@@ -95,7 +97,7 @@ export class Selection {
     this.__designer__.emit(EVENT_TYPES.SELECTION_DEACTIVED)
   }
 
-  createSelection(offset) {
+  _createSelection(offset) {
     const { width, height } = offset
     const div = (this.$recEl = $('<div>')
       .style({
@@ -114,7 +116,7 @@ export class Selection {
     return div
   }
 
-  updateSelection(offset) {
+  _updateSelection(offset) {
     const { width, height } = offset
     this.node.$el.appendChild(this.$recEl)
     $(this.$recEl).style({
@@ -125,19 +127,46 @@ export class Selection {
     })
   }
 
-  createBtn(offset, type) {
+  _createTitle(offset) {
+    const div = this.$recTitleEl = $('<div>').style({
+      position: 'absolute',
+      left: this._getBtnLeftVal(offset, 'title'),
+      top: '-21px',
+      cursor: 'pointer',
+      background: '#1989fa',
+      color: 'white',
+      height: '20px',
+      textAlign: 'center',
+      padding: '0 3px',
+      lineHeight: '21px',
+      borderRadius: '2px',
+      fontSize: '12px'
+    }).text(this.node.title).el
+    this.$recEl.appendChild(div)
+    return div
+  }
+
+  _updateTitle(offset) {
+    $(this.$recTitleEl).text(this.node.title)
+      .style({
+        left: this._getBtnLeftVal(offset, 'title')
+      })
+  }
+
+  _createBtn(offset, type) {
     const div = $('<div>').style({
       position: 'absolute',
       left: this._getBtnLeftVal(offset, type),
-      top: '-27px',
+      top: '-21px',
       cursor: 'pointer'
     }).el
     const img = $('<img>')
       .attr('src', `/${type}.png`)
       .style({
-        width: '18px',
+        width: '14px',
         background: '#1989fa',
-        padding: '4px'
+        padding: '3px',
+        borderRadius: '2px'
       }).el
     div.appendChild(img)
     this.$recEl.appendChild(div)
@@ -158,7 +187,7 @@ export class Selection {
     return div
   }
 
-  updateBtn(offset, type) {
+  _updateBtn(offset, type) {
     if (type === 'delete') {
       this.$recDelBtn.style.left = this._getBtnLeftVal(offset, type)
     } else {
@@ -166,7 +195,7 @@ export class Selection {
     }
   }
 
-  hideBtn(type) {
+  _hideBtn(type) {
     if (type === 'delete') {
       this.$recDelBtn.style.display = 'none'
     } else {
@@ -174,7 +203,7 @@ export class Selection {
     }
   }
 
-  showBtn(type) {
+  _showBtn(type) {
     if (type === 'delete') {
       this.$recDelBtn.style.display = 'block'
     } else {
@@ -183,7 +212,10 @@ export class Selection {
   }
 
   _getBtnLeftVal(offset, type) {
-    return type === 'delete' ? offset.width - 26 + 'px' : offset.width - 58 + 'px'
+    return type === 'delete' ? offset.width - 22 + 'px' 
+      : type === 'copy' ? offset.width - 45 + 'px'
+      : this.isLayout ? offset.width - 79 + 'px' 
+      : offset.width - 55 + 'px'
   }
 
   _getOffset() {

@@ -99,7 +99,7 @@ export class Command {
       this.getActions(type)(currentAction.data)
       this._actionIdx--
       cb && cb(this._actions)
-      this.emitChange()
+      this._emitChange()
       this.lockType = null
     }
   }
@@ -112,7 +112,7 @@ export class Command {
       console.log(currentAction, 'in redo')
       this.getActions(currentAction.type)(currentAction.data)
       cb && cb(this._actionIdx)
-      this.emitChange()
+      this._emitChange()
       this.lockType = null
     }
   }
@@ -142,7 +142,7 @@ export class Command {
     return actions[type]
   }
 
-  emitChange() {
+  _emitChange() {
     this.onChange && this.onChange({ canRedo: this.canRedo, canUndo: this.canUndo })
   }
 }
