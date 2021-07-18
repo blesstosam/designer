@@ -4,12 +4,17 @@
   height: 100%;
 }
 .component-left {
-  width: 60px;
+  width: 50px;
   border-right: 1px solid #eee;
+  padding-top: 6px;
   text-align: center;
+  flex: none;
+  box-sizing: border-box;
 }
 .component-left .menu-item {
-  padding: 12px 0;
+  padding: 6px 0;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .active-menu-item {
@@ -41,12 +46,12 @@
 }
 </style>
 <style>
-  .component .el-tabs__item.is-active {
-    color: #1989fa;
-  }
-  .component .el-tabs__active-bar {
-    background-color: #1989fa;
-  }
+.component .el-tabs__item.is-active {
+  color: #1989fa;
+}
+.component .el-tabs__active-bar {
+  background-color: #1989fa;
+}
 </style>
 
 <template>
@@ -61,9 +66,9 @@
           xmlns="http://www.w3.org/2000/svg"
           p-id="4119"
           xmlns:xlink="http://www.w3.org/1999/xlink"
-          :fill="activeMenu === 'com' ? '#1989fa' : '#707070'"
-          width="24"
-          height="24"
+          :fill="activeMenu === 'com' ? '#1989fa' : '#515151'"
+          width="22"
+          height="22"
           @click="handleMenuClick('com')"
         >
           <path
@@ -82,9 +87,9 @@
           xmlns="http://www.w3.org/2000/svg"
           p-id="3296"
           xmlns:xlink="http://www.w3.org/1999/xlink"
-          :fill="activeMenu === 'tree' ? '#1989fa' : '#707070'"
-          width="24"
-          height="24"
+          :fill="activeMenu === 'tree' ? '#1989fa' : '#515151'"
+          width="22"
+          height="22"
           @click="handleMenuClick('tree')"
         >
           <path
@@ -93,6 +98,32 @@
           ></path>
         </svg>
       </div>
+
+      <!-- <div :class="{ 'menu-item': true, 'active-menu-item': activeMenu === 'schema' }">
+        <svg
+          t="1626450925255"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="2798"
+          :fill="activeMenu === 'schema' ? '#1989fa' : '#707070'"
+          width="22"
+          height="22"
+          @click="handleMenuClick('schema')"
+        >
+          <path
+            d="M903.232 138.24h-782.48a44 44 0 0 0-43.96 44.048v659.424a44 44 0 0 0 43.96 44.048h782.48a44.008 44.008 0 0 0 43.968-44.048V182.288a44.008 44.008 0 0 0-43.968-44.048z m-8.256 693.32H127.096V190.352h767.88v641.208z"
+            p-id="2799"
+            fill="#515151"
+          ></path>
+          <path
+            d="M220.056 511.992l146.568-146.568c9.168-9.168 9.168-22.896 0-32.064-9.16-9.16-22.904-9.16-32.056 0L171.96 495.968c-4.576 4.576-6.872 9.16-6.872 16.024 0 6.872 2.296 11.456 6.872 16.032L334.56 690.632c9.16 9.16 22.904 9.16 32.056 0 9.168-9.168 9.168-22.904 0-32.072l-146.56-146.568zM576.128 269.24c-11.448-2.288-25.184 4.584-27.488 16.032L429.552 727.264c-2.288 11.456 4.584 25.192 16.032 27.496 11.448 2.28 25.184-4.584 27.48-16.04L592.16 296.72c4.576-11.448-2.304-25.192-16.032-27.48zM852.048 495.968L689.44 333.36c-9.16-9.16-22.896-9.16-32.056 0-9.168 9.168-9.168 22.896 0 32.064l146.56 146.568-146.56 146.568c-9.168 9.168-9.168 22.904 0 32.072 9.16 9.16 22.896 9.16 32.056 0l162.608-162.608c4.576-4.576 6.864-11.456 6.864-16.032 0-6.864-2.288-11.448-6.864-16.024z"
+            p-id="2800"
+            fill="#515151"
+          ></path>
+        </svg>
+      </div> -->
     </div>
 
     <el-tabs
@@ -116,11 +147,24 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 12px">基础组件</div>
+          <div style="margin-bottom: 12px">视图组件</div>
           <div ref="basicWrapEl" style="marginBottom: 24px">
             <div
               class="com-item"
-              v-for="(item, index) in basicCom"
+              v-for="(item, index) in viewCom"
+              :key="index"
+              :com-name="item.name"
+            >
+              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
+              <div style="margin-top: 6px">{{ item.title }}</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px">表单组件</div>
+          <div ref="formWrapEl" style="marginBottom: 24px">
+            <div
+              class="com-item"
+              v-for="(item, index) in formCom"
               :key="index"
               :com-name="item.name"
             >
@@ -148,6 +192,8 @@
     </el-tabs>
 
     <div v-show="activeMenu === 'tree'" class="component-tree-wrap"></div>
+
+    <!-- <div v-show="activeMenu === 'schema'">schema 开发</div> -->
   </div>
 </template>
 
@@ -171,8 +217,11 @@ export default {
     layoutCom() {
       return this.componentList.filter(i => i.componentType === componentTypes.LAYOUT)
     },
-    basicCom() {
-      return this.componentList.filter(i => i.componentType !== componentTypes.LAYOUT)
+    viewCom() {
+      return this.componentList.filter(i => i.componentType === componentTypes.VIEW)
+    },
+    formCom() {
+      return this.componentList.filter(i => i.componentType === componentTypes.FORM)
     },
     __designer__() {
       return this.__components__.__designer__

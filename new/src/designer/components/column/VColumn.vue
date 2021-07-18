@@ -6,7 +6,7 @@
   margin: 4px 0;
 }
 .canvas-wrapper .v-column .content {
-  border: solid 1px #999;
+  border: solid 1px #ddd;
   min-height: 72px;
   margin-top: 4px;
 }

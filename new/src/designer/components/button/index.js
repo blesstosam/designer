@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VButton from './VButton.vue'
 import VButtonCfg from './config'
+import { componentTypes } from '../../Components'
 
 const VButtonComponent = {
   name: 'VButton',
@@ -10,6 +11,7 @@ const VButtonComponent = {
     type: 'img',
     value: '/button.png'
   },
+  componentType: componentTypes.VIEW,
   accept: [],
   $el: null,
   vm: null,

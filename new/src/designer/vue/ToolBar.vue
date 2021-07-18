@@ -114,33 +114,39 @@ export default {
       this.__toolbar__.redo()
     },
     transform(_arr) {
-      // 将组件数据的一些字段处理一下
-      const traverse = arr => {
+      const origin = []
+      const traverse = (arr, _origin) => {
         for (let i = 0; i < arr.length; i++) {
           const item = arr[i]
-          delete item.$el
-          delete item.accept
-          delete item.icon
-          delete item.vm
-          delete item.render
-          delete item.transformProps
-          delete item.parent
+          _origin.push({
+            attrs: item.attrs,
+            children: [],
+            componentType:item.componentType,
+            icon: item.icon,
+            isBlock: item.isBlock,
+            isCustom: item.isCustom,
+            name: item.name,
+            props: item.props,
+            title: item.title,
+            unique: item.unique,
+            slotName: item.slotName
+          })
           if (item.children && item.children.length) {
-            traverse(item.children)
+            traverse(item.children, _origin[i].children)
           }
         }
       }
-      traverse(_arr)
+      traverse(_arr, origin)
+
+      return origin
     },
     clear() {
       this.designer.__canvas__.clear()
     },
     save() {
       const { viewModel } = this.designer.__canvas__
-      // TODO need to fix! cloneDeep 对循环依赖没有处理 找找其他的库
-      // this.transform(cloneDeep(viewModel.children))
-      this.transform(viewModel.children)
-      localStorage.setItem('viewModel', JSON.stringify(viewModel))
+      const transformed = this.transform(viewModel.children)
+      localStorage.setItem('viewModel', JSON.stringify({...viewModel, children: transformed}))
       ElMessage.success({
         duration: 1000,
         message: 'save succeed!'
