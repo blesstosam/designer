@@ -1,11 +1,10 @@
 <style scoped>
 .component-tree {
   border-top: 1px solid #eee;
-  padding: 8px 0;
 }
 .component-tree .header {
   border-bottom: 1px solid #dedede;
-  padding: 0 8px 6px;
+  padding: 10px 8px;
   margin-bottom: 12px;
 }
 .component-tree .header span {

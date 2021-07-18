@@ -23,8 +23,7 @@ const VBlockComponent = {
     if (newProps) {
       changeProps(newProps, this.props)
     } else {
-      // TODO 要加判断吗?
-      this.props = this.props || reactive(parseProps(this.attrs))
+      this.props = reactive(parseProps(this.attrs))
       this.vm = genVueInstance(VBlock, this.props)
       return this.vm.$el
     }

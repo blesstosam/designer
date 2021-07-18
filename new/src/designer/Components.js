@@ -6,9 +6,11 @@ import { lookupByClassName, $ } from './lib/dom'
 
 const COMPONENT_EL_CLS = 'component-item'
 
+// 从功能维度划分
 export const componentTypes = {
-  LAYOUT: 'layout',
-  BASIC: 'basic'
+  LAYOUT: 'layout',  // 布局组件
+  VIEW: 'view', // 视图组件
+  FORM: 'form' // 表单组件
 }
 
 /**

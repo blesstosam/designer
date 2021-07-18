@@ -2,6 +2,7 @@ import { randomString } from './lib/util'
 
 export class Node {
   constructor(node, parent) {
+    this.__version__ = '1.0.0'
     this.name = node.name
     this.title = node.title
     this.unique = node.unique || randomString()
@@ -23,6 +24,9 @@ export class Node {
     // 是否是自定义组件
     this.isCustom = !!node.isCustom
     node.customData && (this.customData = node.customData)
+
+    // 物料组件分类，从组件颗粒度来划分 Component|Block|Template
+    node.category && (this.category = node.category)
 
     // function
     this.render = node.render
