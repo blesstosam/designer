@@ -84,6 +84,15 @@
             </el-select>
           </div>
 
+          <!-- radio -->
+          <div v-else-if="_item.formType === FormTypes.Radio" class="dis-flex">
+            <span>{{ _item.title }}</span>
+            <el-radio-group v-model="_item.value" @change='handleChange(_item, $event)'>
+              <el-radio :label="true">是</el-radio>
+              <el-radio :label="false">否</el-radio>
+            </el-radio-group>
+          </div>
+
           <div v-else-if="_item.formType === FormTypes.Switch" class="dis-flex">
             <span>{{ _item.title }}</span>
             <el-switch

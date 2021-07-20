@@ -3,6 +3,7 @@ export const FormTypes = {
   InputNumber: 'input-number',
   Select: 'select',
   TextArea: 'textarea',
+  Radio: 'radio',
   Switch: 'switch',
   BtnStyle: 'btn-style',
   TextStyle: 'text-style',

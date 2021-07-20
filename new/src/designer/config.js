@@ -4,6 +4,7 @@ import { VTabsComponent } from './components/tabs/index'
 import { VButtonComponent } from './components/button/index'
 import { VTextComponent } from './components/text/index'
 import { VInputComponent } from './components/input/index'
+import { VTagComponent } from './components/tag'
 
 // 当前被选中的dom节点所在数据
 let currentViewNodeModel = {}
@@ -22,6 +23,7 @@ export const componentList = [
   VTabsComponent,
 
   VTextComponent,
+  VTagComponent,
   VButtonComponent,
   VInputComponent
 ]

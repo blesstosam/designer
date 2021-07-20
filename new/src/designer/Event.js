@@ -86,6 +86,10 @@ export const EVENT_TYPES = {
   CANVAS_ACTIONS_APPEND: 'canvas.actions.append',
   CANVAS_ACTIONS_DELETE: 'canvas.actions.delete',
 
+  // element 为画布中元素节点
+  ELEMENT_CLICK: 'element.click',
+  ELEMENT_HOVER: 'element.hover',
+
   ATTRPANEL_INITED: 'attrpanel.inited',
   ATTRPANEL_DESTROYED: 'attrpanel.destroyed',
   ATTRPANEL_SET_ATTR: 'attrpanel.setAttr',
@@ -113,5 +117,9 @@ export const EVENT_TYPES = {
   DRAG_OVER: 'drag.over',
   DRAG_ENTER: 'drag.enter',
   DRAG_LEAVE: 'drag.leave',
-  DRAG_DROPED: 'drag.droped'
+  DRAG_DROPED: 'drag.droped',
+
+  PLUG_INITED: 'plug.inited',
+  PLUG_ADDED: 'plug.added',
+  PLUG_DESTROYED: 'plug.destroyed',
 }
