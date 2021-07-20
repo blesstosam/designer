@@ -44,6 +44,15 @@
 .component-tree-wrap {
   width: 100%;
 }
+.component .header {
+  margin-bottom: 12px;
+  padding: 0 6px;
+}
+.component .content {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
 </style>
 <style>
 .component .el-tabs__item.is-active {
@@ -127,15 +136,15 @@
     </div>
 
     <el-tabs
-      style="padding: 0 4px; width: 100%"
+      style="width: 100%"
       v-show="activeMenu === 'com'"
       v-model="activeName"
       @tab-click="handleClick"
     >
       <el-tab-pane label="组件库" name="component">
         <div class="component-wrap">
-          <div style="margin-bottom: 12px">布局组件</div>
-          <div ref="layoutWrapEl" style="marginBottom: 24px">
+          <div class="header">布局组件</div>
+          <div ref="layoutWrapEl" class="content">
             <div
               class="com-item"
               v-for="(item, index) in layoutCom"
@@ -147,8 +156,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 12px">视图组件</div>
-          <div ref="basicWrapEl" style="marginBottom: 24px">
+          <div class="header">视图组件</div>
+          <div ref="basicWrapEl" class="content">
             <div
               class="com-item"
               v-for="(item, index) in viewCom"
@@ -160,8 +169,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 12px">表单组件</div>
-          <div ref="formWrapEl" style="marginBottom: 24px">
+          <div class="header">表单组件</div>
+          <div ref="formWrapEl" class="content">
             <div
               class="com-item"
               v-for="(item, index) in formCom"
@@ -173,8 +182,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 12px">自定义组件</div>
-          <div ref="customWrapEl" style="marginBottom: 24px" v-if="asyncComRegisterSuccess">
+          <div class="header">自定义组件</div>
+          <div ref="customWrapEl" class="content" v-if="asyncComRegisterSuccess">
             <div
               class="custom-com-item"
               v-for="(item, index) in customComList"
@@ -185,7 +194,7 @@
               <div style="margin-top: 6px">{{ item.title }}</div>
             </div>
           </div>
-          <div v-else style="color: #f56c6c">组件加载失败！</div>
+          <div v-else style="color: #f56c6c; padding-left: 6px;">组件加载失败！</div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="模板" name="template">模板</el-tab-pane>

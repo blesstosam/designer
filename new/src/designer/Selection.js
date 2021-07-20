@@ -128,35 +128,39 @@ export class Selection {
   }
 
   _createTitle(offset) {
-    const div = this.$recTitleEl = $('<div>').style({
-      position: 'absolute',
-      left: this._getBtnLeftVal(offset, 'title'),
-      top: '-21px',
-      cursor: 'pointer',
-      background: '#1989fa',
-      color: 'white',
-      height: '20px',
-      textAlign: 'center',
-      padding: '0 3px',
-      lineHeight: '21px',
-      borderRadius: '2px',
-      fontSize: '12px'
-    }).text(this.node.title).el
+    const div = (this.$recTitleEl = $('<div>')
+      .style({
+        position: 'absolute',
+        right: this._getBtnRightVal('title', offset),
+        top: '-21px',
+        cursor: 'pointer',
+        background: '#1989fa',
+        color: 'white',
+        height: '20px',
+        textAlign: 'center',
+        padding: '0 3px',
+        lineHeight: '21px',
+        borderRadius: '2px',
+        fontSize: '12px',
+        overflow: 'hidden'
+      })
+      .text(this.node.title).el)
     this.$recEl.appendChild(div)
     return div
   }
 
   _updateTitle(offset) {
-    $(this.$recTitleEl).text(this.node.title)
+    $(this.$recTitleEl)
+      .text(this.node.title)
       .style({
-        left: this._getBtnLeftVal(offset, 'title')
+        right: this._getBtnRightVal('title', offset)
       })
   }
 
   _createBtn(offset, type) {
     const div = $('<div>').style({
       position: 'absolute',
-      left: this._getBtnLeftVal(offset, type),
+      right: this._getBtnRightVal(type, offset),
       top: '-21px',
       cursor: 'pointer'
     }).el
@@ -189,9 +193,9 @@ export class Selection {
 
   _updateBtn(offset, type) {
     if (type === 'delete') {
-      this.$recDelBtn.style.left = this._getBtnLeftVal(offset, type)
+      this.$recDelBtn.style.right = this._getBtnRightVal(type, offset)
     } else {
-      this.$recCopyBtn.style.left = this._getBtnLeftVal(offset, type)
+      this.$recCopyBtn.style.right = this._getBtnRightVal(type, offset)
     }
   }
 
@@ -211,11 +215,8 @@ export class Selection {
     }
   }
 
-  _getBtnLeftVal(offset, type) {
-    return type === 'delete' ? offset.width - 22 + 'px' 
-      : type === 'copy' ? offset.width - 45 + 'px'
-      : this.isLayout ? offset.width - 79 + 'px' 
-      : offset.width - 55 + 'px'
+  _getBtnRightVal(type, offset) {
+    return type === 'delete' ? '0px' : type === 'copy' ? '23px' : this.isLayout ? '46px' : '23px'
   }
 
   _getOffset() {

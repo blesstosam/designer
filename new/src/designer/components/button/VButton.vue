@@ -1,7 +1,6 @@
 <template>
-  <el-button v-bind="$attrs">{{ content }}
-    <!-- for test -->
-    <!-- <slot name="block"></slot> -->
+  <el-button v-bind="$attrs">
+    {{ content }}
   </el-button>
 </template>
 
