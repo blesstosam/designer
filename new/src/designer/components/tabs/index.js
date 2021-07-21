@@ -25,7 +25,7 @@ const VTabsComponent = {
       return this.vm.$el
     }
   },
-  accept: ['VButton', 'VText', 'VInput']
+  accept: ['VButton', 'VText', 'VInput', 'VTag']
 }
 
 export { VTabsComponent, VTabs }

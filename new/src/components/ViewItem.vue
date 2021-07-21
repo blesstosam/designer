@@ -6,6 +6,9 @@ import { VText } from '../designer/components/text/index'
 import { VBlock } from '../designer/components/block/index'
 import { VInput } from '../designer/components/input/index'
 import { VColumn } from '../designer/components/column/index'
+import { VTag } from '../designer/components/tag/index'
+import { VImage } from '../designer/components/image/index'
+import { VDivider } from '../designer/components/divider/index'
 import { h, resolveComponent } from 'vue'
 import Custom from './Custom.vue'
 
@@ -17,6 +20,9 @@ export default {
     VButton,
     VText,
     VInput,
+    VTag,
+    VImage,
+    VDivider,
     Custom
   },
   props: {

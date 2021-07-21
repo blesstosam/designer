@@ -95,7 +95,7 @@ export class Command {
       this.lockType = 'undo'
       const currentAction = this._actions[this._actionIdx]
       console.log(currentAction, 'in undo')
-      const type = this.getOpposite(currentAction.type)
+      const type = this._getOpposite(currentAction.type)
       this.getActions(type)(currentAction.data)
       this._actionIdx--
       cb && cb(this._actions)
@@ -133,7 +133,7 @@ export class Command {
     return actions[type]
   }
 
-  getOpposite(type) {
+  _getOpposite(type) {
     const actions = {
       [C_A_A]: C_A_D,
       [C_A_D]: C_A_A,
