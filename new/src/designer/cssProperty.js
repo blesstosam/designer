@@ -11,9 +11,11 @@ export const cssProperty = {
   paddingLeft: 1,
   paddingBottom: 1,
   paddingRight: 1,
+  padding: 1,
+  
   marginTop: 1,
   marginLeft: 1,
   marginBottom: 1,
   marginRight: 1,
-
+  margin: 1
 }

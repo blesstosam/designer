@@ -12,5 +12,7 @@ export const FormTypes = {
   VerticalAlign: 'vertical-align',
   ColorRadio: 'color-radio',
   ColorPicker: 'color-picker',
-  ColumnSetting: 'column-setting'
+  ColumnSetting: 'column-setting',
+
+  Margin: 'margin'
 }

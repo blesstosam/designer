@@ -21,7 +21,7 @@
   <div class="prop-panel">
     <el-collapse v-model="activeNames">
       <el-collapse-item
-        v-for="item in formList.configs"
+        v-for="item in filtedFormList"
         :key="item.id"
         :title="item.title"
         :name="item.id"
@@ -93,6 +93,7 @@
             </el-radio-group>
           </div>
 
+          <!-- switch -->
           <div v-else-if="_item.formType === FormTypes.Switch" class="dis-flex">
             <span>{{ _item.title }}</span>
             <el-switch
@@ -181,7 +182,7 @@
 </template>
 
 <script>
-import { reactive, watchEffect } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { getCurrentViewNodeModel } from '../../config.js'
 import TextStyle from './TextStyle.vue'
 import BtnStyle from './BtnStyle.vue'
@@ -191,7 +192,7 @@ import RowAlign from './RowAlign.vue'
 import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
 import ColumnSetting from './ColumnSetting.vue'
-import { FormTypes } from './config'
+import { FormTypes } from '../config'
 import { EVENT_TYPES } from '../../Event.js'
 
 export default {
@@ -209,7 +210,8 @@ export default {
   props: ['attr', 'formList'],
   setup(props) {
     const activeNames = reactive([])
-
+    console.log(props.formList)
+    const filtedFormList = computed(() => props.formList.configs.filter(i => i.id === '_props'))
     watchEffect(() => {
       ;(props.formList.configs || []).forEach(i => {
         activeNames.push(i.id)
@@ -230,7 +232,8 @@ export default {
 
     return {
       activeNames,
-      FormTypes
+      FormTypes,
+      filtedFormList
     }
   },
   computed: {

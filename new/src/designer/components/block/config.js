@@ -24,17 +24,17 @@ export default {
               items: [
                 {
                   type: 'object',
-                  title: '上边距',
+                  title: '外边距',
                   properties: {
                     id: {
-                      const: 'paddingTop'
+                      const: 'margin'
                     },
                     formType: {
-                      const: 'input-number'
+                      const: 'margin'
                     },
                     value: {
-                      type: 'number',
-                      default: 0
+                      type: 'string',
+                      default: '1px 1px 1px 1px'
                     }
                   }
                 }

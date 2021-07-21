@@ -4,7 +4,7 @@
   height: 100%;
 }
 .component-left {
-  width: 50px;
+  width: 45px;
   border-right: 1px solid #eee;
   padding-top: 6px;
   text-align: center;
