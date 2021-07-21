@@ -1,13 +1,13 @@
 export default {
   type: 'object',
-  title: '标签',
-  description: '用于标记和选择',
+  title: '图片',
+  description: '图片容器，在保留原生img的特性下，支持懒加载，自定义占位、加载失败等',
   properties: {
     id: {
-      const: 'tag'
+      const: 'image'
     },
     icon: {
-      const: 'icon-tag'
+      const: 'icon-image'
     },
     configs: {
       type: 'array',
@@ -24,81 +24,45 @@ export default {
               items: [
                 {
                   type: 'object',
-                  title: '内容',
+                  title: '图片源',
                   properties: {
                     id: {
-                      const: 'content'
+                      const: 'src'
                     },
                     formType: {
-                      const: 'textarea'
+                      const: 'input'
                     },
                     value: {
                       type: 'string',
-                      default: '文字'
+                      default: 'https://pic4.zhimg.com/v2-575e45060130ee5a74a4df6d2be66740_xl.jpg'
                     }
                   }
                 },
 
                 {
                   type: 'object',
-                  title: '类型',
+                  title: '适应',
                   properties: {
                     id: {
-                      const: 'type'
-                    },
-                    formType: {
-                      const: 'select'
-                    },
-                    value: {
-                      type: 'string',
-                      default: 'success',
-                      enum: ['success', 'info', 'warning', 'danger']
-                    }
-                  }
-                },
-
-                {
-                  type: 'object',
-                  title: '尺寸',
-                  properties: {
-                    id: {
-                      const: 'size'
+                      const: 'fit'
                     },
                     formType: {
                       const: 'select'
                     },
                     value: {
                       type: 'string',
-                      default: 'medium',
-                      enum: ['medium', 'small', 'mni']
+                      default: 'fill',
+                      enum: ['fill', 'contain', 'cover', 'none', 'scale-down']
                     }
                   }
                 },
 
                 {
                   type: 'object',
-                  title: '主题',
+                  title: '是否开启懒加载',
                   properties: {
                     id: {
-                      const: 'size'
-                    },
-                    formType: {
-                      const: 'select'
-                    },
-                    value: {
-                      type: 'string',
-                      default: 'dark',
-                      enum: ['dark', 'light', 'plain']
-                    }
-                  }
-                },
-
-                {
-                  type: 'object',
-                  title: '是否可关闭',
-                  properties: {
-                    id: {
-                      const: 'closable'
+                      const: 'lazy'
                     },
                     formType: {
                       const: 'radio'
@@ -112,10 +76,10 @@ export default {
 
                 {
                   type: 'object',
-                  title: '是否禁用渐变动画',
+                  title: '是否插入至body',
                   properties: {
                     id: {
-                      const: 'disable-transitions'
+                      const: 'append-to-body'
                     },
                     formType: {
                       const: 'radio'
@@ -129,10 +93,10 @@ export default {
 
                 {
                   type: 'object',
-                  title: '是否有边框描边',
+                  title: '是否可以通过点击遮罩层关闭',
                   properties: {
                     id: {
-                      const: 'hit'
+                      const: 'hide-on-click-modal'
                     },
                     formType: {
                       const: 'radio'
@@ -140,23 +104,6 @@ export default {
                     value: {
                       type: 'boolean',
                       default: false
-                    }
-                  }
-                },
-
-                {
-                  type: 'object',
-                  title: '背景颜色',
-                  properties: {
-                    id: {
-                      const: 'backgroundColor'
-                    },
-                    formType: {
-                      const: 'color-picker'
-                    },
-                    value: {
-                      type: 'string',
-                      default: ''
                     }
                   }
                 }

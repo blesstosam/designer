@@ -18,7 +18,7 @@ const {
 } = EVENT_TYPES
 
 const { LAYOUT } = componentTypes
-const DROP_EL_PADDING = 12,
+const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 8
 const SLOT_NAME_KEY = 'c-slot-name'
 

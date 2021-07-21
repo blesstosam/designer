@@ -14,7 +14,7 @@ const VColumnComponent = {
     value: '/wrap.png'
   },
   componentType: componentTypes.LAYOUT,
-  accept: ['VButton', 'VText', 'VInput'],
+  accept: ['VButton', 'VText', 'VInput', 'VTag', 'VImage', 'VDivider'],
   $el: null,
   vm: null,
   attrs: VColumnCfg,

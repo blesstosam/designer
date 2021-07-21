@@ -152,7 +152,7 @@
               :com-name="item.name"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 6px">{{ item.title }}</div>
+              <div style="margin-top: 2px">{{ item.title }}</div>
             </div>
           </div>
 
@@ -165,7 +165,7 @@
               :com-name="item.name"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 6px">{{ item.title }}</div>
+              <div style="margin-top: 2px">{{ item.title }}</div>
             </div>
           </div>
 
@@ -178,7 +178,7 @@
               :com-name="item.name"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 6px">{{ item.title }}</div>
+              <div style="margin-top: 2px">{{ item.title }}</div>
             </div>
           </div>
 
@@ -191,7 +191,7 @@
               :com-name="item.name"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 6px">{{ item.title }}</div>
+              <div style="margin-top: 2px">{{ item.title }}</div>
             </div>
           </div>
           <div v-else style="color: #f56c6c; padding-left: 6px;">组件加载失败！</div>
