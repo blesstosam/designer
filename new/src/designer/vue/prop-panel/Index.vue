@@ -210,7 +210,6 @@ export default {
   props: ['attr', 'formList'],
   setup(props) {
     const activeNames = reactive([])
-    console.log(props.formList)
     const filtedFormList = computed(() => props.formList.configs.filter(i => i.id === '_props'))
     watchEffect(() => {
       ;(props.formList.configs || []).forEach(i => {
