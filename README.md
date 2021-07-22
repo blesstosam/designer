@@ -52,7 +52,7 @@ this.__components__.init(MyComponentsView)
 | 定义事件类型，每一个操作都对应一种操作，进行全局分发，各插件可以根据需求自行监听| √ | 2021/7/1 |
 | 属性面板增加公共样式调整，支持margin，padding，border | - | 2021/7/6 |
 | 缩放功能 |  - | 2021/7/7 |
-| undo&redo |  - | 2021/7/7 |
+| undo&redo |  √  | 2021/7/7 |
 | event抽成eventbus |  - | 2021/7/7 |
 | 改成lerna管理，分为核心库和应用层 |  - | 2021/7/7 |
 | 使用vercel部署 |  √  | 2021/7/7 |

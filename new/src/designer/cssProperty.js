@@ -17,5 +17,7 @@ export const cssProperty = {
   marginLeft: 1,
   marginBottom: 1,
   marginRight: 1,
-  margin: 1
+  margin: 1,
+
+  borderRadius: 1
 }

@@ -116,7 +116,7 @@
             <text-decoration v-model="_item.value" @change="handleChange(_item, $event)" />
           </div>
 
-          <!-- 内容对齐 -->
+          <!-- 上下对齐 -->
           <div v-else-if="_item.formType === FormTypes.VerticalAlign" class="dis-flex">
             <span>{{ _item.title }}</span>
             <vertical-align
@@ -126,7 +126,7 @@
             />
           </div>
 
-          <!-- 文字对齐 -->
+          <!-- 左右对齐 -->
           <div v-else-if="_item.formType === FormTypes.RowAlign" class="dis-flex">
             <span>{{ _item.title }}</span>
             <row-align

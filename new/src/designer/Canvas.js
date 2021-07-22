@@ -137,9 +137,10 @@ export class Canvas {
         const wrapNode = this.append(blockCom, this.$canvasEl, this.viewModel)
 
         const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
-        this.append({...state.data, slotName}, wrapNode.$el.children[0], wrapNode)
+        this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
       } else {
-        this.append(state.data, this.$canvasEl, this.viewModel)
+        const newNode = this.append(state.data, this.$canvasEl, this.viewModel)
+        this.showTip(newNode.$el.children[0])
       }
     })
 
@@ -196,21 +197,36 @@ export class Canvas {
     this.$canvasEl.scrollTop = this.$canvasEl.scrollHeight
   }
 
-  showTip() {
-    if (!this.$tipEl) {
-      const span = (this.$tipEl = $('<div>')
+  showTip(targetEl) {
+    if (!targetEl) {
+      if (!this.$tipEl) {
+        const span = (this.$tipEl = $('<div>')
+          .text('请将组件拖入这里')
+          .style({
+            textAlign: 'center',
+            paddingTop: '200px'
+          }).el)
+        this.$canvasEl.appendChild(span)
+      }
+    } else {
+      // TODO 如果需要保存el 则传入 const span = node.$tipEl = xxx
+      const span = $('<div>')
         .text('请将组件拖入这里')
         .style({
           textAlign: 'center',
-          paddingTop: '200px'
-        }).el)
-      this.$canvasEl.appendChild(span)
+          paddingTop: '20px'
+        }).el
+      targetEl.appendChild(span)
     }
   }
 
-  removeTip() {
-    this.$tipEl && this.$tipEl.remove()
-    this.$tipEl = null
+  removeTip(targetEl) {
+    if (!targetEl) {
+      this.$tipEl && this.$tipEl.remove()
+      this.$tipEl = null
+    } else {
+      targetEl.children[0].remove()
+    }
   }
 
   // TODO 是否用mousemove/mouseup来计算marker位置？
@@ -244,7 +260,8 @@ export class Canvas {
   }
 
   clear() {
-    const canvasStyle = (this.viewModel && this.viewModel.props.style) || this._getDefaultCanvasStyle()
+    const canvasStyle =
+      (this.viewModel && this.viewModel.props.style) || this._getDefaultCanvasStyle()
     this.model.init(
       new Node({
         name: 'canvas',
@@ -452,7 +469,7 @@ export class Canvas {
         if (component.accept.includes(state.data.name)) {
           const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
           if (dropedVm) {
-            this.append({...state.data, slotName}, e.target, dropedVm)
+            this.append({ ...state.data, slotName }, e.target, dropedVm)
           }
         }
       },
@@ -468,6 +485,7 @@ export class Canvas {
         if (getSlotName(e.target) != null) {
           this.dropToInnerSlot = true
           addDragEnterCls(e)
+          this.removeTip(e.target)
         }
 
         console.log('inner enter...')
@@ -515,6 +533,7 @@ export class Canvas {
         this.dropToInnerSlot = false
         removeDragEnterCls()
         this.removeMark()
+        this.showTip(e.target)
       }
     })
 
