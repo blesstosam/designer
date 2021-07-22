@@ -34,10 +34,6 @@
         height: calc(100vh - 55px);
         overflow-y: auto;
         background: #ddd;
-
-        // .dragenter-actived {
-        //   border: 1px solid red
-        // }
       }
     }
 
@@ -47,6 +43,16 @@
       border-left: 1px solid #eee;
       height: calc(100vh - 67px);
       overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 12px;
+        background-color: transparent; 
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ddd 
+        border-radius: 8px;
+      }
     }
   }
 }

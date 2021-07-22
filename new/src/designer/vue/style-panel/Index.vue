@@ -26,11 +26,54 @@
         :title="item.title"
         :name="item.id"
       >
-        <div v-for="_item in item.children" :key="_item.id">
-          <!-- margin -->
+        <div v-for="_item in item.children" :key="_item.id" style="margin-bottom: 12px;">
+          <!-- margin|padding|borderRadius -->
           <div :label="_item.title" v-if="_item.formType === FormTypes.Margin">
+            <margin
+              :type="_item.id"
+              :label="_item.title"
+              v-model="_item.value"
+              @change="handleChange(_item, $event)"
+            />
+          </div>
+
+          <!-- select -->
+          <div v-else-if="_item.formType === FormTypes.Select" class="dis-flex">
             <span>{{ _item.title }}</span>
-            <margin v-model="_item.value" @change="handleChange(_item, $event)" />
+            <el-select
+              size="medium"
+              :placeholder="_item.description || '请选择'"
+              v-model="_item.value"
+              @change="handleChange(_item, $event)"
+            >
+              <el-option
+                v-for="opt in _item.options"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+
+          <!-- 左右对齐 -->
+          <div v-else-if="_item.formType === FormTypes.RowAlign" class="dis-flex">
+            <span>{{ _item.title }}</span>
+            <row-align
+              v-model="_item.value"
+              :options="_item.options"
+              @change="handleChange(_item, $event)"
+            />
+          </div>
+
+          <!-- 颜色选择器 -->
+          <div
+            :label="_item.title"
+            v-else-if="_item.formType === FormTypes.ColorPicker"
+            class="dis-flex"
+          >
+            <span>{{ _item.title }}</span>
+            <color-picker v-model="_item.value" @change="handleChange(_item, $event)" />
           </div>
         </div>
       </el-collapse-item>
@@ -40,16 +83,21 @@
 
 <script>
 import Margin from './Margin.vue'
+import RowAlign from '../prop-panel/RowAlign.vue'
+import ColorPicker from '../prop-panel/ColorPicker.vue'
 import { FormTypes } from '../config'
 import { reactive } from '@vue/reactivity'
 import { computed, watchEffect } from 'vue'
 import { getCurrentViewNodeModel } from '../../config'
+import { EVENT_TYPES } from '../../Event'
 
 export default {
   name: 'StylePanel',
   props: ['attr', 'formList'],
   components: {
-    Margin
+    Margin,
+    RowAlign,
+    ColorPicker
   },
   setup(props) {
     const activeNames = reactive([])
@@ -76,13 +124,12 @@ export default {
   },
   methods: {
     handleChange(item, val) {
-      console.log(1, item, val)
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
-      // this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {
-      //   type: EVENT_TYPES.ATTRPANEL_SET_ATTR,
-      //   data: { item, val, currentNode }
-      // })
+      this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {
+        type: EVENT_TYPES.ATTRPANEL_SET_ATTR,
+        data: { item, val, currentNode }
+      })
     }
   }
 }

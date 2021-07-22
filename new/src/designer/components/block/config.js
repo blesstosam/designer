@@ -24,34 +24,30 @@ export default {
               items: [
                 {
                   type: 'object',
-                  title: '外边距',
+                  title: '字体',
                   properties: {
                     id: {
-                      const: 'margin'
+                      const: 'fontFamily'
                     },
                     formType: {
-                      const: 'margin'
+                      const: 'select'
                     },
                     value: {
-                      type: 'string',
-                      default: '1px 1px 1px 1px'
+                      type: 'object',
+                      default: 'PingFang SC',
+                      enum: [
+                        'Helvetica Neue',
+                        'Helvetica',
+                        'PingFang SC',
+                        'Hiragino Sans GB',
+                        'Microsoft YaHei',
+                        '微软雅黑',
+                        'Arial',
+                        'sans-serif'
+                      ]
                     }
                   }
-                }
-              ]
-            }
-          }
-        },
-        {
-          type: 'object',
-          title: '属性',
-          properties: {
-            id: {
-              const: '_props'
-            },
-            children: {
-              type: 'array',
-              items: [
+                },
                 {
                   type: 'object',
                   title: '背景颜色',
@@ -68,7 +64,6 @@ export default {
                     }
                   }
                 },
-
                 {
                   type: 'object',
                   title: '文字对齐',
@@ -85,8 +80,69 @@ export default {
                       enum: ['left', 'center', 'right']
                     }
                   }
+                },
+                {
+                  type: 'object',
+                  title: '外边距',
+                  properties: {
+                    id: {
+                      const: 'margin'
+                    },
+                    formType: {
+                      const: 'margin'
+                    },
+                    value: {
+                      type: 'string',
+                      default: '0px 0px 0px 0px'
+                    }
+                  }
+                },
+                {
+                  type: 'object',
+                  title: '内边距',
+                  properties: {
+                    id: {
+                      const: 'padding'
+                    },
+                    formType: {
+                      const: 'margin'
+                    },
+                    value: {
+                      type: 'string',
+                      default: '0px 0px 0px 0px'
+                    }
+                  }
+                },
+                {
+                  type: 'object',
+                  title: '圆角',
+                  properties: {
+                    id: {
+                      const: 'borderRadius'
+                    },
+                    formType: {
+                      const: 'margin'
+                    },
+                    value: {
+                      type: 'string',
+                      default: '0px 0px 0px 0px'
+                    }
+                  }
                 }
               ]
+            }
+          }
+        },
+        {
+          type: 'object',
+          title: '属性',
+          properties: {
+            id: {
+              const: '_props'
+            },
+            children: {
+              type: 'array',
+              items: []
             }
           }
         }
