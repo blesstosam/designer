@@ -1,5 +1,12 @@
 import { setCurrentViewNodeModel } from './config'
-import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
+import {
+  lookupByClassName,
+  lookdownByAttr,
+  lookdownForAttr,
+  getStyle,
+  $,
+  lookdownAllByAttr
+} from './lib/dom'
 import { Selection } from './Selection'
 import { componentTypes } from './Components'
 import { Node } from './Node'
@@ -21,6 +28,7 @@ const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 8
 const SLOT_NAME_KEY = 'c-slot-name'
+const TIP_EL_CLS = 'canvas-tip'
 
 function getSlotName(el) {
   return el.getAttribute(SLOT_NAME_KEY)
@@ -140,7 +148,12 @@ export class Canvas {
         this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
       } else {
         const newNode = this.append(state.data, this.$canvasEl, this.viewModel)
-        this.showTip(newNode.$el.children[0])
+        const $firstSlotEl = lookdownByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
+        $firstSlotEl && this.showTip($firstSlotEl)
+        // const slotElArr = lookdownAllByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
+        // for (const el of slotElArr) {
+        //   this.showTip(el)
+        // }
       }
     })
 
@@ -202,6 +215,7 @@ export class Canvas {
       if (!this.$tipEl) {
         const span = (this.$tipEl = $('<div>')
           .text('请将组件拖入这里')
+          .addClass(TIP_EL_CLS)
           .style({
             textAlign: 'center',
             paddingTop: '200px'
@@ -212,9 +226,11 @@ export class Canvas {
       // TODO 如果需要保存el 则传入 const span = node.$tipEl = xxx
       const span = $('<div>')
         .text('请将组件拖入这里')
+        .addClass(TIP_EL_CLS)
         .style({
           textAlign: 'center',
-          paddingTop: '20px'
+          paddingTop: '20px',
+          color: '#666'
         }).el
       targetEl.appendChild(span)
     }
@@ -225,7 +241,8 @@ export class Canvas {
       this.$tipEl && this.$tipEl.remove()
       this.$tipEl = null
     } else {
-      targetEl.children[0].remove()
+      const el = targetEl.children[0]
+      el && el.classList.contains(TIP_EL_CLS) && targetEl.children[0].remove()
     }
   }
 
@@ -370,7 +387,6 @@ export class Canvas {
       }
       // true
     )
-
     wrapper.addEventListener('mouseenter', e => {
       const node = this.model.findVmByKey('$el', e.target)
       if (this.hover) {

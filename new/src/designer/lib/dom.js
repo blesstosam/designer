@@ -14,12 +14,16 @@ export function lookupByClassName(dom, classname) {
  * 通过 attr 向下查找最近的一个 dom 节点
  * @param {Element} dom
  * @param {string} attrname
- * @param {string} attrval
+ * @param {string} attrval? 如果有值进行比对 如果没有值只需要找到该属性即可
  * @returns {Element}
  */
 export function lookdownByAttr(dom, attrname, attrval) {
   if (!dom || dom.nodeType !== 1) return
-  if (dom.getAttribute(attrname) === attrval) return dom
+  if (attrval) {
+    if (dom.getAttribute(attrname) === attrval) return dom
+  } else {
+    if (dom.getAttribute(attrname) != null) return dom
+  }
   if (dom.children && dom.children.length) {
     for (let i = 0; i < dom.children.length; i++) {
       const _dom = lookdownByAttr(dom.children[i], attrname, attrval)
@@ -30,7 +34,35 @@ export function lookdownByAttr(dom, attrname, attrval) {
 }
 
 /**
+ * 通过 attr 向下查找所有的dom节点
+ * @param {Element} _dom
+ * @param {string} _attrname
+ * @param {string} _attrval? 如果有值进行比对 如果没有值只需要找到该属性即可
+ * @returns {Element}
+ */
+export function lookdownAllByAttr(_dom, _attrname, _attrval) {
+  const arr = []
+  function getDom(dom, attrname, attrval) {
+    if (!dom || dom.nodeType !== 1) return
+    if (attrval) {
+      if (dom.getAttribute(attrname) === attrval) arr.push(dom)
+    } else {
+      if (dom.getAttribute(attrname) != null) arr.push(dom)
+    }
+    if (dom.children && dom.children.length) {
+      for (let i = 0; i < dom.children.length; i++) {
+        getDom(dom.children[i], attrname, attrval)
+      }
+    }
+  }
+  getDom(_dom, _attrname, _attrval)
+  return arr
+}
+
+/**
  * 向下查找最近的一个 attrname 不为空的 dom 节点，返回其 attr
+ * @param {Element} dom
+ * @param {string} attrname
  */
 export function lookdownForAttr(dom, attrname) {
   if (!dom || dom.nodeType !== 1) return
