@@ -48,9 +48,20 @@ export class Selection {
     this.observer.disconnect()
   }
 
+  // btnPos = 'bottom' | 'top'
+  decideBtnPos(top) {
+    // 85 为距离顶部距离
+    if (top < 85) {
+      this.btnPos = 'bottom'
+    } else {
+      this.btnPos = 'top'
+    }
+  }
+
   create(node) {
     this.node = node
     const offset = this._getOffset()
+    this.decideBtnPos(offset.top)
     this._createSelection(offset)
     this._createTitle(offset)
     this._createBtn(offset, 'delete')
@@ -68,6 +79,7 @@ export class Selection {
     }
 
     const offset = this._getOffset()
+    this.decideBtnPos(offset.top)
     this._updateSelection(offset)
     this._updateBtn(offset, 'delete')
     this._updateTitle(offset)
@@ -132,7 +144,7 @@ export class Selection {
       .style({
         position: 'absolute',
         right: this._getBtnRightVal('title', offset),
-        top: '-21px',
+        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
         cursor: 'pointer',
         background: '#1989fa',
         color: 'white',
@@ -153,7 +165,8 @@ export class Selection {
     $(this.$recTitleEl)
       .text(this.node.title)
       .style({
-        right: this._getBtnRightVal('title', offset)
+        right: this._getBtnRightVal('title', offset),
+        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
       })
   }
 
@@ -161,7 +174,7 @@ export class Selection {
     const div = $('<div>').style({
       position: 'absolute',
       right: this._getBtnRightVal(type, offset),
-      top: '-21px',
+      top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
       cursor: 'pointer'
     }).el
     const img = $('<img>')
@@ -193,9 +206,15 @@ export class Selection {
 
   _updateBtn(offset, type) {
     if (type === 'delete') {
-      this.$recDelBtn.style.right = this._getBtnRightVal(type, offset)
+      $(this.$recDelBtn).style({
+        right: this._getBtnRightVal(type, offset),
+        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
+      })
     } else {
-      this.$recCopyBtn.style.right = this._getBtnRightVal(type, offset)
+      $(this.$recCopyBtn).style({
+        right: this._getBtnRightVal(type, offset),
+        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
+      })
     }
   }
 
