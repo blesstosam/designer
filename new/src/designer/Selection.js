@@ -10,6 +10,8 @@ export class Selection {
     this.$recEl = null
     this.$recDelBtn = null
     this.$recCopyBtn = null
+    this.$recMoveBtn = null
+    this.btnPos = 'top'
     this.initListener()
 
     // 还有一种hack方法 使用iframe的resize https://www.npmjs.com/package/simple-element-resize-detector
@@ -64,8 +66,9 @@ export class Selection {
     this.decideBtnPos(offset.top)
     this._createSelection(offset)
     this._createTitle(offset)
-    this._createBtn(offset, 'delete')
-    this.isLayout && this._createBtn(offset, 'copy')
+    this._createBtn('delete', offset)
+    this._createBtn('move', offset)
+    this.isLayout && this._createBtn('copy', offset)
     this.observe()
     this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED)
   }
@@ -81,14 +84,15 @@ export class Selection {
     const offset = this._getOffset()
     this.decideBtnPos(offset.top)
     this._updateSelection(offset)
-    this._updateBtn(offset, 'delete')
     this._updateTitle(offset)
+    this._updateBtn('delete', offset)
+    this._updateBtn('move', offset)
     if (this.isLayout) {
       if (this.$recCopyBtn) {
-        this._updateBtn(offset, 'copy')
-        this._showBtn(offset, 'copy')
+        this._updateBtn('copy', offset)
+        this._showBtn('copy')
       } else {
-        this._createBtn(offset, 'copy')
+        this._createBtn('copy', offset)
       }
     } else {
       this._hideBtn('copy')
@@ -154,7 +158,8 @@ export class Selection {
         lineHeight: '21px',
         borderRadius: '2px',
         fontSize: '12px',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        fontWeight: 500
       })
       .text(this.node.title).el)
     this.$recEl.appendChild(div)
@@ -165,57 +170,70 @@ export class Selection {
     $(this.$recTitleEl)
       .text(this.node.title)
       .style({
-        right: this._getBtnRightVal('title', offset),
-        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
+        right: this._getBtnRightVal('title'),
+        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
       })
   }
 
-  _createBtn(offset, type) {
+  _createBtn(type, offset) {
     const div = $('<div>').style({
       position: 'absolute',
-      right: this._getBtnRightVal(type, offset),
+      right: this._getBtnRightVal(type),
       top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
-      cursor: 'pointer'
+      cursor:type === 'move' ? 'move' : 'pointer'
     }).el
     const img = $('<img>')
       .attr('src', `/${type}.png`)
       .style({
-        width: '14px',
+        width: '16px',
         background: '#1989fa',
-        padding: '3px',
+        padding: '2px',
         borderRadius: '2px'
       }).el
     div.appendChild(img)
     this.$recEl.appendChild(div)
+    $(div).hover(
+      () => {
+        $(div).style({ transform: 'scale(1.1)' })
+      },
+      () => {
+        $(div).removeStyle('transform')
+      }
+    )
     if (type === 'delete') {
       this.$recDelBtn = div
-    } else {
+    } else if (type === 'copy') {
       this.$recCopyBtn = div
+    } else if (type === 'move') {
+      this.$recMoveBtn = div
     }
-    div.addEventListener('click', e => {
-      e.stopPropagation()
-      const eType =
-        type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
-      this.__designer__.emit(eType, {
-        type: eType,
-        data: this.node
+    if (type === 'delete' || type === 'copy') {
+      div.addEventListener('click', e => {
+        e.stopPropagation()
+        const eType =
+          type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
+        this.__designer__.emit(eType, {
+          type: eType,
+          data: this.node
+        })
       })
-    })
+    } else {
+      // todo 绑定拖动事件
+    }
+
     return div
   }
 
-  _updateBtn(offset, type) {
-    if (type === 'delete') {
-      $(this.$recDelBtn).style({
-        right: this._getBtnRightVal(type, offset),
-        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
-      })
-    } else {
-      $(this.$recCopyBtn).style({
-        right: this._getBtnRightVal(type, offset),
-        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
-      })
+  _updateBtn(type, offset) {
+    const map = {
+      delete: this.$recDelBtn,
+      copy: this.$recCopyBtn,
+      move: this.$recMoveBtn
     }
+    $(map[type]).style({
+      right: this._getBtnRightVal(type),
+      top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
+    })
   }
 
   _hideBtn(type) {
@@ -234,8 +252,14 @@ export class Selection {
     }
   }
 
-  _getBtnRightVal(type, offset) {
-    return type === 'delete' ? '0px' : type === 'copy' ? '23px' : this.isLayout ? '46px' : '23px'
+  _getBtnRightVal(type) {
+    const map = {
+      delete: 0,
+      copy: '23px',
+      move: this.isLayout ? '46px' : '23px',
+      title: this.isLayout ? '69px' : '46px'
+    }
+    return map[type]
   }
 
   _getOffset() {

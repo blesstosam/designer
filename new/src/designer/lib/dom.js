@@ -102,9 +102,12 @@ class DomUtil {
     }
     return this
   }
-
   getStyle(key) {
     return this.dom.style[key]
+  }
+  removeStyle(key) {
+    this.dom.style[key] = ''
+    return this
   }
 
   attr(key, val) {
@@ -121,6 +124,10 @@ class DomUtil {
 
   addClass(cls) {
     this.dom.classList.add(cls)
+    return this
+  }
+  removeClass(cls) {
+    this.dom.classList.remove(cls)
     return this
   }
 
@@ -147,6 +154,15 @@ class DomUtil {
       this._oldDisplay = this.dom.style.display
       this.dom.style.display = 'none'
     }
+  }
+
+  hover(handlerIn, handlerOut) {
+    this._addListener('mouseenter', handlerIn)._addListener('mouseleave', handlerOut)
+  }
+
+  _addListener(event, handler) {
+    this.dom.addEventListener(event, handler)
+    return this
   }
 }
 
