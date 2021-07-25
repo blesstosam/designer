@@ -103,7 +103,7 @@ class DomUtil {
     return this
   }
   getStyle(key) {
-    return this.dom.style[key]
+    return getStyle(this.dom, key)
   }
   removeStyle(key) {
     this.dom.style[key] = ''
@@ -185,10 +185,10 @@ export function isElement(obj) {
       )
 }
 
-export function getStyle(el, attr) {
+export function getStyle(el, key) {
   if (el.currentStyle) {
-    return el.currentStyle[attr]
+    return el.currentStyle[key]
   } else {
-    return window.getComputedStyle(el, false)[attr]
+    return window.getComputedStyle(el, false)[key]
   }
 }

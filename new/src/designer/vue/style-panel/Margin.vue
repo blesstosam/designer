@@ -20,6 +20,7 @@
   padding: 8px 0 0 0;
   display: flex;
   flex-wrap: wrap;
+  border-radius: 4px;
 }
 .item {
   width: 47%;
@@ -42,17 +43,17 @@
 .item .margin-icon-item,
 .item .border-radius-icon-item {
   margin-top: 6px;
-  margin-right: 2px;
+  margin-right: 4px;
 }
 </style>
 <style>
-.item .el-input-number__decrease {
+.border-radius .item .el-input-number__decrease {
   width: 24px;
 }
-.item .el-input-number__increase {
+.border-radius .item .el-input-number__increase {
   width: 24px;
 }
-.item .el-input__inner {
+.border-radius .item .el-input__inner {
   padding-left: 5px;
   padding-left: 28px;
 }
@@ -60,7 +61,7 @@
 
 
 <template>
-  <div>
+  <div class="border-radius">
     <div class="top">
       <div class="label">{{ label }}</div>
       <div>
@@ -122,7 +123,6 @@ export default {
     }
   },
   created() {
-    console.log(this.modelValue, 'this.modelValue')
     if (typeof this.modelValue === 'string' && this.modelValue) {
       this.valArr = this.modelValue.split(' ').map(i => Number(i.replace(/(em|px|%)$/, '')))
       this.val = undefined

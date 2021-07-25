@@ -8,6 +8,7 @@ export class Hover {
 
     // 当前hover的node
     this.node = null
+    this.$rectEl = null 
   }
 
   get selection() {
@@ -23,16 +24,16 @@ export class Hover {
 
   create(node) {
     this.node = node
-    this._oldBorderColor = $(this.node.$el).getStyle('borderColor')
-    this._showEffect()
+    const offset = this._getOffset()
+    this._showEffect(offset)
     this.__designer__.emit(EVENT_TYPES.HOVER_ACTIVED)
   }
 
   update(node) {
     if (this.getIsLayout(node)) {
-      this._hideEffect()
       this.node = node
-      this._showEffect()
+      const offset = this._getOffset()
+      this._updateEffect(offset)
       this.__designer__.emit(EVENT_TYPES.HOVER_UPDATED)
     }
   }
@@ -44,16 +45,54 @@ export class Hover {
     }
   }
 
-  _showEffect() {
+  _showEffect(offset) {
     // hover和selection是互斥的 如果selection被选上则不能触发hover事件
     if (!this.isTargetSelected) {
-      const el = this.node.$el.children[0]
-      $(el).style({ borderColor: '#409EFF' })
+      // const el = this.node.$el.children[0]
+      // $(el).style({ borderColor: '#409EFF' })
+
+      const { width, height } = offset
+      const div = (this.$rectEl = $('<div>')
+        .style({
+          width: width + 'px',
+          height: height + 'px',
+          top: 0,
+          left: 0,
+          position: 'absolute',
+          border: '1px dashed #409EFF',
+          zIndex: 100,
+          boxSizing: 'border-box'
+          // pointerEvents: 'none'
+        })
+        .addClass('selection').el)
+      this.node.$el.appendChild(div)
+      return div
     }
   }
 
+  _updateEffect(offset) {
+    const { width, height } = offset
+    this.node.$el.appendChild(this.$rectEl)
+    $(this.$rectEl).style({
+      width: width + 'px',
+      height: height + 'px',
+      top: 0,
+      left: 0
+    })
+  }
+
   _hideEffect() {
-    const el = this.node.$el.children[0]
-    $(el).style({ borderColor: this._oldBorderColor })
+    this.$rectEl && this.$rectEl.remove()
+  }
+
+  _getOffset() {
+    const { $el } = this.node
+    const domRect = $el.getBoundingClientRect()
+    return {
+      width: domRect.width,
+      height: domRect.height,
+      top: domRect.top,
+      left: domRect.left
+    }
   }
 }

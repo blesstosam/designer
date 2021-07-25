@@ -1,3 +1,5 @@
+import * as StyleSchema from '../style-schema'
+
 export default {
   type: 'object',
   title: '区块',
@@ -22,113 +24,11 @@ export default {
             children: {
               type: 'array',
               items: [
-                {
-                  type: 'object',
-                  title: '字体',
-                  properties: {
-                    id: {
-                      const: 'fontFamily'
-                    },
-                    formType: {
-                      const: 'select'
-                    },
-                    value: {
-                      type: 'object',
-                      default: 'PingFang SC',
-                      enum: [
-                        'Helvetica Neue',
-                        'Helvetica',
-                        'PingFang SC',
-                        'Hiragino Sans GB',
-                        'Microsoft YaHei',
-                        '微软雅黑',
-                        'Arial',
-                        'sans-serif'
-                      ]
-                    }
-                  }
-                },
-                {
-                  type: 'object',
-                  title: '背景颜色',
-                  properties: {
-                    id: {
-                      const: 'backgroundColor'
-                    },
-                    formType: {
-                      const: 'color-picker'
-                    },
-                    value: {
-                      type: 'string',
-                      default: ''
-                    }
-                  }
-                },
-                {
-                  type: 'object',
-                  title: '文字对齐',
-                  properties: {
-                    id: {
-                      const: 'textAlign'
-                    },
-                    formType: {
-                      const: 'row-align'
-                    },
-                    value: {
-                      type: 'string',
-                      default: 'left',
-                      enum: ['left', 'center', 'right']
-                    }
-                  }
-                },
-                {
-                  type: 'object',
-                  title: '外边距',
-                  properties: {
-                    id: {
-                      const: 'margin'
-                    },
-                    formType: {
-                      const: 'margin'
-                    },
-                    value: {
-                      type: 'string',
-                      default: '0px 0px 0px 0px'
-                    }
-                  }
-                },
-                {
-                  type: 'object',
-                  title: '内边距',
-                  properties: {
-                    id: {
-                      const: 'padding'
-                    },
-                    formType: {
-                      const: 'margin'
-                    },
-                    value: {
-                      type: 'string',
-                      default: '0px 0px 0px 0px'
-                    }
-                  }
-                },
-                {
-                  type: 'object',
-                  title: '圆角',
-                  properties: {
-                    id: {
-                      const: 'borderRadius'
-                    },
-                    formType: {
-                      const: 'margin'
-                    },
-                    value: {
-                      type: 'string',
-                      default: '0px 0px 0px 0px'
-                    }
-                  }
-                }
+                StyleSchema.BACKGROUND_COLOR,
+                StyleSchema.MARGIN,
+                StyleSchema.PADDING,
+                StyleSchema.BORDER_RADIUS,
+                // StyleSchema.BORDER
               ]
             }
           }

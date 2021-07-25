@@ -14,5 +14,6 @@ export const FormTypes = {
   ColorPicker: 'color-picker',
   ColumnSetting: 'column-setting',
 
-  Margin: 'margin'
+  Margin: 'margin',
+  Border: 'border'
 }

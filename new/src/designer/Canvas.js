@@ -26,7 +26,7 @@ const {
 
 const { LAYOUT } = componentTypes
 const DROP_EL_PADDING = 8,
-  NODE_BOX_PADDING = 8
+  NODE_BOX_PADDING = 0
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
 
@@ -467,7 +467,7 @@ export class Canvas {
       return wrapper
     }
 
-    $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', backgroundColor: '#fff' })
+    $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', })
 
     this.__dragDrop__.bindDrop(
       wrapper,

@@ -1,5 +1,5 @@
 <template>
-  <el-color-picker v-model="color" show-alpha @change="handleChange"> </el-color-picker>
+  <el-color-picker v-model="color" @change="handleChange"> </el-color-picker>
 </template>
 
 <script>
