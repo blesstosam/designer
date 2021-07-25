@@ -1,9 +1,10 @@
 <style>
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-column {
-  border: 1px dashed #d9d9d9;
+  border: 1px dashed #aaa;
+  background-color: #fff;
   min-height: 80px;
-  margin: 4px 0;
+  /* margin: 4px 0; */
 }
 .canvas-wrapper .v-column .content {
   border: solid 1px #ddd;

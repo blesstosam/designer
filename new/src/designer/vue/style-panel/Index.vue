@@ -37,6 +37,15 @@
             />
           </div>
 
+          <!-- border -->
+          <div :label="_item.title" v-else-if="_item.formType === FormTypes.Border">
+            <border
+              :label="_item.title"
+              v-model="_item.value"
+              @change="handleBorderChange(_item, $event)"
+            />
+          </div>
+
           <!-- select -->
           <div v-else-if="_item.formType === FormTypes.Select" class="dis-flex">
             <span>{{ _item.title }}</span>
@@ -75,6 +84,18 @@
             <span>{{ _item.title }}</span>
             <color-picker v-model="_item.value" @change="handleChange(_item, $event)" />
           </div>
+
+          <!-- 文字风格 -->
+          <div v-else-if="_item.formType === FormTypes.TextStyle" class="dis-flex">
+            <span>{{ _item.title }}</span>
+            <text-style v-model="_item.value" @change="handleChange(_item, $event)" />
+          </div>
+
+          <!-- 文字装饰 -->
+          <div v-else-if="_item.formType === FormTypes.TextDecoration" class="dis-flex">
+            <span>{{ _item.title }}</span>
+            <text-decoration v-model="_item.value" @change="handleChange(_item, $event)" />
+          </div>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -82,12 +103,14 @@
 </template>
 
 <script>
+import { computed, watchEffect, reactive } from 'vue'
 import Margin from './Margin.vue'
+import Border from './Border.vue'
 import RowAlign from '../prop-panel/RowAlign.vue'
 import ColorPicker from '../prop-panel/ColorPicker.vue'
+import TextDecoration from '../prop-panel/TextDecoration.vue'
+import TextStyle from '../prop-panel/TextStyle.vue'
 import { FormTypes } from '../config'
-import { reactive } from '@vue/reactivity'
-import { computed, watchEffect } from 'vue'
 import { getCurrentViewNodeModel } from '../../config'
 import { EVENT_TYPES } from '../../Event'
 
@@ -96,8 +119,11 @@ export default {
   props: ['attr', 'formList'],
   components: {
     Margin,
+    Border,
     RowAlign,
-    ColorPicker
+    ColorPicker,
+    TextDecoration,
+    TextStyle
   },
   setup(props) {
     const activeNames = reactive([])
@@ -123,6 +149,12 @@ export default {
     }
   },
   methods: {
+    handleBorderChange(item, val) {
+      // TODO 如果schema里的字段要表达多个属性怎么办？ 比如border=>要对应border-top|bottom|left|right
+      // 在更新的时候还需要更新key和properties.id
+      const valArr = val.split(':')
+      this.handleChange(item, valArr[1])
+    },
     handleChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
