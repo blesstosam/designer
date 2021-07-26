@@ -38,7 +38,9 @@
         <el-tab-pane label="样式" name="style">
           <StylePanel :attr="__attr__" :formList="formList" ref="stylePanel" />
         </el-tab-pane>
-        <el-tab-pane label="事件" name="event">事件</el-tab-pane>
+        <el-tab-pane label="事件" name="event">
+          <EventPanel :attr="__attr__" :formList="formList" ref="eventPanel"  />
+        </el-tab-pane>
         <el-tab-pane label="数据" name="data">数据</el-tab-pane>
       </el-tabs>
     </div>
@@ -52,12 +54,14 @@ import { getCurrentViewNodeModel } from '../config'
 import { parse } from '../lib/parse-schema'
 import PropPanel from './prop-panel/Index.vue'
 import StylePanel from './style-panel/Index.vue'
+import EventPanel from './event-panel/Index.vue'
 
 export default {
   name: 'AttrPanel',
   components: {
     PropPanel,
-    StylePanel
+    StylePanel,
+    EventPanel
   },
   beforeCreate() {
     this.data = getCurrentViewNodeModel()

@@ -1,0 +1,255 @@
+<div></div>
+
+<script>
+  // 1. schema本身能表达表单的数据结构
+  // 2. schema拓展了表单类型字段：formType
+  // 3. schema拓展了表单显示隐藏字段：isShow 默认为true
+  // 4. schema拓展了字段的表达形式：可以为js表达式，'{}'语法；理论上每个字段都可以使用js表达式
+  const schema = {
+    type: 'object',
+    title: '区块',
+    description: '独占一行的基础布局组件，可将页面划分为若干区域',
+    properties: {
+      id: {
+        const: 'block'
+      },
+      icon: {
+        const: 'icon-block'
+      },
+      configs: {
+        type: 'array',
+        items: [
+          {
+            type: 'object',
+            title: '样式',
+            properties: {
+              id: {
+                const: '_styles'
+              },
+              children: {
+                type: 'array',
+                items: [
+                  {
+                    type: 'object',
+                    title: '上边距',
+                    properties: {
+                      id: {
+                        const: 'paddingTop'
+                      },
+                      formType: {
+                        const: 'input-number'
+                      },
+                      value: {
+                        type: 'number',
+                        default: 0,
+                        required: true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            type: 'object',
+            title: '属性',
+            properties: {
+              id: {
+                const: '_props'
+              },
+              children: {
+                type: 'array',
+                items: [
+                  {
+                    type: 'object',
+                    title: '背景颜色',
+                    properties: {
+                      id: {
+                        const: 'backgroundColor'
+                      },
+                      formType: {
+                        const: 'color-picker'
+                      },
+                      value: {
+                        type: 'string',
+                        default: '',
+                        required: true
+                      }
+                    }
+                  },
+
+                  {
+                    type: 'object',
+                    title: '文字对齐',
+                    properties: {
+                      id: {
+                        const: 'textAlign'
+                      },
+                      formType: {
+                        const: 'row-align'
+                      },
+                      value: {
+                        type: 'string',
+                        default: 'left',
+                        enum: ['left', 'center', 'right'],
+                        required: true
+                      }
+                    }
+                  },
+
+                  {
+                    type: 'object',
+                    title: '字高',
+                    properties: {
+                      id: {
+                        const: 'fontSize'
+                      },
+                      formType: {
+                        const: 'select'
+                      },
+                      value: {
+                        type: 'object',
+                        // 参考x-render 将 enum 里的对象改成 enum和enumNames
+                        // enum: ['14px', '16px'],
+                        // enumLabel: ['14px', '16px']
+                        default: { label: '14px', value: '14px' },
+                        enum: [
+                          { label: '14px', value: '14px' },
+                          { label: '16px', value: '16px' },
+                          { label: '18px', value: '18px' },
+                          { label: '20px', value: '20px' }
+                        ],
+                        required: true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+
+  function _forEach(obj, cb) {
+    Object.keys(obj).forEach(k => cb(obj[k], k))
+  }
+
+  const ValidRules = {
+    type: 'type',
+    maxLength: 'max',
+    minLength: 'min',
+    maximum: 'max',
+    minimum: 'min',
+    pattern: 'pattern'
+  }
+
+  function parse(schema) {
+    const defination = {}
+    function _getVal(item) {
+      const { type } = item
+      if (item.const !== undefined) return item.const
+      if (item.default !== undefined) return item.default
+      if (type === 'string') return ''
+      if (type === 'number') return 0
+      if (type === 'boolean') return true
+    }
+    function _getRules(item) {
+      const rules = {}
+      // debugger
+      if (item.value) {
+        rules[item.id.const] = []
+        _forEach(item.value, (ruleVal, rule) => {
+          // debugger
+          if (ValidRules[rule]) {
+            rules[item.id.const].push({ [ValidRules[rule]]: ruleVal, message: 'invalid' })
+          }
+        })
+      }
+      return rules
+    }
+    function _getOpts(item) {
+      if (item.value && item.value.enum) {
+        const arr = []
+        item.value.enum.forEach(i => {
+          if (i.label) {
+            arr.push(i)
+          } else {
+            arr.push({ label: i, value: i })
+          }
+        })
+        return arr
+      }
+    }
+    function _getObjVal(item) {
+      const itemVal = item.default || item.value
+      if (itemVal) {
+        return typeof itemVal === 'object' ? itemVal.value : itemVal
+      }
+      return {}
+    }
+
+    function _parse(_schema, _def) {
+      if (_schema.type === 'object' && _schema.properties) {
+        _def.title = _schema.title
+        _def.description = _schema.description
+        _forEach(_schema.properties, (item, property) => {
+          if (item.type !== 'array' && item.type !== 'object') {
+            // 简单类型
+            _def[property] = _getVal(item)
+            _def.rules = _getRules(_schema.properties)
+            _def.options = _getOpts(_schema.properties)
+          } else {
+            // 复杂类型
+            if (item.type === 'array') {
+              _def[property] = item.default || []
+            } else {
+              _def[property] = _getObjVal(item)
+            }
+            _parse(item, _def[property])
+          }
+        })
+      } else if (_schema.type === 'array' && _schema.items) {
+        // debugger
+        if (Array.isArray(_schema.items)) {
+          _schema.items.forEach((item, index) => {
+            _def.push(_parseArray(item))
+          })
+        } else {
+          _def = _schema.items.enum
+        }
+      }
+    }
+
+    function _parseArray(_schema) {
+      // TODO 怎么解析数组 另外网上找找解析 json schema 的算法
+      const _obj = { title: _schema.title, description: _schema.description }
+      if (_schema.type === 'object' && _schema.properties) {
+        _forEach(_schema.properties, (item, property) => {
+          if (item.type !== 'array' && item.type !== 'object') {
+            _obj[property] = _getVal(item)
+            _obj.rules = _getRules(_schema.properties)
+            _obj.options = _getOpts(_schema.properties)
+          } else {
+            // debugger
+            if (item.type === 'array') {
+              _obj[property] = item.default || []
+            } else {
+              _obj[property] = _getObjVal(item)
+            }
+            _parse(item, _obj[property])
+          }
+        })
+      } else if (_schema.type === 'array' && _schema.items) {
+        // TODO
+      }
+      return _obj
+    }
+
+    _parse(schema, defination)
+    return defination
+  }
+
+  console.log(parse(schema))
+</script>

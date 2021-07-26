@@ -89,6 +89,29 @@ test('Parse schema', () => {
                         enum: ['left', 'center', 'right']
                       }
                     }
+                  },
+
+                  {
+                    type: 'object',
+                    title: '字高',
+                    properties: {
+                      id: {
+                        const: 'fontSize'
+                      },
+                      formType: {
+                        const: 'select'
+                      },
+                      value: {
+                        type: 'object',
+                        default: { label: '14px', value: '14px' },
+                        enum: [
+                          { label: '14px', value: '14px' },
+                          { label: '16px', value: '16px' },
+                          { label: '18px', value: '18px' },
+                          { label: '20px', value: '20px' }
+                        ]
+                      }
+                    }
                   }
                 ]
               }

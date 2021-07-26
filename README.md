@@ -40,6 +40,9 @@ class Components {
 this.__components__.init(MyComponentsView)
 ```
 
+3. 属性面板本质上是表单，所有使用 json schema 去描述。  
+定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
+
 # TODO
 
 | todo | 状态 | 增加时间 |

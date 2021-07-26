@@ -184,7 +184,7 @@ export default {
   },
   methods: {
     handleEmit() {
-      if (this.createdFlag && this.val && this.color && this.borderType) {
+      if (this.createdFlag && this.val != null && this.color && this.borderType) {
         this.$emit('update:modelValue', this.finalVal)
         this.$emit('change', this.finalVal)
       }
