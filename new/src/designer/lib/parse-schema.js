@@ -1,130 +1,119 @@
-import { _forEach } from "./util"
+import { _forEach } from './util'
 
-const ValidRules = {
+// rules 参考 async-validator
+// https://github.com/yiminghe/async-validator
+const RulesTypes = {
   type: 'type',
+  required: 'required',
   maxLength: 'max',
   minLength: 'min',
   maximum: 'max',
   minimum: 'min',
   pattern: 'pattern'
 }
+const MessageTypes = {
+  type: val => `类型要为${val}`,
+  required: () => '必填',
+  maxLength: val => `长度不能超过${val}`,
+  minLength: val => `长度不能小于${val}`,
+  maximum: val => `数字不能超过${val}`,
+  minimum: val => `数字不能小于${val}`,
+  pattern: () => `格式不正确`
+}
 
 /**
- * 解析 schema 为vue可以渲染的组件
+ * 将属性面板解析成一唯数组结构 按表单类型进行渲染
+ * 1. 解析表单类型 input，select，radio，checkbox
+ *     字体样式选择器(特殊的checkbox=>textStyle)
+ *     字体装饰
+ *     字体对齐
+ *     颜色单选器（特殊的radio=>colorRadio）
+ *     颜色选择器（特殊，colorPicker)
+ *     按钮样式选择器（特殊，btnStyle）
+ * 2. 将表单的约束解析出来并绑定rules
+ * 3. 解析默认值 const|default
+ * 4. 解析出 model: value用于v-model绑定
+ * @param {*} schema 
+ * @returns 
  */
 export function parse(schema) {
   const defination = {}
-  function _getVal(item) {
-    const { type } = item
-    if (item.const !== undefined) return item.const
-    if (item.default !== undefined) return item.default
-    if (type === 'string') return ''
-    if (type === 'number') return 0
-    if (type === 'boolean') return true
+
+  function getVal(item, obj, key) {
+    const val =
+      item.const !== undefined ? item.const : item.default !== undefined ? item.default : null
+    if (val != null) {
+      if (/^{.*}$/.test(val)) {
+        // js 表达式计算再返回
+        Object.defineProperty(obj, key, {
+          get: () => {
+            // 将所有字段处理成对象形式
+            const map = {}
+            for (const cfg of defination.configs) {
+              for (const item of cfg.children || []) {
+                map[item.id] = item.value
+              }
+            }
+            const code = 'return ' + val.slice(1, val.length - 1)
+            return eval(`(function(formData){;${code}})(map)`)
+          }
+        })
+      } else {
+        obj[key] = val
+      }
+    } else {
+      obj[key] = null
+    }
   }
-  function _getRules(item) {
+  function getRules(item) {
     const rules = {}
-    // debugger
     if (item.value) {
       rules[item.id.const] = []
       _forEach(item.value, (ruleVal, rule) => {
-        // debugger
-        if (ValidRules[rule]) {
-          rules[item.id.const].push({ [ValidRules[rule]]: ruleVal, message: 'invalid' })
+        if (RulesTypes[rule]) {
+          rules[item.id.const].push({
+            [RulesTypes[rule]]: ruleVal,
+            message: MessageTypes[rule](ruleVal)
+          })
         }
       })
     }
     return rules
   }
-  function _getOpts(item) {
-    if (item.value && item.value.enum) {
-      const arr = []
-      item.value.enum.forEach(i => {
-        if (i.label) {
-          arr.push(i)
-        } else {
-          arr.push({ label: i, value: i })
-        }
-      })
-      return arr
+  function getOpts(item) {
+    if (item.value && item.value.enum && item.value.enumLabel) {
+      return item.value.enum.map((i, index) => ({ label: item.value.enumLabel[index], value: i }))
     }
-  }
-  function _getObjVal(item) {
-    const itemVal = item.default || item.value
-    if (itemVal) {
-      return typeof itemVal === 'object' ? itemVal.value : itemVal
-    }
-    return {}
   }
 
-  // TODO 和 parsearray 代码重复 需要优化一下
   function _parse(_schema, _def) {
+    _def = _def || {}
     if (_schema.type === 'object' && _schema.properties) {
-      _def.title = _schema.title
-      _def.description = _schema.description
+      _schema.title && (_def.title = _schema.title)
+      _schema.description && (_def.description = _schema.description)
       _forEach(_schema.properties, (item, property) => {
-        // 简单类型
         if (item.type !== 'array' && item.type !== 'object') {
-          _def[property] = _getVal(item)
-          _def.rules = _getRules(_schema.properties)
-          _def.options = _getOpts(_schema.properties)
-          // 处理条件
-          if (_schema.if && _schema.then && _schema.else) {
-            _def.if = _schema.if
-            _def.then = _schema.then
-            _def.else = _schema.else
-          }
+          getVal(item, _def, property)
+          _def.rules = getRules(_schema.properties)
+          _def.options = getOpts(_schema.properties)
         } else {
-          // 复杂类型
           if (item.type === 'array') {
             _def[property] = item.default || []
-          } else {
-            _def[property] = _getObjVal(item)
+          } else if (item.type === 'object') {
+            _def[property] = item.default || {}
           }
           _parse(item, _def[property])
         }
       })
     } else if (_schema.type === 'array' && _schema.items) {
-      // debugger
+      // 只处理 items 为数组的情况
       if (Array.isArray(_schema.items)) {
         _schema.items.forEach((item, index) => {
-          _def.push(_parseArray(item))
+          _def.push(_parse(item))
         })
-      } else {
-        _def = _schema.items.enum
       }
     }
-  }
-  function _parseArray(_schema) {
-    // TODO 怎么解析数组 另外网上找找解析 json schema 的算法
-    const _obj = { title: _schema.title, description: _schema.description }
-    if (_schema.type === 'object' && _schema.properties) {
-      _forEach(_schema.properties, (item, property) => {
-        if (item.type !== 'array' && item.type !== 'object') {
-          _obj[property] = _getVal(item)
-          _obj.rules = _getRules(_schema.properties)
-          _obj.options = _getOpts(_schema.properties)
-          // 处理条件
-          // debugger
-          if (_schema.if && _schema.then && _schema.else) {
-            _obj.if = _schema.if
-            _obj.then = _schema.then
-            _obj.else = _schema.else
-          }
-        } else {
-          // debugger
-          if (item.type === 'array') {
-            _obj[property] = item.default || []
-          } else {
-            _obj[property] = _getObjVal(item)
-          }
-          _parse(item, _obj[property])
-        }
-      })
-    } else if (_schema.type === 'array' && _schema.items) {
-      // TODO
-    }
-    return _obj
+    return _def
   }
 
   _parse(schema, defination)

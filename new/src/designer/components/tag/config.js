@@ -52,7 +52,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'success',
-                      enum: ['success', 'info', 'warning', 'danger']
+                      enum: ['success', 'info', 'warning', 'danger'],
+                      enumLabel: ['success', 'info', 'warning', 'danger']
                     }
                   }
                 },
@@ -70,7 +71,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'medium',
-                      enum: ['medium', 'small', 'mni']
+                      enum: ['medium', 'small', 'mni'],
+                      enumLabel: ['medium', 'small', 'mni']
                     }
                   }
                 },
@@ -88,7 +90,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'dark',
-                      enum: ['dark', 'light', 'plain']
+                      enum: ['dark', 'light', 'plain'],
+                      enumLabel: ['dark', 'light', 'plain']
                     }
                   }
                 },

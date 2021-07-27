@@ -52,7 +52,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'left',
-                      enum: ['left', 'right', 'center']
+                      enum: ['left', 'right', 'center'],
+                      enumLabel: ['left', 'right', 'center']
                     }
                   }
                 }

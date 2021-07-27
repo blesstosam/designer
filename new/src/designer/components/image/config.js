@@ -52,7 +52,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'fill',
-                      enum: ['fill', 'contain', 'cover', 'none', 'scale-down']
+                      enum: ['fill', 'contain', 'cover', 'none', 'scale-down'],
+                      enumLabel: ['fill', 'contain', 'cover', 'none', 'scale-down']
                     }
                   }
                 },

@@ -51,12 +51,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '8px', value: 8 },
-                      enum: [
-                        { label: '8px', value: 8 },
-                        { label: '12px', value: 12 },
-                        { label: '16px', value: 16 }
-                      ]
+                      default: 8,
+                      enum: [8, 12, 16],
+                      enumLabel: [ '8px', '12px', '16px']
                     }
                   }
                 },
@@ -74,7 +71,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'flex-start',
-                      enum: ['flex-start', 'center']
+                      enum: ['flex-start', 'center'],
+                      enumLabel: ['flex-start', 'center']
                     }
                   }
                 },
@@ -92,7 +90,8 @@ export default {
                     value: {
                       type: 'string',
                       default: 'flex-start',
-                      enum: ['flex-start', 'center', 'flex-end']
+                      enum: ['flex-start', 'center', 'flex-end'],
+                      enumLabel: ['flex-start', 'center', 'flex-end'],
                     }
                   }
                 },

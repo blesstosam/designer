@@ -1,3 +1,5 @@
+import * as StyleSchema from '../style-schema'
+
 export default {
   type: 'object',
   title: '按钮',
@@ -35,7 +37,9 @@ export default {
                     value: {
                       type: 'string',
                       default: '按钮',
-                      maxLength: 6
+                      minLength: 1,
+                      maxLength: 6,
+                      required: true
                     }
                   }
                 },
@@ -69,7 +73,8 @@ export default {
                     },
                     value: {
                       type: 'string',
-                      default: ''
+                      default: '',
+                      required: true
                     }
                   }
                 },
@@ -86,13 +91,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '名称', value: 'text' },
-                      enum: [
-                        { label: '名称', value: 'text' },
-                        { label: '图标', value: 'icon' },
-                        { label: '图标+名称', value: 'icon-text' }
-                        // { label: '名称+图标', value: 'text-icon' }
-                      ]
+                      default: 'text',
+                      enum: ['text', 'icon', 'icon-text'],
+                      enumLabel: ['名称', '图标', '图标+名称']
                     }
                   }
                 },
@@ -110,20 +111,24 @@ export default {
                     value: {
                       type: 'string',
                       default: '',
-                      enum: ['el-icon-edit', 'el-icon-share', 'el-icon-delete']
+                      enum: ['el-icon-edit', 'el-icon-share', 'el-icon-delete'],
+                      enumLabel: ['el-icon-edit', 'el-icon-share', 'el-icon-delete']
+                    },
+                    disabled: {
+                      const: '{formData.__displayway==="text"}'
                     }
-                  },
-                  // if/then/else 缺一不可
-                  if: {
-                    // 当 id=__displayway 的字段的 value 为 /icon/
-                    properties: { __displayway: { pattern: /icon/ } }
-                  },
-                  then: {
-                    properties: { show: true }
-                  },
-                  else: {
-                    properties: { show: false }
                   }
+                  //draft7: if/then/else 缺一不可
+                  // if: {
+                  //   // 当 id=__displayway 的字段的 value 为 /icon/
+                  //   properties: { __displayway: { pattern: /icon/ } }
+                  // },
+                  // then: {
+                  //   properties: { show: true }
+                  // },
+                  // else: {
+                  //   properties: { show: false }
+                  // }
                 },
 
                 {
@@ -138,12 +143,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '标准', value: 'medium' },
-                      enum: [
-                        { label: '大', value: 'large' },
-                        { label: '标准', value: 'medium' },
-                        { label: '小', value: 'small' }
-                      ]
+                      default: 'medium',
+                      enum: ['large', 'medium', 'small'],
+                      enumLabel: ['大', '标准', '小']
                     }
                   }
                 },
@@ -160,111 +162,13 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '#4680FF', value: 'primary' },
-                      enum: [
-                        { label: '#4680FF', value: 'primary' },
-                        { label: '#FF8C31', value: 'warning' },
-                        { label: '#27C540', value: 'success' },
-                        { label: '#FF4C4C', value: 'danger' },
-                        { label: '#FFFFFF', value: 'default' }
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-
-        // 文字样式
-        {
-          type: 'object',
-          title: '文字样式',
-          properties: {
-            id: {
-              const: '_styles'
-            },
-            children: {
-              type: 'array',
-              items: [
-                {
-                  type: 'object',
-                  title: '字高',
-                  properties: {
-                    id: {
-                      const: 'fontSize'
-                    },
-                    formType: {
-                      const: 'select'
-                    },
-                    value: {
-                      type: 'object',
-                      default: { label: '14px', value: '14px' },
-                      enum: [
-                        { label: '14px', value: '14px' },
-                        { label: '16px', value: '16px' },
-                        { label: '18px', value: '18px' },
-                        { label: '18px', value: '20px' }
-                      ]
+                      default: 'primary',
+                      enum: ['primary', 'warning', 'success', 'danger', 'default'],
+                      enumLabel: ['#4680FF', '#FF8C31', '#27C540', '#FF4C4C', '#FFFFFF']
                     }
                   }
                 },
 
-                {
-                  type: 'object',
-                  title: '字重',
-                  properties: {
-                    id: {
-                      const: 'fontWeight'
-                    },
-                    formType: {
-                      const: 'select'
-                    },
-                    value: {
-                      type: 'object',
-                      default: { label: '400', value: '400' },
-                      enum: [
-                        { label: '400', value: '400' },
-                        { label: '700', value: '700' },
-                        { label: '900', value: '900' }
-                      ]
-                    }
-                  }
-                },
-
-                {
-                  type: 'object',
-                  title: '文字样式',
-                  properties: {
-                    id: {
-                      const: 'fontStyle'
-                    },
-                    formType: {
-                      const: 'text-style'
-                    },
-                    value: {
-                      type: 'string',
-                      default: 'normal',
-                      enum: ['normal', 'italic']
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-
-        // 样式库
-        {
-          type: 'object',
-          title: '样式库',
-          properties: {
-            id: {
-              const: '_stylerepo'
-            },
-            children: {
-              type: 'array',
-              items: [
                 {
                   type: 'object',
                   title: '',
@@ -279,11 +183,26 @@ export default {
                       type: 'string',
                       default: '',
                       // 普通/圆角/plain
-                      enum: ['', 'round', 'plain']
+                      enum: ['', 'round', 'plain'],
+                      enumLabel: ['', 'round', 'plain']
                     }
                   }
                 }
               ]
+            }
+          }
+        },
+
+        {
+          type: 'object',
+          title: '样式',
+          properties: {
+            id: {
+              const: '_styles'
+            },
+            children: {
+              type: 'array',
+              items: [StyleSchema.FONT_SIZE, StyleSchema.FONT_WEIGHT, StyleSchema.FONT_STYLE]
             }
           }
         }

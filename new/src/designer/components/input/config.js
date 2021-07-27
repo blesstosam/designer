@@ -85,13 +85,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: 'medium', value: 'medium' },
-                      enum: [
-                        { label: 'large', value: 'large' },
-                        { label: 'medium', value: 'medium' },
-                        { label: 'small', value: 'small' },
-                        { label: 'mini', value: 'mini' }
-                      ]
+                      default: 'medium',
+                      enum: ['large', 'medium', 'small', 'mini'],
+                      enumLabel: ['large', 'medium', 'small', 'mini']
                     }
                   }
                 },
@@ -108,11 +104,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '', value: '' },
-                      enum: [
-                        { label: 'el-icon-search', value: 'el-icon-search' },
-                        { label: 'el-icon-date', value: 'el-icon-date' }
-                      ]
+                      default: '',
+                      enum: ['el-icon-search', 'el-icon-date'],
+                      enumLabel: ['el-icon-search', 'el-icon-date']
                     }
                   }
                 }

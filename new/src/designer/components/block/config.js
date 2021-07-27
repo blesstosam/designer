@@ -68,11 +68,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: 'click', value: '' },
-                      enum: [
-                        { label: 'click', value: '' },
-                        { label: 'hover', value: '' },
-                      ]
+                      default: '',
+                      enum: ['', ''],
+                      enumLabel: ['click', 'hover']
                     }
                   }
                 }
