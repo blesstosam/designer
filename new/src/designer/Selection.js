@@ -70,7 +70,7 @@ export class Selection {
     this._createBtn('move', offset)
     this.isLayout && this._createBtn('copy', offset)
     this.observe()
-    this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED)
+    this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED, node)
   }
 
   update(node) {
@@ -97,7 +97,7 @@ export class Selection {
     } else {
       this._hideBtn('copy')
     }
-    this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED)
+    this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED, node)
   }
 
   updateSize() {

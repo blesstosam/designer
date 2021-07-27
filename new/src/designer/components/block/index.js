@@ -21,6 +21,7 @@ const VBlockComponent = {
   props: null,
   render(newProps) {
     if (newProps) {
+      // TODO 这里的changeprops可以去掉了
       changeProps(newProps, this.props)
     } else {
       this.props = reactive(parseProps(this.attrs))

@@ -37,6 +37,16 @@ export const FONT_FAMILY = {
         '微软雅黑',
         'Arial',
         'sans-serif'
+      ],
+      enumLabel: [
+        'Helvetica Neue',
+        'Helvetica',
+        'PingFang SC',
+        'Hiragino Sans GB',
+        'Microsoft YaHei',
+        '微软雅黑',
+        'Arial',
+        'sans-serif'
       ]
     }
   }
@@ -71,13 +81,9 @@ export const FONT_SIZE = {
     },
     value: {
       type: 'object',
-      default: { label: '14px', value: '14px' },
-      enum: [
-        { label: '14px', value: '14px' },
-        { label: '16px', value: '16px' },
-        { label: '18px', value: '18px' },
-        { label: '20px', value: '20px' }
-      ]
+      default: '14px',
+      enum: ['14px', '16px', '18px', '20px'],
+      enumLabel: ['14px', '16px', '18px', '20px']
     }
   }
 }
@@ -94,12 +100,9 @@ export const FONT_WEIGHT = {
     },
     value: {
       type: 'object',
-      default: { label: '400', value: '400' },
-      enum: [
-        { label: '400', value: '400' },
-        { label: '700', value: '700' },
-        { label: '900', value: '900' }
-      ]
+      default: '400',
+      enum: [ '400', '700', '900'],
+      enumLabel: [ '400', '700', '900'],
     }
   }
 }
@@ -117,7 +120,8 @@ export const FONT_STYLE = {
     value: {
       type: 'string',
       default: 'normal',
-      enum: ['normal', 'italic']
+      enum: ['normal', 'italic'],
+      enumLabel: ['normal', 'italic'],
     }
   }
 }
@@ -135,7 +139,8 @@ export const TEXT_DECORATION = {
     value: {
       type: 'string',
       default: 'none',
-      enum: ['none', 'overline', 'underline', 'line-through']
+      enum: ['none', 'overline', 'underline', 'line-through'],
+      enumLabel: ['none', 'overline', 'underline', 'line-through'],
     }
   }
 }
@@ -153,7 +158,8 @@ export const TEXT_ALIGN = {
     value: {
       type: 'string',
       default: 'left',
-      enum: ['left', 'center', 'right']
+      enum: ['left', 'center', 'right'],
+      enumLabel: ['left', 'center', 'right'],
     }
   }
 }

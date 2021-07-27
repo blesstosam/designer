@@ -4,22 +4,14 @@ import { parse } from '../lib/parse-schema'
 
 // 使用vue生成vue实例挂载
 export function genVueInstance(appOpt, props) {
-  // TODO 怎么和vue文件相关联 参考vue.extend api
-  // #__empty__ 为承载mount的容器 只是为了生成dom（不知道有没有现成的api，只生成dom，不插入到容器）
-  const div = document.createElement('div')
-  div.style.width = 0
-  div.style.height = 0
-  div.setAttribute('id', '__empty__')
-  document.body.appendChild(div)
-
-  // important：需要将组件再包一层 这样 props才能是响应式的
+  // props.onClick = (e) => {
+  //   console.log(e, '/////')
+  // }
   const app = createApp({
-    props: Object.keys(props),
     render: () => h(appOpt, props)
   })
-  const rootInstance = app.mount(`#__empty__`)
+  const rootInstance = app.mount(document.createElement('div'))
   // console.log('app', app, 'rootInstance', rootInstance)
-  document.body.removeChild(document.querySelector('#__empty__'))
   return rootInstance
 }
 

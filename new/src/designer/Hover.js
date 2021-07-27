@@ -9,6 +9,13 @@ export class Hover {
     // 当前hover的node
     this.node = null
     this.$rectEl = null 
+
+    // 当先hover，然后select时，为避免hover和selection同时触发，及时隐藏hover
+    this.__designer__.on([EVENT_TYPES.SELECTION_ACTIVED, EVENT_TYPES.SELECTION_UPDATED], (node) => {
+      if (node === this.node) {
+        this._hideEffect()
+      }
+    })
   }
 
   get selection() {
@@ -31,9 +38,11 @@ export class Hover {
 
   update(node) {
     if (this.getIsLayout(node)) {
+      this._hideEffect()
       this.node = node
-      const offset = this._getOffset()
-      this._updateEffect(offset)
+      this._showEffect()
+      // const offset = this._getOffset()
+      // this._updateEffect(offset)
       this.__designer__.emit(EVENT_TYPES.HOVER_UPDATED)
     }
   }
@@ -48,41 +57,41 @@ export class Hover {
   _showEffect(offset) {
     // hover和selection是互斥的 如果selection被选上则不能触发hover事件
     if (!this.isTargetSelected) {
-      // const el = this.node.$el.children[0]
-      // $(el).style({ borderColor: '#409EFF' })
+      $(this.node.$el).style({ border: '1px dashed #409EFF' })
 
-      const { width, height } = offset
-      const div = (this.$rectEl = $('<div>')
-        .style({
-          width: width + 'px',
-          height: height + 'px',
-          top: 0,
-          left: 0,
-          position: 'absolute',
-          border: '1px dashed #409EFF',
-          zIndex: 100,
-          boxSizing: 'border-box'
-          // pointerEvents: 'none'
-        })
-        .addClass('selection').el)
-      this.node.$el.appendChild(div)
-      return div
+      // const { width, height } = offset
+      // const div = (this.$rectEl = $('<div>')
+      //   .style({
+      //     width: width + 2 + 'px',
+      //     height: height + 2 + 'px',
+      //     top: '-1px',
+      //     left: '-1px',
+      //     position: 'absolute',
+      //     border: '1px dashed #409EFF',
+      //     zIndex: 0,
+      //     boxSizing: 'border-box'
+      //     // pointerEvents: 'none'
+      //   })
+      //   .addClass('hover').el)
+      // this.node.$el.appendChild(div)
+      // return div
     }
   }
 
   _updateEffect(offset) {
-    const { width, height } = offset
-    this.node.$el.appendChild(this.$rectEl)
-    $(this.$rectEl).style({
-      width: width + 'px',
-      height: height + 'px',
-      top: 0,
-      left: 0
-    })
+    // const { width, height } = offset
+    // this.node.$el.appendChild(this.$rectEl)
+    // $(this.$rectEl).style({
+    //   width: width +2 + 'px',
+    //   height: height +2+ 'px',
+    //   top: '-1px',
+    //   left: '-1px'
+    // })
   }
 
   _hideEffect() {
-    this.$rectEl && this.$rectEl.remove()
+    // this.$rectEl && this.$rectEl.remove()
+    $(this.node.$el).style({ border: '1px solid transparent' })
   }
 
   _getOffset() {

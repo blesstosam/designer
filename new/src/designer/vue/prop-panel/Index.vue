@@ -68,7 +68,7 @@
           <div v-else-if="_item.formType === FormTypes.Select" class="dis-flex">
             <span>{{ _item.title }}</span>
             <el-select
-              :disabled="checkDisabled(_item, item.children)"
+              :disabled="_item.disabled"
               size="medium"
               :placeholder="_item.description || '请选择'"
               v-model="_item.value"
@@ -217,18 +217,6 @@ export default {
       })
     })
 
-    // 将属性面板解析成一唯数组结构 按表单类型进行渲染
-    // 1. 解析表单类型 input，select，radio，checkbox
-    //    字体样式选择器(特殊的checkbox=>textStyle)
-    //    字体装饰
-    //    字体对齐
-    //    颜色单选器（特殊的radio=>colorRadio）
-    //    颜色选择器（特殊，colorPicker)
-    //    按钮样式选择器（特殊，btnStyle）
-    // 2. 将表单的约束解析出来并绑定rules
-    // 3. 解析默认值 const|default
-    // 4. 解析出 model: value用于v-model绑定
-
     return {
       activeNames,
       FormTypes,
@@ -244,31 +232,6 @@ export default {
     }
   },
   methods: {
-    // 表单联动效果
-    checkDisabled(item, array) {
-      if (!item) return false
-      if (!item.if || !item.then || !item.else) return false
-
-      let flag = true
-      const ifCon = item.if.properties
-      Object.keys(ifCon).forEach(k => {
-        const conItem = array.find(i => i.id === k)
-        if (conItem) {
-          // value 可能为对象
-          const _val = typeof conItem.value === 'object' ? conItem.value.value : conItem.value
-          if (ifCon[k].const && ifCon[k].const !== _val) {
-            flag = false
-          } else if (ifCon[k].pattern && !ifCon[k].pattern.test(_val)) {
-            flag = false
-          }
-        }
-      })
-      if (flag) {
-        return !item.then.properties.show
-      } else {
-        return !item.else.properties.show
-      }
-    },
     handleChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)

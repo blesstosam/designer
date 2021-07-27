@@ -13,6 +13,7 @@ import { Node } from './Node'
 import { ViewModel } from './ViewModel'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
+import { changeProps } from './components/render-util'
 
 const {
   SELECTION_DEL_CLICK: F_D_C,
@@ -410,10 +411,10 @@ export class Canvas {
    * @param {*} val 属性值
    */
   patch(el, item, val) {
-    const vm = this.model.findVmByKey('$el', el)
+    const node = this.model.findVmByKey('$el', el)
     // 更新attrs
     // TODO 有没有遍历 json schema 的库？
-    const configCates = vm.attrs.properties.configs.items
+    const configCates = node.attrs.properties.configs.items
     for (const cfgCate of configCates) {
       for (const cfg of cfgCate.properties.children.items) {
         if (cfg.properties.id.const === item.id) {
@@ -422,8 +423,9 @@ export class Canvas {
       }
     }
 
-    if (vm && vm.render) {
-      vm.render({ [item.id]: val })
+    if (node && node.props) {
+      changeProps({ [item.id]: val }, node.props)
+      node.transformProps && node.transformProps(node.props)
     }
   }
 

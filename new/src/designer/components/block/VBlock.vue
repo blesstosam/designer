@@ -1,7 +1,7 @@
 <style>
 /* 该样式只在画布里才有 */
 .canvas-wrapper .v-block {
-  border: 1px dashed #aaa;
+  /* border: 1px dashed #aaa; */
   background-color: #fff;
   min-height: 70px;
   box-sizing: border-box;

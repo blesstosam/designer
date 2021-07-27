@@ -15,5 +15,6 @@ export const FormTypes = {
   ColumnSetting: 'column-setting',
 
   Margin: 'margin',
-  Border: 'border'
+  Border: 'border',
+  EventEditor: 'event-editor'
 }

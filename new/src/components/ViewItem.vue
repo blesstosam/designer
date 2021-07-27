@@ -62,11 +62,21 @@ export default {
           arr.map(child => {
             if (child.isCustom)
               return h(Custom, { moduleData: this.getModuleData(child.customData) })
+
+            // handleEvents(child.props)  
             return h(resolveComponent(child.name), child.props, { default: () => genRender(child) })
           })
       })
 
+      handleEvents(item.props)
       return h(resolveComponent(item.name), item.props, slots)
+    }
+
+    const handleEvents = (props) => {
+      const { nativeEvent } = props
+      props.onClick = (e) => {
+        eval(nativeEvent)
+      }
     }
 
     return genRender(_item)

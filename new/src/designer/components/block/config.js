@@ -28,7 +28,7 @@ export default {
                 StyleSchema.MARGIN,
                 StyleSchema.PADDING,
                 StyleSchema.BORDER_RADIUS,
-                // StyleSchema.BORDER
+                StyleSchema.BORDER
               ]
             }
           }
@@ -43,6 +43,38 @@ export default {
             children: {
               type: 'array',
               items: []
+            }
+          }
+        },
+        {
+          type: 'object',
+          title: '事件',
+          properties: {
+            id: {
+              const: '_events'
+            },
+            children: {
+              type: 'array',
+              items: [
+                {
+                  type: 'object',
+                  title: '原生事件',
+                  properties: {
+                    id: {
+                      const: 'nativeEvent'
+                    },
+                    formType: {
+                      const: 'event-editor'
+                    },
+                    value: {
+                      type: 'object',
+                      default: '',
+                      enum: ['', ''],
+                      enumLabel: ['click', 'hover']
+                    }
+                  }
+                }
+              ]
             }
           }
         }

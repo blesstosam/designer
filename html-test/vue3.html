@@ -1,18 +1,38 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@3.1.4"></script>
 
+<h1>通过外部响应式数据改变dom</h1>
+<button>changeMsg</button>
 <div id="app"></div>
 
 <script>
-  const props = {
+  const { h, reactive, createApp } = Vue
+
+  const props = reactive({
     style: {
-      border: '1px solid red'
+      color: 'red'
+    },
+    msg: '11111',
+
+    onClick(e) {
+      console.log(e, 'eee')
     }
+  })
+
+  document.querySelector('button').addEventListener('click', () => {
+    props.style.color = 'blue'
+    props.msg = '222'
+  })
+
+  const com = {
+    name: 'test',
+    props: ['msg'],
+    template: `<div>{{msg}}</div>`
   }
-  const app = Vue.createApp({
-    props: Object.keys(props),
-    render: () => Vue.h({
-      template: `<div>11</div>`
-    }, props)
+
+  const app = createApp({
+    render() {
+      return h(com, props)
+    }
   })
   app.mount('#app')
 </script>
