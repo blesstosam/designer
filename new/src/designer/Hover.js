@@ -8,10 +8,10 @@ export class Hover {
 
     // 当前hover的node
     this.node = null
-    this.$rectEl = null 
+    this.$rectEl = null
 
     // 当先hover，然后select时，为避免hover和selection同时触发，及时隐藏hover
-    this.__designer__.on([EVENT_TYPES.SELECTION_ACTIVED, EVENT_TYPES.SELECTION_UPDATED], (node) => {
+    this.__designer__.on([EVENT_TYPES.SELECTION_ACTIVED, EVENT_TYPES.SELECTION_UPDATED], node => {
       if (node === this.node) {
         this._hideEffect()
       }

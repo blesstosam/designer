@@ -113,15 +113,23 @@ export default {
     redo() {
       this.__toolbar__.redo()
     },
-    transform(_arr) {
+    transform(arr) {
       const origin = []
-      const traverse = (arr, _origin) => {
+      const traverse = (_arr, _origin) => {
         for (let i = 0; i < arr.length; i++) {
-          const item = arr[i]
+          const item = _arr[i]
+          if (item.props.nativeEvent) {
+            item.props.events = {}
+            const eventArr = JSON.parse(item.props.nativeEvent)
+            for (const event of eventArr) {
+              item.props.events[event.name] = event.code
+            }
+            delete item.props.nativeEvent
+          }
           _origin.push({
             attrs: item.attrs,
             children: [],
-            componentType:item.componentType,
+            componentType: item.componentType,
             icon: item.icon,
             isBlock: item.isBlock,
             isCustom: item.isCustom,
@@ -136,8 +144,8 @@ export default {
           }
         }
       }
-      traverse(_arr, origin)
 
+      traverse(arr, origin)
       return origin
     },
     clear() {
@@ -146,7 +154,7 @@ export default {
     save() {
       const { viewModel } = this.designer.__canvas__
       const transformed = this.transform(viewModel.children)
-      localStorage.setItem('viewModel', JSON.stringify({...viewModel, children: transformed}))
+      localStorage.setItem('viewModel', JSON.stringify({ ...viewModel, children: transformed }))
       ElMessage.success({
         duration: 1000,
         message: 'save succeed!'

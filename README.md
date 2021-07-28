@@ -53,7 +53,7 @@ this.__components__.init(MyComponentsView)
 | 扩展机制，参考bpmn.js | - | 2021/7/1 |
 | viewModel 抽象类 | √ | 2021/7/1 |
 | 定义事件类型，每一个操作都对应一种操作，进行全局分发，各插件可以根据需求自行监听| √ | 2021/7/1 |
-| 属性面板增加公共样式调整，支持margin，padding，border | - | 2021/7/6 |
+| 属性面板增加公共样式调整，支持margin，padding，border | √ | 2021/7/6 |
 | 缩放功能 |  - | 2021/7/7 |
 | undo&redo |  √  | 2021/7/7 |
 | event抽成eventbus |  - | 2021/7/7 |
@@ -65,3 +65,4 @@ this.__components__.init(MyComponentsView)
 | ci机制 | - | 2021/7/16 |
 | 写一个log插件，记录每一次操作，打印在左侧角落 | - | 2021/7/16 |
 | 原生event绑定 | - | 2021/7/21 |
+| 组件event绑定，参数通过定义的schema传递过来 | - | 2021/7/27 |

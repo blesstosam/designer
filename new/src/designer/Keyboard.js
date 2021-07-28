@@ -26,6 +26,21 @@ export class KeyBoard extends Event {
     this.cb && window.removeEventListener(type, this.cb)
   }
 
+  onRedo(cb) {
+    this.add(KEYBOARD_REDO, cb)
+  }
+  onUndo(cb) {
+    this.add(KEYBOARD_UNDO, cb)
+  }
+  onSave(cb) {
+    this.add(KEYBOARD_SAVE, cb)
+  }
+
+  add(type, cb) {
+    if (![KEYBOARD_REDO, KEYBOARD_UNDO, KEYBOARD_SAVE].includes(type)) return
+    this.on(type, cb)
+  }
+
   // 分发事件
   _run($event) {
     let type = null
@@ -49,11 +64,6 @@ export class KeyBoard extends Event {
       fn($event)
     }
     this._afterEve($event)
-  }
-
-  add(type, cb) {
-    if (![KEYBOARD_REDO, KEYBOARD_UNDO, KEYBOARD_SAVE].includes(type)) return
-    this.on(type, cb)
   }
 
   _beforeEve($event) {
