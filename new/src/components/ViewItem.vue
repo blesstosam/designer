@@ -63,7 +63,7 @@ export default {
             if (child.isCustom)
               return h(Custom, { moduleData: this.getModuleData(child.customData) })
 
-            // handleEvents(child.props)  
+            handleEvents(child.props)
             return h(resolveComponent(child.name), child.props, { default: () => genRender(child) })
           })
       })
@@ -72,10 +72,14 @@ export default {
       return h(resolveComponent(item.name), item.props, slots)
     }
 
-    const handleEvents = (props) => {
-      const { nativeEvent } = props
-      props.onClick = (e) => {
-        eval(nativeEvent)
+    const handleEvents = props => {
+      const { events } = props
+      for (let evtName in events) {
+        const code = events[evtName]
+        evtName = evtName[0].toUpperCase() + evtName.slice(1)
+        props[`on${evtName}`] = e => {
+          eval(`(${code})(e)`)
+        }
       }
     }
 

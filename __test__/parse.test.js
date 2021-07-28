@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { parse } from '../new/src/designer/lib/parse-schema'
+import * as StyleSchema from '../new/src/designer/components/style-schema'
 
 test('Parse schema', () => {
   const schema = {
@@ -73,46 +74,9 @@ test('Parse schema', () => {
                     }
                   },
 
-                  {
-                    type: 'object',
-                    title: '文字对齐',
-                    properties: {
-                      id: {
-                        const: 'textAlign'
-                      },
-                      formType: {
-                        const: 'row-align'
-                      },
-                      value: {
-                        type: 'string',
-                        default: 'left',
-                        enum: ['left', 'center', 'right']
-                      }
-                    }
-                  },
+                  StyleSchema.TEXT_ALIGN,
 
-                  {
-                    type: 'object',
-                    title: '字高',
-                    properties: {
-                      id: {
-                        const: 'fontSize'
-                      },
-                      formType: {
-                        const: 'select'
-                      },
-                      value: {
-                        type: 'object',
-                        default: { label: '14px', value: '14px' },
-                        enum: [
-                          { label: '14px', value: '14px' },
-                          { label: '16px', value: '16px' },
-                          { label: '18px', value: '18px' },
-                          { label: '20px', value: '20px' }
-                        ]
-                      }
-                    }
-                  }
+                  StyleSchema.FONT_SIZE
                 ]
               }
             }

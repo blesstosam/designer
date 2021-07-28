@@ -29,7 +29,7 @@
         <div v-for="_item in item.children" :key="_item.id" style="margin-bottom: 12px;">
           <!-- 事件绑定 -->
           <div v-if="_item.formType === FormTypes.EventEditor">
-            <event-editor :item="_item"  />
+            <event-editor :item="_item" v-model="_item.value" @change="handleChange(_item, $event)"  />
           </div>
 
           <!-- select -->
@@ -133,13 +133,8 @@ export default {
     }
   },
   methods: {
-    handleBorderChange(item, val) {
-      // TODO 如果schema里的字段要表达多个属性怎么办？ 比如border=>要对应border-top|bottom|left|right
-      // 在更新的时候还需要更新key和properties.id
-      const valArr = val.split(':')
-      this.handleChange(item, valArr[1])
-    },
     handleChange(item, val) {
+      debugger
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode.$el, item, val)
       this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {

@@ -67,10 +67,8 @@ export default {
                       const: 'event-editor'
                     },
                     value: {
-                      type: 'object',
+                      type: 'string',
                       default: '',
-                      enum: ['', ''],
-                      enumLabel: ['click', 'hover']
                     }
                   }
                 }
