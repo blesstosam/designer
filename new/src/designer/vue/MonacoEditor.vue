@@ -17,15 +17,21 @@
 .event-editor .actions-wrap {
   position: absolute;
   right: 30px;
-  bottom: 10px;
+  bottom: 0px;
 }
 </style>
 
 <template>
-  <el-drawer title="我是标题" v-model="isShow" :with-header="false">
+  <el-drawer
+    :close-on-press-escape="false"
+    title="我是标题"
+    v-model="isShow"
+    :with-header="false"
+    @close="handleClose"
+  >
     <div id="monacoEditorWrap" ref="monacoEditorWrap"></div>
     <div class="actions-wrap">
-    <el-button size="mini" @click="save">保存</el-button>
+      <el-button size="mini" @click="save">保存</el-button>
       <el-button size="mini" @click="close">关闭</el-button>
     </div>
   </el-drawer>
@@ -80,6 +86,9 @@ export default {
     },
     save() {
       this.$emit('save', this.monacoInstance.getValue())
+    },
+    handleClose() {
+      this.close()
     }
   }
 }
