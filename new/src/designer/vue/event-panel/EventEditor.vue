@@ -84,11 +84,14 @@ export default {
   },
   methods: {
     handleChange(val) {
-      this.tableData.push({
-        name: val,
-        code: 'function(e) {\n\n}'
-      })
-      this.doEmit()
+      if (val) {
+        this.tableData.push({
+          name: val,
+          code: 'function(e) {\n\n}'
+        })
+        this.doEmit()
+        this.eventType = ''
+      }
     },
     showEditor(data, index) {
       this.currentIndex = index

@@ -157,10 +157,10 @@ class DomUtil {
   }
 
   hover(handlerIn, handlerOut) {
-    this._addListener('mouseenter', handlerIn)._addListener('mouseleave', handlerOut)
+    this.addListener('mouseenter', handlerIn).addListener('mouseleave', handlerOut)
   }
 
-  _addListener(event, handler) {
+  addListener(event, handler) {
     this.dom.addEventListener(event, handler)
     return this
   }

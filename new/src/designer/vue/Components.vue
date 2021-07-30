@@ -26,6 +26,7 @@
   padding: 6px;
   width: 40px;
   margin-right: 12px;
+  margin-bottom: 8px;
   font-size: 12px;
   text-align: center;
   cursor: pointer;
