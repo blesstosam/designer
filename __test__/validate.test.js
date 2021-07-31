@@ -12,18 +12,22 @@ test('test jsonschema validator', () => {
 
 test('test custom field', () => {
   const ajv = new Ajv({
-    strict: false
+    // strict: false
   })
   const schema = {
     type: 'object',
-    custom: 'custom',
+    // custom: 'custom',
+    // required: ['id', 'id2'],
     properties: {
       id: {
+        type: 'string'
+      },
+      id2: {
         type: 'string'
       }
     }
   }
-  const instance = { id: '1' }
+  const instance = { id: '1'}
   const validate = ajv.compile(schema)
   const valid = validate(instance)
   expect(valid).toBe(true)

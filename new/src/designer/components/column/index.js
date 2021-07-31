@@ -1,8 +1,6 @@
-
-
 import { reactive } from 'vue'
 import { componentTypes } from '../../Components'
-import { parseProps, changeProps, genVueInstance } from '../render-util'
+import { parseProps, genVueInstance } from '../render-util'
 import VColumn from './VColumn.vue'
 import VColumnCfg from './config'
 
@@ -19,15 +17,11 @@ const VColumnComponent = {
   vm: null,
   attrs: VColumnCfg,
   props: null,
-  render(newProps) {
-    if (newProps) {
-      changeProps(newProps, this.props)
-    } else {
-      this.props = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VColumn, this.props)
-      return this.vm.$el
-    }
-  },
+  render() {
+    this.props = reactive(parseProps(this.attrs))
+    this.vm = genVueInstance(VColumn, this.props)
+    return this.vm.$el
+  }
 }
 
 export { VColumnComponent, VColumn }

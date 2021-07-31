@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { parseProps, changeProps, genVueInstance } from '../render-util'
+import { parseProps, genVueInstance } from '../render-util'
 import VDivider from './VDivider.vue'
 import VDividerCfg from './config'
 import { componentTypes } from '../../Components'
@@ -18,14 +18,10 @@ const VDividerComponent = {
   vm: null,
   props: null,
   accept: [],
-  render(newProps) {
-    if (newProps) {
-      changeProps(newProps, this.props)
-    } else {
-      this.props = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VDivider, this.props)
-      return this.vm.$el
-    }
+  render() {
+    this.props = reactive(parseProps(this.attrs))
+    this.vm = genVueInstance(VDivider, this.props)
+    return this.vm.$el
   }
 }
 export { VDividerComponent, VDivider }

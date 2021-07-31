@@ -19,16 +19,22 @@ const VBlockComponent = {
   vm: null,
   attrs: VBlockCfg,
   props: null,
-  render(newProps) {
-    if (newProps) {
-      // TODO 这里的changeprops可以去掉了
-      changeProps(newProps, this.props)
-    } else {
-      this.props = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VBlock, this.props)
-      return this.vm.$el
+  emits: [
+    // 组件所暴露出来的自定义事件，用于其他组件的监听，所有组件的自定义事件用event模块来管理
+    {
+      name: 'valChange',
+      params: {
+        val: {
+          type: 'string'
+        }
+      }
     }
-  },
+  ],
+  render() {
+    this.props = reactive(parseProps(this.attrs))
+    this.vm = genVueInstance(VBlock, this.props)
+    return this.vm.$el
+  }
 }
 
 export { VBlockComponent, VBlock }

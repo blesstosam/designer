@@ -31,17 +31,12 @@ const VButtonComponent = {
       p.icon = p.__chooseicon
     }
   },
-  render(newProps) {
-    if (newProps) {
-      changeProps(newProps, this.props)
-      this.transformProps(this.props)
-    } else {
-      const p = parseProps(this.attrs)
-      this.transformProps(p)
-      this.props = reactive(p)
-      this.vm = genVueInstance(VButton, this.props)
-      return this.vm.$el
-    }
+  render() {
+    const p = parseProps(this.attrs)
+    this.transformProps(p)
+    this.props = reactive(p)
+    this.vm = genVueInstance(VButton, this.props)
+    return this.vm.$el
   }
 }
 

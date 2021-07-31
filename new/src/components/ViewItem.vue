@@ -76,8 +76,7 @@ export default {
       const { events } = props
       for (let evtName in events) {
         const code = events[evtName]
-        evtName = evtName[0].toUpperCase() + evtName.slice(1)
-        props[`on${evtName}`] = e => {
+        props[`${evtName}`] = e => {
           eval(`(${code})(e)`)
         }
       }

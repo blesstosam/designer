@@ -5,11 +5,11 @@ export class LoggerPlugin {
   constructor(attr) {
     this.__attr__ = attr
     this.$el = null
-    this.initLogger()
-    this.__designer__.on(EVENT_TYPES.CANVAS_ACTIONS_APPEND, data => {
-      console.log('append...', data)
-      this.appendLog('插入' + data.data.title)
-    })
+    // this.initLogger()
+    // this.__designer__.on(EVENT_TYPES.CANVAS_ACTIONS_APPEND, data => {
+    //   console.log('append...', data)
+    //   this.appendLog('插入' + data.data.title)
+    // })
   }
 
   get __designer__() {
