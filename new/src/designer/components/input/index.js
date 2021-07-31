@@ -17,14 +17,10 @@ const VInputComponent = {
   vm: null,
   attrs: VInputCfg,
   props: null,
-  render(newProps) {
-    if (newProps) {
-      changeProps(newProps, this.props)
-    } else {
-      this.props = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VInput, this.props)
-      return this.vm.$el
-    }
+  render() {
+    this.props = reactive(parseProps(this.attrs))
+    this.vm = genVueInstance(VInput, this.props)
+    return this.vm.$el
   }
 }
 

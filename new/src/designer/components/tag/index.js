@@ -18,14 +18,10 @@ const VTagComponent = {
   vm: null,
   props: null,
   accept: [],
-  render(newProps) {
-    if (newProps) {
-      changeProps(newProps, this.props)
-    } else {
-      this.props = reactive(parseProps(this.attrs))
-      this.vm = genVueInstance(VTag, this.props)
-      return this.vm.$el
-    }
+  render() {
+    this.props = reactive(parseProps(this.attrs))
+    this.vm = genVueInstance(VTag, this.props)
+    return this.vm.$el
   }
 }
 export { VTagComponent, VTag }

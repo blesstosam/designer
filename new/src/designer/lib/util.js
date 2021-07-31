@@ -15,7 +15,7 @@ export function typeOf(obj) {
   return map[toString.call(obj)]
 }
 
-export function _forEach(obj, cb) {
+export function forEach(obj, cb) {
   Object.keys(obj).forEach(k => cb(obj[k], k))
 }
 

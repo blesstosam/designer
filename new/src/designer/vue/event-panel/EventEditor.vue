@@ -72,8 +72,8 @@ export default {
   data() {
     return {
       options: [
-        { label: 'click', value: 'click' },
-        { label: 'hover', value: 'hover' },
+        { label: 'onClick', value: 'onClick' },
+        { label: 'onHover', value: 'onHover' },
       ],
       tableData: [],
       currentIndex: -1,
@@ -87,7 +87,7 @@ export default {
       if (val) {
         this.tableData.push({
           name: val,
-          code: 'function(e) {\n\n}'
+          code: `function ${val}(e) {\n\n}`
         })
         this.doEmit()
         this.eventType = ''

@@ -27,6 +27,8 @@ export default {
                 {
                   type: 'object',
                   title: '按钮名称',
+                  // 如果该值是必填的，加上required，required的值都为['value']
+                  required: ['value'],
                   properties: {
                     id: {
                       const: 'content'
@@ -38,8 +40,7 @@ export default {
                       type: 'string',
                       default: '按钮',
                       minLength: 1,
-                      maxLength: 6,
-                      required: true
+                      maxLength: 6
                     }
                   }
                 },
@@ -73,8 +74,7 @@ export default {
                     },
                     value: {
                       type: 'string',
-                      default: '',
-                      required: true
+                      default: ''
                     }
                   }
                 },
@@ -82,6 +82,7 @@ export default {
                 {
                   type: 'object',
                   title: '显示方式',
+                  required: ['value'],
                   properties: {
                     id: {
                       const: '__displayway'

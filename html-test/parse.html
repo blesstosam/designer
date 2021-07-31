@@ -38,7 +38,6 @@
                       value: {
                         type: 'number',
                         default: 0,
-                        required: true
                       },
                       isShow: {
                         const: false
@@ -72,7 +71,6 @@
                       value: {
                         type: 'string',
                         default: '',
-                        required: true
                       },
                       isShow: {
                         const: '{formData.paddingTop >= 0}'
@@ -94,7 +92,6 @@
                         type: 'string',
                         default: 'left',
                         enum: ['left', 'center', 'right'],
-                        required: true
                       },
                       disabled: {
                         const: '{formData.backgroundColor===""}'
@@ -117,7 +114,6 @@
                         enum: ['14px', '16px'],
                         enumLabel: ['14px', '16px'],
                         default: '14px',
-                        required: true
                       }
                     }
                   }

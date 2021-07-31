@@ -4,9 +4,6 @@ import { parse } from '../lib/parse-schema'
 
 // 使用vue生成vue实例挂载
 export function genVueInstance(appOpt, props) {
-  // props.onClick = (e) => {
-  //   console.log(e, '/////')
-  // }
   const app = createApp({
     render: () => h(appOpt, props)
   })

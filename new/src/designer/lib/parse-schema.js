@@ -1,4 +1,16 @@
-import { _forEach } from './util'
+import { forEach } from './util'
+
+// 1. schema本身能表达表单的数据结构
+// 2. schema使用title作为label；description作为placeholder；所有的required的值都为`['value']`
+// 3. schema的items字段只支持数组类型
+// 4. schema增加了表单类型字段，formType，即表示该字段用什么ui组件去展示
+// 5. schema增加了表单显示隐藏字段isShow，默认为true
+// 6. schema增加了disabled字段，默认为false
+// 7. schema增加了enumLabel字段，用来表达select类型数据的lable
+// 8. schema拓展了字段的表达形式：可以为js表达式，为'{}'语法；理论上每个字段都可以使用js表达式
+// 9. TODO 解析需要增加根据数据类型字段来自动获取ui类型的逻辑，formType 优先级更高一些
+//    比如 string => input; number => inputNumber; enum => select
+// 10. TODO 要不要把组件config.js的数据结构改为一维数组的结构，反正这里的ui可以写死，有点类似于阉割版的表单引擎，只是没了表达ui布局的字段
 
 // rules 参考 async-validator
 // https://github.com/yiminghe/async-validator
@@ -33,8 +45,8 @@ const MessageTypes = {
  * 2. 将表单的约束解析出来并绑定rules
  * 3. 解析默认值 const|default
  * 4. 解析出 model: value用于v-model绑定
- * @param {*} schema 
- * @returns 
+ * @param {*} schema
+ * @returns
  */
 export function parse(schema) {
   const defination = {}
@@ -69,7 +81,7 @@ export function parse(schema) {
     const rules = {}
     if (item.value) {
       rules[item.id.const] = []
-      _forEach(item.value, (ruleVal, rule) => {
+      forEach(item.value, (ruleVal, rule) => {
         if (RulesTypes[rule]) {
           rules[item.id.const].push({
             [RulesTypes[rule]]: ruleVal,
@@ -86,34 +98,38 @@ export function parse(schema) {
     }
   }
 
-  function _parse(_schema, _def) {
-    _def = _def || {}
-    if (_schema.type === 'object' && _schema.properties) {
-      _schema.title && (_def.title = _schema.title)
-      _schema.description && (_def.description = _schema.description)
-      _forEach(_schema.properties, (item, property) => {
+  function _parse(schemaData, def) {
+    def = def || {}
+    if (schemaData.type === 'object' && schemaData.properties) {
+      schemaData.title && (def.title = schemaData.title)
+      schemaData.description && (def.description = schemaData.description)
+      if (schemaData.required && schemaData.required.indexOf('value') > -1) {
+        schemaData.properties.value.required = true
+      }
+      forEach(schemaData.properties, (item, property) => {
         if (item.type !== 'array' && item.type !== 'object') {
-          getVal(item, _def, property)
-          _def.rules = getRules(_schema.properties)
-          _def.options = getOpts(_schema.properties)
+          getVal(item, def, property)
+          def.rules = getRules(schemaData.properties)
+          const opts = getOpts(schemaData.properties)
+          opts && (def.options = opts)
         } else {
           if (item.type === 'array') {
-            _def[property] = item.default || []
+            def[property] = item.default || []
           } else if (item.type === 'object') {
-            _def[property] = item.default || {}
+            def[property] = item.default || {}
           }
-          _parse(item, _def[property])
+          _parse(item, def[property])
         }
       })
-    } else if (_schema.type === 'array' && _schema.items) {
+    } else if (schemaData.type === 'array' && schemaData.items) {
       // 只处理 items 为数组的情况
-      if (Array.isArray(_schema.items)) {
-        _schema.items.forEach((item, index) => {
-          _def.push(_parse(item))
+      if (Array.isArray(schemaData.items)) {
+        schemaData.items.forEach((item) => {
+          def.push(_parse(item))
         })
       }
     }
-    return _def
+    return def
   }
 
   _parse(schema, defination)
