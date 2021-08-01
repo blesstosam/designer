@@ -164,6 +164,11 @@ class DomUtil {
     this.dom.addEventListener(event, handler)
     return this
   }
+
+  // 将元素插入到其子元素的开头
+  prepend(newNode) {
+    this.dom.insertBefore(newNode, this.dom.childNodes[0])
+  }
 }
 
 /**

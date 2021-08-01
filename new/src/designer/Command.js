@@ -122,7 +122,7 @@ export class Command {
     const actions = {
       [C_A_A]: data => {
         // 因为deepclone 导致parent是一个新的对象 这里重新从model里找到parent
-        const realParent = this.model.findVmByKey('$el', data.parent.$el)
+        const realParent = this.model.findByEl(data.parent.$el)
         const $targetEl = data.parent.$el.children[0]
         this.__canvas__.append(data, $targetEl, realParent)
       },

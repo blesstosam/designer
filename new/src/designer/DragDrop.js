@@ -31,6 +31,7 @@ const DropEffects = {
   none: 'none'
 }
 const EventTypes = {
+  drag: 'drag',
   dragstart: 'dragstart',
   dragend: 'dragend',
   drop: 'drop',
@@ -112,11 +113,20 @@ export class DragDrop {
       this.removeDragEnterCls()
       state.dropPos.x = e.x
       state.dropPos.y = e.y
-    
+
       cb && cb(this._getParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_DROPED)
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED, this._getParams(e))
       this.resetData()
+    })
+  }
+
+  bindDrag(target, cb, opts = {}) {
+    target.addEventListener(EventTypes.drag, e => {
+      opts.stop && e.stopPropagation()
+
+      cb && cb(this._getParams(e))
+      this.__designer__.emit(EVENT_TYPES.DRAG_DRAG)
     })
   }
 

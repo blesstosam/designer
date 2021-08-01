@@ -116,7 +116,7 @@ export default {
     transform(arr) {
       const origin = []
       const traverse = (_arr, _origin) => {
-        for (let i = 0; i < arr.length; i++) {
+        for (let i = 0; i < _arr.length; i++) {
           const item = _arr[i]
           if (item.props.nativeEvent) {
             item.props.events = {}
