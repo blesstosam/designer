@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 import { componentTypes } from '../../Components'
-import { parseProps, changeProps, genVueInstance } from '../render-util'
+import { parseProps, genVueInstance } from '../render-util'
 import VBlock from './VBlock.vue'
 import VBlockCfg from './config'
 
@@ -32,8 +32,11 @@ const VBlockComponent = {
   ],
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VBlock, this.props)
-    return this.vm.$el
+    // cloneDeep vm 的时候会报错 =>
+    // Avoid app logic that relies on enumerating keys on a component instance. The keys will be empty in production mode to avoid performance overhead
+    // this.vm = genVueInstance(VBlock, this.props)
+    const vm = genVueInstance(VBlock, this.props)
+    return vm.$el
   }
 }
 

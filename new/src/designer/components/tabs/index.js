@@ -18,8 +18,8 @@ const VTabsComponent = {
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VTabs, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VTabs, this.props)
+    return vm.$el
   },
   accept: ['VButton', 'VText', 'VInput', 'VTag']
 }

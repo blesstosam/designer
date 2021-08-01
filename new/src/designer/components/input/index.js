@@ -19,8 +19,8 @@ const VInputComponent = {
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VInput, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VInput, this.props)
+    return vm.$el
   }
 }
 

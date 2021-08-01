@@ -57,8 +57,9 @@ export class Command {
           cb && cb({ actions: this._actions, idx: this._actionIdx })
         })
       } else if (d.type === C_A_A) {
-        // 在执行redo或undo中
+        // 在执行redo中
         // 如果是添加节点，需要把node的$el重新赋值，因为之前被remove掉了
+        // TODO 理论上可以去掉 因为在canvas.append的时候已经判断过$el了，但是在hover的时候还是会报错
         if (this.lockType === 'redo') {
           this._actions[this._actionIdx].data.$el = d.data.$el
         }
@@ -122,7 +123,8 @@ export class Command {
       [C_A_A]: data => {
         // 因为deepclone 导致parent是一个新的对象 这里重新从model里找到parent
         const realParent = this.model.findVmByKey('$el', data.parent.$el)
-        this.__canvas__.append(data, data.parent.$el, realParent)
+        const $targetEl = data.parent.$el.children[0]
+        this.__canvas__.append(data, $targetEl, realParent)
       },
       [C_A_D]: data => {
         this.__canvas__.remove(data)
@@ -143,6 +145,7 @@ export class Command {
   }
 
   _emitChange() {
-    this.onChange && this.onChange({ canRedo: this.canRedo, canUndo: this.canUndo })
+    const { canRedo, canUndo } = this
+    this.onChange && this.onChange({ canRedo, canUndo })
   }
 }

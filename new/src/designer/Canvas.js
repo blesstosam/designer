@@ -158,6 +158,8 @@ export class Canvas {
       }
     })
 
+    // TODO 支持从前面，中间插入元素
+
     this.__dragDrop__.bindDragOver(this.$canvasEl)
 
     this.__dragDrop__.bindDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
@@ -356,7 +358,8 @@ export class Canvas {
   appendDom(d, container) {
     const isLayout = d.componentType === LAYOUT
     const wrapper = this._createNodebox(isLayout, d.isBlock)
-    const res = d.render()
+    // 如果是点击下一步按钮，此时的$el已经生成了，可以复用
+    const res = d.$el || d.render()
     $(res).attr({ 'data-name': d.name })
     wrapper.appendChild(res)
 
@@ -388,8 +391,9 @@ export class Canvas {
       }
       // true
     )
-    wrapper.addEventListener('mouseenter', e => {
-      const node = this.model.findVmByKey('$el', e.target)
+    wrapper.addEventListener('mouseover', e => {
+      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
+      const node = this.model.findVmByKey('$el', $nodeBoxEl)
       if (this.hover) {
         this.hover.update(node)
       } else {
@@ -398,7 +402,8 @@ export class Canvas {
       }
     })
     wrapper.addEventListener('mouseleave', e => {
-      this.hover && this.hover.remove(this.model.findVmByKey('$el', e.target))
+      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
+      this.hover && this.hover.remove(this.model.findVmByKey('$el', $nodeBoxEl))
     })
 
     return wrapper
@@ -485,9 +490,9 @@ export class Canvas {
 
         const state = getData()
         if (component.accept.includes(state.data.name)) {
-          const dropedVm = this.model.findVmByKey('$el', $nodeboxEl)
-          if (dropedVm) {
-            this.append({ ...state.data, slotName }, e.target, dropedVm)
+          const dropedNode = this.model.findVmByKey('$el', $nodeboxEl)
+          if (dropedNode) {
+            this.append({ ...state.data, slotName }, e.target, dropedNode)
           }
         }
       },
@@ -551,7 +556,8 @@ export class Canvas {
         this.dropToInnerSlot = false
         removeDragEnterCls()
         this.removeMark()
-        this.showTip(e.target)
+        // 确保容器没有子元素
+        !e.target.children.length && this.showTip(e.target)
       }
     })
 

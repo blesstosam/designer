@@ -35,8 +35,8 @@ const VButtonComponent = {
     const p = parseProps(this.attrs)
     this.transformProps(p)
     this.props = reactive(p)
-    this.vm = genVueInstance(VButton, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VButton, this.props)
+    return vm.$el
   }
 }
 

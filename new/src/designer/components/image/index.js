@@ -20,8 +20,8 @@ const VImageComponent = {
   accept: [],
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VImage, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VImage, this.props)
+    return vm.$el
   }
 }
 export { VImageComponent, VImage }
