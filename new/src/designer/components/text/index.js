@@ -20,8 +20,8 @@ const VTextComponent = {
   accept: [],
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VText, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VText, this.props)
+    return vm.$el
   }
 }
 export { VTextComponent, VText }

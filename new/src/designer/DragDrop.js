@@ -75,6 +75,7 @@ export class DragDrop {
     state.target = null
     state.dropEnterTarget = null
     state.data = null
+    state.dropPos = { x: 0, y: 0 }
   }
 
   addDragEnterCls(e) {
@@ -109,6 +110,9 @@ export class DragDrop {
     target.addEventListener(EventTypes.drop, e => {
       opts.stop && e.stopPropagation()
       this.removeDragEnterCls()
+      state.dropPos.x = e.x
+      state.dropPos.y = e.y
+    
       cb && cb(this._getParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_DROPED)
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED, this._getParams(e))

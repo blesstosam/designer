@@ -20,8 +20,8 @@ const VDividerComponent = {
   accept: [],
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VDivider, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VDivider, this.props)
+    return vm.$el
   }
 }
 export { VDividerComponent, VDivider }

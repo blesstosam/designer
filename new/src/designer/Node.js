@@ -19,7 +19,7 @@ export class Node {
     this.accept = node.accept
     this.isBlock = !!node.isBlock
     node.slotName && (this.slotName = node.slotName)
-    this.vm = node.vm
+    node.vm && (this.vm = node.vm)
 
     // 是否是自定义组件
     this.isCustom = !!node.isCustom

@@ -20,8 +20,8 @@ const VTagComponent = {
   accept: [],
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VTag, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VTag, this.props)
+    return vm.$el
   }
 }
 export { VTagComponent, VTag }

@@ -19,8 +19,8 @@ const VColumnComponent = {
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))
-    this.vm = genVueInstance(VColumn, this.props)
-    return this.vm.$el
+    const vm = genVueInstance(VColumn, this.props)
+    return vm.$el
   }
 }
 

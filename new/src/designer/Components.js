@@ -117,7 +117,7 @@ export class Components {
                 render() {
                   // vm 是指微组件实例
                   const { el, vm } = mod.mount(document.createElement('div'))
-                  this.vm = vm
+                  // this.vm = vm
                   return el
                 }
               }
