@@ -43,6 +43,8 @@ this.__components__.init(MyComponentsView)
 3. 属性面板本质上是表单，所以使用 json schema 去描述。  
 定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
 
+4. 通信机制，eventBus
+
 # TODO
 
 | todo | 状态 | 增加时间 |
@@ -66,3 +68,5 @@ this.__components__.init(MyComponentsView)
 | 写一个log插件，记录每一次操作，打印在左侧角落 | - | 2021/7/16 |
 | 原生event绑定 | - | 2021/7/21 |
 | 组件event绑定，参数通过定义的schema传递过来 | - | 2021/7/27 |
+| viewModel去掉，使用Node | √ | 2021/8/1 |
+| 属性面板schema结构去掉嵌套，使用belong标示属于哪个类别 | - | 2021/8/1 |
