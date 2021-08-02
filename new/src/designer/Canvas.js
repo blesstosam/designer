@@ -30,6 +30,7 @@ const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 0
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
+const NODE_BOX_CLS = 'node-box'
 
 function getSlotName(el) {
   return el.getAttribute(SLOT_NAME_KEY)
@@ -47,7 +48,7 @@ export class Canvas {
     this.$canvasEl = null
     this.$markEl = null
     this.$tipEl = null
-    this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
+    this.dropToInnerSlot = false // 是否被拖入 nodebox 的 slot 容器
     this.model = null
     this.selection = null
     this.hover = null
@@ -141,14 +142,14 @@ export class Canvas {
       const state = getData()
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
-        const wrapNode = this.needInsertBefore
+        const wrapNode = this.insertBefore
           ? this.prepend(blockCom, this.$canvasEl, this.viewModel)
           : this.append(blockCom, this.$canvasEl, this.viewModel)
 
         const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
         this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
       } else {
-        const newNode = this.needInsertBefore
+        const newNode = this.insertBefore
           ? this.prepend(state.data, this.$canvasEl, this.viewModel)
           : this.append(state.data, this.$canvasEl, this.viewModel)
         const $firstSlotEl = lookdownByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
@@ -159,7 +160,7 @@ export class Canvas {
         // }
       }
       // reset
-      this.needInsertBefore = false
+      this.insertBefore = false
     })
 
     // TODO 支持从前面，中间插入元素
@@ -176,7 +177,7 @@ export class Canvas {
             top: rectPos.y + DROP_EL_PADDING,
             left: rectPos.left + DROP_EL_PADDING
           }
-          this.needInsertBefore = true
+          this.insertBefore = true
           this.showMark(pos, e.target, 'before')
         } else {
           const children = e.target.children
@@ -415,14 +416,14 @@ export class Canvas {
       e => {
         e.stopPropagation()
         // 查找 node-box 节点 更新当前节点 通知属性面板更新
-        const $nodeboxEl = lookupByClassName(e.target, 'node-box')
+        const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
         const node = this.model.findByEl($nodeboxEl)
         node && this.handleNodeboxSelect(node)
       }
       // true
     )
     wrapper.addEventListener('mouseover', e => {
-      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
+      const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
       const node = this.model.findByEl($nodeBoxEl)
       if (this.hover) {
         this.hover.update(node)
@@ -432,7 +433,7 @@ export class Canvas {
       }
     })
     wrapper.addEventListener('mouseleave', e => {
-      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
+      const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
       this.hover && this.hover.remove(this.model.findByEl($nodeBoxEl))
     })
 
@@ -490,7 +491,7 @@ export class Canvas {
    */
   _createNodebox(isLayout, isBlock) {
     const wrapper = $('<div>')
-      .addClass('node-box')
+      .addClass(NODE_BOX_CLS)
       .style({
         position: 'relative',
         boxSizing: 'border-box'
@@ -513,7 +514,7 @@ export class Canvas {
 
         // 找到node-box节点的子节点
         const slotName = getSlotName(e.target) || 'default'
-        const $nodeboxEl = lookupByClassName(e.target, 'node-box')
+        const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
         const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
         const component = this.__components__.findComByName(targetNodeboxName)
 
