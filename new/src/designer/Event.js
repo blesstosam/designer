@@ -1,54 +1,70 @@
+const DEFAULT_PRIORITY = 1000
+
 export class Event {
   constructor(name) {
     this.name = name
     this.subs = new Map()
   }
 
-  // TODO 目前监听是按照监听的先后来插入数组的，可以通过权重参数来实现插队，即权重大的监听先执行
-  on(type, cb) {
-    if (typeof type === 'string') {
-      this.onSingle(type, cb)
-    } else if (Array.isArray(type)) {
-      for (const t of type) {
-        this.onSingle(t, cb)
-      }
-    } else {
-      throw new Error(`Event.on: ${type} invalid, please pass a string or a array`)
+  on(type, priority, cb) {
+    if (typeof priority === 'function') {
+      cb = priority
+      priority = DEFAULT_PRIORITY
+    }
+
+    if (typeof priority !== 'number') {
+      throw new Error(`Event.on: priority must be a number`)
+    }
+
+    const types = typeof type === 'string' ? [type] : type
+    for (const t of types) {
+      this._onOne(t, priority, cb)
     }
   }
 
-  onSingle(type, cb) {
+  _onOne(type, priority, cb) {
     const origin = this.subs.get(type)
     if (origin) {
-      this.subs.set(type, [...origin, cb])
+      let index = 0
+      for (const item of origin) {
+        if (item.priority >= priority) {
+          index++
+        } else {
+          break
+        }
+      }
+      cb.priority = priority
+      origin.splice(index, 0, cb)
+      this.subs.set(type, origin)
     } else {
+      cb.priority = priority
       this.subs.set(type, [cb])
     }
   }
 
-  once(type, cb) {
+  once(type, priority, cb) {
+    if (typeof priority === 'function') {
+      cb = priority
+      priority = DEFAULT_PRIORITY
+    }
+
     const wrappedCb = (...args) => {
       // 先调用off是因为cb有可能执行报错 导致后面代码不能执行
       this.off(type, wrappedCb)
       const res = cb(...args)
       return res
     }
-    this.on(type, wrappedCb)
+    this.on(type, priority, wrappedCb)
   }
 
   off(type, cb) {
-    if (typeof type === 'string') {
-      this.offSingle(type, cb)
-    } else if (Array.isArray(type)) {
-      for (const t of type) {
-        this.offSingle(t, cb)
-      }
-    } else {
-      throw new Error(`Event.off: ${type} invalid, please pass a string or a array`)
+    const types = typeof type === 'string' ? [type] : type
+    for (const t of types) {
+      this._offOne(t, cb)
     }
   }
 
-  offSingle(type, cb) {
+  _offOne(type, cb) {
     const origin = this.subs.get(type)
     if (cb != undefined) {
       const index = origin.findIndex(i => i === cb)
@@ -61,12 +77,21 @@ export class Event {
   }
 
   emit(type, ...args) {
+    let res
     const origin = this.subs.get(type)
     if (origin && origin.length) {
-      for (const fn of origin) {
-        fn(...args)
+      // important: 必须copy一份 因为once的回调会在调用之后off掉，导致原始数组在变短
+      const originCopy = origin.slice()
+      for (const fn of originCopy) {
+        res = fn(...args)
       }
     }
+    return res
+  }
+
+  // clear all listeners
+  _destory() {
+    this.subs = new Map()
   }
 }
 
