@@ -128,6 +128,14 @@ export class Canvas {
         mount([data], this.viewModel)
       }
     })
+
+    // auto select appended node
+    this.__designer__.on(
+      C_A_A,
+      throttle(({ data }) => {
+        this.handleNodeboxSelect(data)
+      }, 500)
+    )
   }
 
   bindCanvasEvents() {
@@ -425,12 +433,7 @@ export class Canvas {
     wrapper.addEventListener('mouseover', e => {
       const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
       const node = this.model.findByEl($nodeBoxEl)
-      if (this.hover) {
-        this.hover.update(node)
-      } else {
-        this.hover = new Hover({}, this.__designer__)
-        this.hover.create(node)
-      }
+      this.handleNodeboxHover(node)
     })
     wrapper.addEventListener('mouseleave', e => {
       const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
@@ -484,6 +487,15 @@ export class Canvas {
     }
 
     this.__componentTree__ && this.__componentTree__.setCurrentKey(node.unique)
+  }
+
+  handleNodeboxHover(node) {
+    if (this.hover) {
+      this.hover.update(node)
+    } else {
+      this.hover = new Hover({}, this.__designer__)
+      this.hover.create(node)
+    }
   }
 
   /**
