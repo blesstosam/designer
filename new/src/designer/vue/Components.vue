@@ -30,6 +30,11 @@
   font-size: 12px;
   text-align: center;
   cursor: pointer;
+  transition: 200ms;
+}
+
+.com-item:hover {
+  transform: scale(1.1);
 }
 
 .custom-com-item {
