@@ -48,7 +48,7 @@
       @node-click="handleNodeClick"
     >
       <template #default="{ data }">
-        <span class="custom-tree-node">
+        <span class="custom-tree-node" @mouseenter="handleNodeMouseEnter(data, $event)">
           <img
             :src="data.icon && data.icon.value"
             style="width: 14px; margin-right: 6px; vertical-align: middle"
@@ -67,7 +67,8 @@ export default {
   props: {
     tree: Array,
     // vue 实例通过回调函数实现 emit
-    handleClick: Function
+    handleClick: Function,
+    handleMouseEnter: Function
   },
   data() {
     return {
@@ -103,6 +104,9 @@ export default {
     }
   },
   methods: {
+    handleNodeMouseEnter(d) {
+      this.handleMouseEnter && this.handleMouseEnter(d)
+    },
     handleNodeClick(d) {
       this.handleClick && this.handleClick(d)
     },

@@ -39,3 +39,33 @@ export function makeLogger(prefix) {
 export function isPlainObject(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]'
 }
+
+/**
+ * 防抖函数
+ */
+export function debounce(func, delay) {
+  let timer
+  return function(...args) {
+    if (timer) {
+      window.clearTimeout(timer)
+    }
+
+    timer = window.setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
+
+/**
+ * 截流函数
+ */
+export function throttle(func, timeFrame) {
+  let lastTime = 0
+  return function(...args) {
+    let now = new Date()
+    if (now - lastTime >= timeFrame) {
+      func(...args)
+      lastTime = now
+    }
+  }
+}

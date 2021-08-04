@@ -91,6 +91,9 @@ class DomUtil {
   get el() {
     return this.dom
   }
+  get firstElement() {
+    return this.dom.children[0]
+  }
 
   style(key, val) {
     if (typeof key === 'object') {
@@ -163,6 +166,11 @@ class DomUtil {
   addListener(event, handler) {
     this.dom.addEventListener(event, handler)
     return this
+  }
+
+  // 将元素插入到其子元素的开头
+  prepend(newNode) {
+    this.dom.insertBefore(newNode, this.dom.childNodes[0])
   }
 }
 

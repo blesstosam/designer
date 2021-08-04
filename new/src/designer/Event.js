@@ -139,6 +139,7 @@ export const EVENT_TYPES = {
 
   DRAG_START: 'drag.start',
   DRAG_END: 'drag.end',
+  DRAG_DRAG: 'drag.drag',
   DRAG_OVER: 'drag.over',
   DRAG_ENTER: 'drag.enter',
   DRAG_LEAVE: 'drag.leave',

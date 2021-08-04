@@ -24,18 +24,25 @@ export class ComponentTree {
     // Attr.js 里是直接使用 this.vueInstance 调用方法改变数据完成视图更新
     // 这里使用修改props
     const handleClick = d => {
-      const node = this.__canvas__.model.findVmByKey('unique', d.unique)
+      const node = this.__canvas__.model.findByKey('unique', d.unique)
       if (node) {
         this.__canvas__.handleNodeboxSelect(node)
+      }
+    }
+    const handleMouseEnter = d => {
+      const node = this.__canvas__.model.findByKey('unique', d.unique)
+      if (node) {
+        this.__canvas__.handleNodeboxHover(node)
       }
     }
     const props = reactive({
       tree: (data && data.children) || [],
       handleClick,
+      handleMouseEnter,
       ref: 'componentTree'
     })
     const app = createApp({
-      props: ['tree', 'handleClick', 'ref'],
+      props: ['tree', 'handleClick', 'handleMouseEnter', 'ref'],
       render: () => h(ComponentTreeVue, props)
     })
 

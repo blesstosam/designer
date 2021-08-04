@@ -10,10 +10,10 @@ import {
 import { Selection } from './Selection'
 import { componentTypes } from './Components'
 import { Node } from './Node'
-import { ViewModel } from './ViewModel'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
 import { changeProps } from './components/render-util'
+import { throttle } from './lib/util'
 
 const {
   SELECTION_DEL_CLICK: F_D_C,
@@ -30,6 +30,7 @@ const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 0
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
+const NODE_BOX_CLS = 'node-box'
 
 function getSlotName(el) {
   return el.getAttribute(SLOT_NAME_KEY)
@@ -47,7 +48,7 @@ export class Canvas {
     this.$canvasEl = null
     this.$markEl = null
     this.$tipEl = null
-    this.dropToInnerSlot = false // 是否被拖入 node-box 的 slot 容器
+    this.dropToInnerSlot = false // 是否被拖入 nodebox 的 slot 容器
     this.model = null
     this.selection = null
     this.hover = null
@@ -75,7 +76,7 @@ export class Canvas {
   }
 
   get viewModel() {
-    return this.model.data
+    return this.model
   }
 
   init(viewModel) {
@@ -88,18 +89,16 @@ export class Canvas {
         .style(canvasStyle).el)
       this.$canvasWrapEl.appendChild(div)
       if (viewModel != null) {
-        this.model = new ViewModel(new Node({ ...viewModel, $el: div }))
+        this.model = new Node({ ...viewModel, $el: div })
       } else {
         this.showTip()
-        this.model = new ViewModel(
-          new Node({
-            name: 'canvas',
-            $el: div,
-            children: [],
-            isRoot: true,
-            props: { style: canvasStyle }
-          })
-        )
+        this.model = new Node({
+          name: 'canvas',
+          $el: div,
+          children: [],
+          isRoot: true,
+          props: { style: canvasStyle }
+        })
       }
       // ------- for debug -----------
       window.model = this.model
@@ -129,6 +128,14 @@ export class Canvas {
         mount([data], this.viewModel)
       }
     })
+
+    // auto select appended node
+    this.__designer__.on(
+      C_A_A,
+      throttle(({ data }) => {
+        this.handleNodeboxSelect(data)
+      }, 500)
+    )
   }
 
   bindCanvasEvents() {
@@ -143,12 +150,16 @@ export class Canvas {
       const state = getData()
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
-        const wrapNode = this.append(blockCom, this.$canvasEl, this.viewModel)
+        const wrapNode = this.insertBefore
+          ? this.prepend(blockCom, this.$canvasEl, this.viewModel)
+          : this.append(blockCom, this.$canvasEl, this.viewModel)
 
         const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
         this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
       } else {
-        const newNode = this.append(state.data, this.$canvasEl, this.viewModel)
+        const newNode = this.insertBefore
+          ? this.prepend(state.data, this.$canvasEl, this.viewModel)
+          : this.append(state.data, this.$canvasEl, this.viewModel)
         const $firstSlotEl = lookdownByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
         $firstSlotEl && this.showTip($firstSlotEl)
         // const slotElArr = lookdownAllByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
@@ -156,33 +167,53 @@ export class Canvas {
         //   this.showTip(el)
         // }
       }
+      // reset
+      this.insertBefore = false
     })
 
     // TODO 支持从前面，中间插入元素
 
-    this.__dragDrop__.bindDragOver(this.$canvasEl)
+    this.__dragDrop__.bindDragOver(
+      this.$canvasEl,
+      throttle(({ $event: e }) => {
+        const { x, y, target } = e
+        let pos = {}
+        const rectPos = this.$canvasEl.getBoundingClientRect()
+        if (y < rectPos.y + DROP_EL_PADDING) {
+          pos = {
+            width: target.offsetWidth - DROP_EL_PADDING * 2,
+            top: rectPos.y + DROP_EL_PADDING,
+            left: rectPos.left + DROP_EL_PADDING
+          }
+          this.insertBefore = true
+          this.showMark(pos, e.target, 'before')
+        } else {
+          const children = e.target.children
+          if (children.length) {
+            const lastChild = children[children.length - 1]
+            const rectPos = lastChild.getBoundingClientRect()
+            pos = {
+              width: e.target.offsetWidth - DROP_EL_PADDING * 2,
+              left: rectPos.left,
+              top: rectPos.top + lastChild.offsetHeight + 2
+            }
+          } else {
+            const rectPos = e.target.getBoundingClientRect()
+            pos = {
+              width: e.target.offsetWidth,
+              left: rectPos.left,
+              top: rectPos.top + 2
+            }
+          }
+          this.showMark(pos, e.target)
+        }
+      }, 200)
+    )
 
     this.__dragDrop__.bindDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
       this.removeTip()
-
       console.log('wrapper enter...')
-      const pos = {}
-      const children = e.target.children
-      if (children.length) {
-        const lastChild = children[children.length - 1]
-        const rectPos = lastChild.getBoundingClientRect()
-        pos.width = e.target.offsetWidth - DROP_EL_PADDING * 2
-        pos.left = rectPos.left
-        pos.top = rectPos.top + lastChild.offsetHeight + 2
-      } else {
-        const rectPos = e.target.getBoundingClientRect()
-        pos.width = e.target.offsetWidth
-        pos.left = rectPos.left
-        pos.top = rectPos.top + 2
-      }
-
-      this.showMark(pos)
     })
 
     this.__dragDrop__.bindDragLeave(this.$canvasEl, ({ removeDragEnterCls }) => {
@@ -250,27 +281,30 @@ export class Canvas {
   }
 
   // TODO 是否用mousemove/mouseup来计算marker位置？
-  showMark(pos) {
+  showMark(pos, target, type = 'after') {
     const { width, left, top } = pos
     if (!this.$markEl) {
       const mark = (this.$markEl = $('<div>').style({
         borderTop: '3px solid #1989fa',
         background: '#eef1db',
-        position: 'absolute',
-        left: left + 'px',
-        top: top + 'px',
+        // position: 'absolute',
+        // left: left + 'px',
+        // top: top + 'px',
         width: width + 'px',
         height: '20px',
+        marginBottom: '12px',
         // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
         pointerEvents: 'none'
       }).el)
-      document.body.appendChild(mark)
+      type === 'before' ? $(target).prepend(mark) : target.appendChild(mark)
+      // document.body.appendChild(mark)
     } else {
       $(this.$markEl).style({
-        width: width + 'px',
-        left: left + 'px',
-        top: top + 'px'
+        width: width + 'px'
+        // left: left + 'px',
+        // top: top + 'px'
       })
+      type === 'before' ? $(target).prepend(this.$markEl) : target.appendChild(this.$markEl)
     }
   }
 
@@ -282,15 +316,14 @@ export class Canvas {
   clear() {
     const canvasStyle =
       (this.viewModel && this.viewModel.props.style) || this._getDefaultCanvasStyle()
-    this.model.init(
-      new Node({
-        name: 'canvas',
-        $el: this.viewModel.$el,
-        children: [],
-        isRoot: true,
-        props: { style: canvasStyle }
-      })
-    )
+    this.model = new Node({
+      name: 'canvas',
+      $el: this.viewModel.$el,
+      children: [],
+      isRoot: true,
+      props: { style: canvasStyle }
+    })
+
     this.$canvasEl.innerHTML = ''
     this.clearSelection()
     this.showTip()
@@ -331,7 +364,7 @@ export class Canvas {
         com.transformProps && (node.transformProps = com.transformProps)
 
         const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-        nodeArr[i] = this.append(node, targetEl, parent, false)
+        nodeArr[i] = this.append(node, targetEl, parent, true)
         if (node.children && node.children.length) {
           mount(node.children, nodeArr[i])
         }
@@ -343,9 +376,17 @@ export class Canvas {
   }
 
   append(com, container, parent, cancelDispatch = false) {
-    const wrap = this.appendDom(com, container)
+    const wrap = this.insertDom(com, container)
     const newNode = new Node({ ...com, $el: wrap }, parent)
-    this.model.appendTo(newNode, parent)
+    parent.append(newNode)
+    !cancelDispatch && this._dispathAppend(newNode)
+    return newNode
+  }
+
+  prepend(com, container, parent, cancelDispatch = false) {
+    const wrap = this.insertDom(com, container, 'before')
+    const newNode = new Node({ ...com, $el: wrap }, parent)
+    parent.prepend(newNode)
     !cancelDispatch && this._dispathAppend(newNode)
     return newNode
   }
@@ -354,56 +395,49 @@ export class Canvas {
    * 将组件插入到画布渲染
    * @param {*} d 被拖入组件的元数据
    * @param {Element} container 被拖入的容器（组件或最外层的画布）
+   * @param {enum} type: before|after 插入的位置
    */
-  appendDom(d, container) {
+  insertDom(d, container, type = 'after') {
     const isLayout = d.componentType === LAYOUT
     const wrapper = this._createNodebox(isLayout, d.isBlock)
-    // 如果是点击下一步按钮，此时的$el已经生成了，可以复用
-    const res = d.$el || d.render()
+    const res = d.$el || d.render() // 如果是点击下一步按钮，此时的$el已经生成了，可以复用
     $(res).attr({ 'data-name': d.name })
     wrapper.appendChild(res)
 
     // 当组件的slotname 为 default 时，直接插入到容器的末尾
     // 当组件的slotname 不为 default 时，需要查找对应的容器
     const slotName = d.slotName || 'default'
+    let realContainer = container
     if (slotName !== 'default') {
-      const _container = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
-      if (_container) _container.appendChild(wrapper)
+      realContainer = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
     } else {
       //  TODO 是否去掉该分支 明确要求布局组件要有c-slot-name属性
-      container.appendChild(wrapper)
+    }
+    if (realContainer) {
+      type === 'after' ? realContainer.appendChild(wrapper) : $(realContainer).prepend(wrapper)
     }
 
     this.scrollToBottom()
 
     wrapper.addEventListener(
       'click',
-      _e => {
-        console.log(_e.target)
-        _e.stopPropagation()
-
+      e => {
+        e.stopPropagation()
         // 查找 node-box 节点 更新当前节点 通知属性面板更新
-        const $nodeboxEl = lookupByClassName(_e.target, 'node-box')
-        const node = this.model.findVmByKey('$el', $nodeboxEl)
-        if (node) {
-          this.handleNodeboxSelect(node)
-        }
+        const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
+        const node = this.model.findByEl($nodeboxEl)
+        node && this.handleNodeboxSelect(node)
       }
       // true
     )
     wrapper.addEventListener('mouseover', e => {
-      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
-      const node = this.model.findVmByKey('$el', $nodeBoxEl)
-      if (this.hover) {
-        this.hover.update(node)
-      } else {
-        this.hover = new Hover({}, this.__designer__)
-        this.hover.create(node)
-      }
+      const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
+      const node = this.model.findByEl($nodeBoxEl)
+      this.handleNodeboxHover(node)
     })
     wrapper.addEventListener('mouseleave', e => {
-      const $nodeBoxEl = lookupByClassName(e.target, 'node-box')
-      this.hover && this.hover.remove(this.model.findVmByKey('$el', $nodeBoxEl))
+      const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
+      this.hover && this.hover.remove(this.model.findByEl($nodeBoxEl))
     })
 
     return wrapper
@@ -416,9 +450,8 @@ export class Canvas {
    * @param {*} val 属性值
    */
   patch(el, item, val) {
-    const node = this.model.findVmByKey('$el', el)
-    // 更新attrs
-    // TODO 有没有遍历 json schema 的库？
+    const node = this.model.findByEl(el)
+    // TODO 更新attrs 有没有遍历 json schema 的库？
     const configCates = node.attrs.properties.configs.items
     for (const cfgCate of configCates) {
       for (const cfg of cfgCate.properties.children.items) {
@@ -435,7 +468,7 @@ export class Canvas {
   }
 
   remove(node) {
-    const movedNode = this.model.removeVmByKey('$el', node.$el)
+    const movedNode = this.model.removeByKey('$el', node.$el)
     movedNode.$el.remove()
     this.clearSelection()
     setCurrentViewNodeModel(null)
@@ -456,12 +489,21 @@ export class Canvas {
     this.__componentTree__ && this.__componentTree__.setCurrentKey(node.unique)
   }
 
+  handleNodeboxHover(node) {
+    if (this.hover) {
+      this.hover.update(node)
+    } else {
+      this.hover = new Hover({}, this.__designer__)
+      this.hover.create(node)
+    }
+  }
+
   /**
    * 在节点外包一个div，监听 drop 事件
    */
   _createNodebox(isLayout, isBlock) {
     const wrapper = $('<div>')
-      .addClass('node-box')
+      .addClass(NODE_BOX_CLS)
       .style({
         position: 'relative',
         boxSizing: 'border-box'
@@ -474,7 +516,7 @@ export class Canvas {
       return wrapper
     }
 
-    $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', })
+    $(wrapper).style({ padding: NODE_BOX_PADDING + 'px' })
 
     this.__dragDrop__.bindDrop(
       wrapper,
@@ -484,13 +526,13 @@ export class Canvas {
 
         // 找到node-box节点的子节点
         const slotName = getSlotName(e.target) || 'default'
-        const $nodeboxEl = lookupByClassName(e.target, 'node-box')
-        const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
+        const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
+        const targetNodeboxName = $($nodeboxEl).firstElement.getAttribute('data-name')
         const component = this.__components__.findComByName(targetNodeboxName)
 
         const state = getData()
         if (component.accept.includes(state.data.name)) {
-          const dropedNode = this.model.findVmByKey('$el', $nodeboxEl)
+          const dropedNode = this.model.findByEl($nodeboxEl)
           if (dropedNode) {
             this.append({ ...state.data, slotName }, e.target, dropedNode)
           }
@@ -512,8 +554,9 @@ export class Canvas {
         }
 
         console.log('inner enter...')
+        // TODO 增加insertbefore逻辑
         const state = getData()
-        const pos = {}
+        let pos = {}
         const children = e.target.children
         if (children.length) {
           const lastChild = children[children.length - 1]
@@ -545,7 +588,7 @@ export class Canvas {
             pos.top = rectPos.top + 2
           }
         }
-        this.showMark(pos)
+        this.showMark(pos, e.target)
       },
       { stop: true }
     )
