@@ -60,10 +60,6 @@ export function debounce(func, delay) {
  * 截流函数
  */
 export function throttle(func, timeFrame) {
-<<<<<<< HEAD
-=======
-  console.log(timeFrame)
->>>>>>> d486ab01ecf7440696f82e13b807659d4b0cee82
   let lastTime = 0
   return function(...args) {
     let now = new Date()
