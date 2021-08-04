@@ -515,7 +515,7 @@ export class Canvas {
         // 找到node-box节点的子节点
         const slotName = getSlotName(e.target) || 'default'
         const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
-        const targetNodeboxName = $nodeboxEl.firstChild.getAttribute('data-name')
+        const targetNodeboxName = $($nodeboxEl).firstElement.getAttribute('data-name')
         const component = this.__components__.findComByName(targetNodeboxName)
 
         const state = getData()

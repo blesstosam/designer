@@ -91,6 +91,9 @@ class DomUtil {
   get el() {
     return this.dom
   }
+  get firstElement() {
+    return this.dom.children[0]
+  }
 
   style(key, val) {
     if (typeof key === 'object') {
