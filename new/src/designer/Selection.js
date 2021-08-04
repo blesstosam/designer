@@ -123,9 +123,9 @@ export class Selection {
         left: 0,
         position: 'absolute',
         border: '1px solid rgb(70, 128, 255)',
-        zIndex: 100,
-        boxSizing: 'border-box'
-        // pointerEvents: 'none'
+        zIndex: 2,
+        boxSizing: 'border-box',
+        pointerEvents: 'none'
       })
       .addClass('selection').el)
     this.node.$el.appendChild(div)
