@@ -26,7 +26,7 @@ const {
 } = EVENT_TYPES
 
 const { LAYOUT } = componentTypes
-const DROP_EL_PADDING = 8,
+export const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 0
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
@@ -58,7 +58,13 @@ export class Canvas {
     return getStyle(this.$canvasEl, 'width')
   }
   get height() {
-    return getStyle(this.$canvasEl, 'heighht')
+    return getStyle(this.$canvasEl, 'height')
+  }
+  get x() {
+    return this.$canvasEl.getBoundingClientRect().x
+  }
+  get y() {
+    return this.$canvasEl.getBoundingClientRect().y
   }
 
   // TODO 没有使用di的时候 只能一层层的找依赖
@@ -516,6 +522,8 @@ export class Canvas {
         wrapper.style.display = 'inline-block'
       }
       return wrapper
+    } else {
+      wrapper.style.border = '1px solid #dedede'
     }
 
     $(wrapper).style({ padding: NODE_BOX_PADDING + 'px' })

@@ -34,7 +34,7 @@ export default {
                     },
                     value: {
                       type: 'string',
-                      default: '文字'
+                      default: '标签'
                     }
                   }
                 },

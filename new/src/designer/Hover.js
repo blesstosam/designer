@@ -86,10 +86,10 @@ export class Hover {
 
   _getPos(width, height) {
     return {
-      width: width +  'px',
-      height: height +'px',
-      top: '0px',
-      left: '0px'
+      width: width + 'px',
+      height: height + 'px',
+      top: 0,
+      left: 0
     }
   }
 
