@@ -35,7 +35,7 @@
       </svg>
       <span>组件树</span>
     </div>
-    
+
     <el-tree
       ref="tree"
       empty-text="暂无组件"
@@ -48,7 +48,11 @@
       @node-click="handleNodeClick"
     >
       <template #default="{ data }">
-        <span class="custom-tree-node" @mouseenter="handleNodeMouseEnter(data, $event)">
+        <span
+          class="custom-tree-node"
+          @mouseenter="handleNodeMouseEnter(data, $event)"
+          @mouseleave="handleNodeMouseLeave(data, $event)"
+        >
           <img
             :src="data.icon && data.icon.value"
             style="width: 14px; margin-right: 6px; vertical-align: middle"
@@ -68,7 +72,8 @@ export default {
     tree: Array,
     // vue 实例通过回调函数实现 emit
     handleClick: Function,
-    handleMouseEnter: Function
+    handleMouseEnter: Function,
+    handleMouseLeave: Function
   },
   data() {
     return {
@@ -106,6 +111,9 @@ export default {
   methods: {
     handleNodeMouseEnter(d) {
       this.handleMouseEnter && this.handleMouseEnter(d)
+    },
+    handleNodeMouseLeave() {
+      this.handleMouseLeave && this.handleMouseLeave()
     },
     handleNodeClick(d) {
       this.handleClick && this.handleClick(d)

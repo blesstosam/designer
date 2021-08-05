@@ -159,7 +159,8 @@ export class Selection {
         borderRadius: '2px',
         fontSize: '12px',
         overflow: 'hidden',
-        fontWeight: 500
+        fontWeight: 500,
+        pointerEvents: 'all'
       })
       .text(this.node.title).el)
     this.$recEl.appendChild(div)
@@ -180,7 +181,8 @@ export class Selection {
       position: 'absolute',
       right: this._getBtnRightVal(type),
       top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
-      cursor:type === 'move' ? 'move' : 'pointer'
+      cursor:type === 'move' ? 'move' : 'pointer',
+      pointerEvents: 'all'
     }).el
     const img = $('<img>')
       .attr('src', `/${type}.png`)
