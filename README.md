@@ -70,4 +70,5 @@ this.__components__.init(MyComponentsView)
 | 组件event绑定，参数通过定义的schema传递过来 | - | 2021/7/27 |
 | viewModel去掉，使用Node | √ | 2021/8/1 |
 | 属性面板schema结构去掉嵌套，使用belong标示属于哪个类别 | - | 2021/8/1 |
-| 将hover改为div盒子🧐 | - | 2021/8/4 |
+| 将hover改为div盒子🧐 | √ | 2021/8/4 |
+| hover效果加一个移动渐变效果 | - | 2021/8/4 |

@@ -1,17 +1,27 @@
 import { ResizeObserver } from '@juggle/resize-observer'
 import { componentTypes } from './Components'
+import { DROP_EL_PADDING } from './Canvas'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
+const getBtnsWidth = isLayout => (isLayout ? 100 : 75)
+
 export class Selection {
   constructor(desginer) {
+    window.selection = this
     this.__designer__ = desginer
+    this.DISTANCE_TO_TOP = this.__canvas__.y + DROP_EL_PADDING + 25 // 距离顶部距离,25为按钮的高度
+    this.DISTANCE_TO_LEFT = this.__canvas__.x + DROP_EL_PADDING // 距离左边距离
     this.node = null
+
     this.$recEl = null
     this.$recDelBtn = null
     this.$recCopyBtn = null
     this.$recMoveBtn = null
-    this.btnPos = 'top'
+
+    this.btnVPos = 'top'
+    this.btnHPos = 'right'
+
     this.initListener()
 
     // 还有一种hack方法 使用iframe的resize https://www.npmjs.com/package/simple-element-resize-detector
@@ -22,6 +32,10 @@ export class Selection {
         this.initedOb = true
       }
     })
+  }
+
+  get __canvas__() {
+    return this.__designer__.__canvas__
   }
 
   get isLayout() {
@@ -50,20 +64,17 @@ export class Selection {
     this.observer.disconnect()
   }
 
-  // btnPos = 'bottom' | 'top'
-  decideBtnPos(top) {
-    // 85 为距离顶部距离
-    if (top < 85) {
-      this.btnPos = 'bottom'
-    } else {
-      this.btnPos = 'top'
-    }
+  // btnVPos = bottom | top
+  // btnHPos = left | right
+  decideBtnPos(top, right) {
+    this.btnVPos = top < this.DISTANCE_TO_TOP ? 'bottom' : 'top'
+    this.btnHPos = right < this.DISTANCE_TO_LEFT + getBtnsWidth(this.isLayout) ? 'left' : 'right'
   }
 
   create(node) {
     this.node = node
     const offset = this._getOffset()
-    this.decideBtnPos(offset.top)
+    this.decideBtnPos(offset.top, offset.width + offset.left)
     this._createSelection(offset)
     this._createTitle(offset)
     this._createBtn('delete', offset)
@@ -82,7 +93,7 @@ export class Selection {
     }
 
     const offset = this._getOffset()
-    this.decideBtnPos(offset.top)
+    this.decideBtnPos(offset.top, offset.width + offset.left)
     this._updateSelection(offset)
     this._updateTitle(offset)
     this._updateBtn('delete', offset)
@@ -147,8 +158,8 @@ export class Selection {
     const div = (this.$recTitleEl = $('<div>')
       .style({
         position: 'absolute',
-        right: this._getBtnRightVal('title', offset),
-        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
+        ...this._getBtnHPos('title'),
+        top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`,
         cursor: 'pointer',
         background: '#1989fa',
         color: 'white',
@@ -171,17 +182,17 @@ export class Selection {
     $(this.$recTitleEl)
       .text(this.node.title)
       .style({
-        right: this._getBtnRightVal('title'),
-        top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
+        ...this._getBtnHPos('title'),
+        top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`
       })
   }
 
   _createBtn(type, offset) {
     const div = $('<div>').style({
       position: 'absolute',
-      right: this._getBtnRightVal(type),
-      top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`,
-      cursor:type === 'move' ? 'move' : 'pointer',
+      ...this._getBtnHPos(type),
+      top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`,
+      cursor: type === 'move' ? 'move' : 'pointer',
       pointerEvents: 'all'
     }).el
     const img = $('<img>')
@@ -233,8 +244,8 @@ export class Selection {
       move: this.$recMoveBtn
     }
     $(map[type]).style({
-      right: this._getBtnRightVal(type),
-      top: this.btnPos === 'top' ? '-21px' : `${offset.height}px`
+      ...this._getBtnHPos(type),
+      top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`
     })
   }
 
@@ -254,14 +265,23 @@ export class Selection {
     }
   }
 
-  _getBtnRightVal(type) {
-    const map = {
-      delete: 0,
-      copy: '23px',
-      move: this.isLayout ? '46px' : '23px',
-      title: this.isLayout ? '69px' : '46px'
+  _getBtnHPos(type) {
+    if (this.btnHPos === 'right') {
+      const map = {
+        delete: 0,
+        copy: '23px',
+        move: this.isLayout ? '46px' : '23px',
+        title: this.isLayout ? '69px' : '46px'
+      }
+      return { left: null, right: map[type] }
     }
-    return map[type]
+    const map = {
+      delete: this.isLayout ? '80px' : '56px',
+      copy: '56px',
+      move: '33px',
+      title: 0
+    }
+    return { left: map[type], right: null }
   }
 
   _getOffset() {
