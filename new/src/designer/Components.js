@@ -51,7 +51,7 @@ export class Components {
   }
 
   // 给组件绑定数据和事件
-  bindEvent(target) {
+  _bindEvent(target) {
     this.__dragDrop__.bindDragStart(target, ({ $event: e, setData }) => {
       console.log('drag start...')
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLS)
@@ -75,7 +75,7 @@ export class Components {
       .attr('component-type', com.componentType)
       .addClass(COMPONENT_EL_CLS)
 
-    this.bindEvent(comEl)
+    this._bindEvent(comEl)
     this._hasRegistered.push(com)
     return com
   }
@@ -141,5 +141,9 @@ export class Components {
 
   findComByName(name) {
     return this._hasRegistered.find(c => c.name === name)
+  }
+
+  renderComponent() {
+    // todo 是否将render相关逻辑从canvas里抽出来
   }
 }

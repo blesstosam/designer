@@ -35,10 +35,14 @@ export class ComponentTree {
         this.__canvas__.handleNodeboxHover(node)
       }
     }
+    const handleMouseLeave = () => {
+      this.__canvas__.handleNodeboxHoverRemove()
+    }
     const props = reactive({
       tree: (data && data.children) || [],
       handleClick,
       handleMouseEnter,
+      handleMouseLeave,
       ref: 'componentTree'
     })
     const app = createApp({

@@ -46,7 +46,7 @@ export class Canvas {
     this.__designer__ = designer
     this.$canvasWrapEl = document.querySelector(this.config.canvasWrap)
     this.$canvasEl = null
-    this.$markEl = null
+    this.$markerEl = null
     this.$tipEl = null
     this.dropToInnerSlot = false // 是否被拖入 nodebox 的 slot 容器
     this.model = null
@@ -146,7 +146,8 @@ export class Canvas {
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
     this.__dragDrop__.bindDrop(this.$canvasEl, ({ getData }) => {
       console.log('drop...')
-      this.removeMark()
+      this.removeMarker()
+
       const state = getData()
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
@@ -171,8 +172,6 @@ export class Canvas {
       this.insertBefore = false
     })
 
-    // TODO 支持从前面，中间插入元素
-
     this.__dragDrop__.bindDragOver(
       this.$canvasEl,
       throttle(({ $event: e }) => {
@@ -186,7 +185,7 @@ export class Canvas {
             left: rectPos.left + DROP_EL_PADDING
           }
           this.insertBefore = true
-          this.showMark(pos, e.target, 'before')
+          this.showMarker(pos, e.target, 'before')
         } else {
           const children = e.target.children
           if (children.length) {
@@ -205,7 +204,7 @@ export class Canvas {
               top: rectPos.top + 2
             }
           }
-          this.showMark(pos, e.target)
+          this.showMarker(pos, e.target)
         }
       }, 200)
     )
@@ -220,7 +219,7 @@ export class Canvas {
       console.log('wraper leave...')
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
-        this.removeMark()
+        this.removeMarker()
         !this.viewModel && this.showTip()
       }
     })
@@ -281,10 +280,10 @@ export class Canvas {
   }
 
   // TODO 是否用mousemove/mouseup来计算marker位置？
-  showMark(pos, target, type = 'after') {
+  showMarker(pos, target, type = 'after') {
     const { width, left, top } = pos
-    if (!this.$markEl) {
-      const mark = (this.$markEl = $('<div>').style({
+    if (!this.$markerEl) {
+      const marker = (this.$markerEl = $('<div>').style({
         borderTop: '3px solid #1989fa',
         background: '#eef1db',
         // position: 'absolute',
@@ -296,21 +295,20 @@ export class Canvas {
         // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给mark元素加上 `pointerEvents:none`
         pointerEvents: 'none'
       }).el)
-      type === 'before' ? $(target).prepend(mark) : target.appendChild(mark)
-      // document.body.appendChild(mark)
+      type === 'before' ? $(target).prepend(marker) : target.appendChild(marker)
     } else {
-      $(this.$markEl).style({
+      $(this.$markerEl).style({
         width: width + 'px'
         // left: left + 'px',
         // top: top + 'px'
       })
-      type === 'before' ? $(target).prepend(this.$markEl) : target.appendChild(this.$markEl)
+      type === 'before' ? $(target).prepend(this.$markerEl) : target.appendChild(this.$markerEl)
     }
   }
 
-  removeMark() {
-    this.$markEl && this.$markEl.remove()
-    this.$markEl = null
+  removeMarker() {
+    this.$markerEl && this.$markerEl.remove()
+    this.$markerEl = null
   }
 
   clear() {
@@ -436,8 +434,8 @@ export class Canvas {
       this.handleNodeboxHover(node)
     })
     wrapper.addEventListener('mouseleave', e => {
-      const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
-      this.hover && this.hover.remove(this.model.findByEl($nodeBoxEl))
+      // const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
+      this.handleNodeboxHoverRemove()
     })
 
     return wrapper
@@ -498,6 +496,10 @@ export class Canvas {
     }
   }
 
+  handleNodeboxHoverRemove() {
+    this.hover && this.hover.remove()
+  }
+
   /**
    * 在节点外包一个div，监听 drop 事件
    */
@@ -522,7 +524,7 @@ export class Canvas {
       wrapper,
       ({ $event: e, getData }) => {
         this.dropToInnerSlot = false
-        this.removeMark()
+        this.removeMarker()
 
         // 找到node-box节点的子节点
         const slotName = getSlotName(e.target) || 'default'
@@ -588,7 +590,7 @@ export class Canvas {
             pos.top = rectPos.top + 2
           }
         }
-        this.showMark(pos, e.target)
+        this.showMarker(pos, e.target)
       },
       { stop: true }
     )
@@ -598,7 +600,7 @@ export class Canvas {
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = false
         removeDragEnterCls()
-        this.removeMark()
+        this.removeMarker()
         // 确保容器没有子元素
         !e.target.children.length && this.showTip(e.target)
       }
