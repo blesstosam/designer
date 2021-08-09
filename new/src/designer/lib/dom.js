@@ -124,6 +124,9 @@ class DomUtil {
 
     return this
   }
+  getAttr(key) {
+    return this.dom.getAttribute(key)
+  }
 
   addClass(cls) {
     this.dom.classList.add(cls)
