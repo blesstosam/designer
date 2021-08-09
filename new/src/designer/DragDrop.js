@@ -1,7 +1,9 @@
 import { EVENT_TYPES } from './Event'
+import { $ } from './lib/dom'
 
 const state = {
   dragging: false, // 是否在拖拽
+  dragImage: null,
   target: null, // 当前被拖拽的组件dom
   dropEnterTarget: null, // 拖入目标触发dropEnter的dom
   data: null, // 当前组件的描述对象 每次在drop之后重置
@@ -73,6 +75,8 @@ export class DragDrop {
 
   resetData() {
     state.dragging = false
+    state.dragImage && state.dragImage.remove()
+    state.dragImage = null
     state.target = null
     state.dropEnterTarget = null
     state.data = null
@@ -88,11 +92,36 @@ export class DragDrop {
     state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
   }
 
+  renderDragImage(target) {
+    const el = $('<div>')
+      .style({
+        position: 'fixed',
+        top: '-1000px',
+        left: 0,
+        padding: '8px 16px',
+        background: '#222',
+        color: '#fff'
+      })
+      .text(
+        $(target)
+          .addClass('drag-image')
+          .getAttr('com-title')
+      ).el
+    document.body.appendChild(el)
+    return el
+  }
+
   bindDragStart(target, cb) {
     target.addEventListener(EventTypes.dragstart, e => {
       e.dataTransfer.effectAllowed = this.effectAllowed
+      e.dataTransfer.dropEffect = this.dropEffect
+
+      const dragImage = this.renderDragImage(e.target)
+      e.dataTransfer.setDragImage(dragImage, 0, 0)
+
       this.setData('dragging', true)
       this.setData('target', e.target)
+      this.setData('dragImage', dragImage)
       cb && cb(this._getParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_START)
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG, this._getParams(e))
