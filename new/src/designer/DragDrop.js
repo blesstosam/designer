@@ -107,6 +107,7 @@ export class DragDrop {
           .addClass('drag-image')
           .getAttr('com-title')
       ).el
+    // the drag image need to append to dom
     document.body.appendChild(el)
     return el
   }
