@@ -124,6 +124,9 @@ class DomUtil {
 
     return this
   }
+  getAttr(key) {
+    return this.dom.getAttribute(key)
+  }
 
   addClass(cls) {
     this.dom.classList.add(cls)
@@ -168,9 +171,22 @@ class DomUtil {
     return this
   }
 
-  // 将元素插入到其子元素的开头
+  // 将元素插入到当前子元素的末尾
+  append(newNode) {
+    this.dom.appendChild(newNode)
+  }
+  // 将元素插入到当前子元素的开头
   prepend(newNode) {
     this.dom.insertBefore(newNode, this.dom.childNodes[0])
+  }
+  // 将元素插入到当前元素的开头
+  after(newNode) {
+    this.dom.parentNode.appendChild(newNode)
+  }
+  // 将元素插入到当前元素的末尾
+  before(newNode) {
+    // debugger
+    this.dom.parentNode.insertBefore(newNode, this.dom)
   }
 }
 
