@@ -181,11 +181,19 @@ class DomUtil {
   }
   // 将元素插入到当前元素的开头
   after(newNode) {
-    this.dom.parentNode.appendChild(newNode)
+    const childNodes = this.dom.parentNode.childNodes
+    if (!childNodes.length) {
+      this.dom.parentNode.appendChild(newNode)
+    } else {
+      if (this.dom === childNodes[childNodes.length - 1]) {
+        this.dom.parentNode.appendChild(newNode)
+      } else {
+        this.dom.nextSibling.before(newNode)
+      }
+    }
   }
   // 将元素插入到当前元素的末尾
   before(newNode) {
-    // debugger
     this.dom.parentNode.insertBefore(newNode, this.dom)
   }
 }
