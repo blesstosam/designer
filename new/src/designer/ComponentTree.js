@@ -46,7 +46,7 @@ export class ComponentTree {
       ref: 'componentTree'
     })
     const app = createApp({
-      props: ['tree', 'handleClick', 'handleMouseEnter', 'ref'],
+      props: ['tree', 'handleClick', 'handleMouseEnter', 'handleMouseLeave', 'ref'],
       render: () => h(ComponentTreeVue, props)
     })
 
@@ -54,11 +54,7 @@ export class ComponentTree {
     this.vueInstance = app.mount(this.config.componentTreeWrap)
     this.vueInstance.__componentTree__ = this
     this.__designer__.on([C_A_D, C_A_A], payload => {
-      const {
-        type,
-        viewModel: { children = [] }
-      } = payload
-
+      const { type, viewModel: { children = [] } } = payload
       // TODO 要使用浅拷贝一遍才会触发视图更新?
       props.tree = [...children]
     })
