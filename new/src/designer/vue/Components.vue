@@ -174,6 +174,7 @@
               v-for="(item, index) in layoutCom"
               :key="index"
               :com-name="item.name"
+              :com-title="item.title"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
               <div style="margin-top: 2px">{{ item.title }}</div>
@@ -187,6 +188,7 @@
               v-for="(item, index) in viewCom"
               :key="index"
               :com-name="item.name"
+              :com-title="item.title"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
               <div style="margin-top: 2px">{{ item.title }}</div>
@@ -200,6 +202,7 @@
               v-for="(item, index) in formCom"
               :key="index"
               :com-name="item.name"
+              :com-title="item.title"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
               <div style="margin-top: 2px">{{ item.title }}</div>
@@ -213,6 +216,7 @@
               v-for="(item, index) in customComList"
               :key="index"
               :com-name="item.name"
+              :com-title="item.title"
             >
               <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
               <div style="margin-top: 2px">{{ item.title }}</div>
