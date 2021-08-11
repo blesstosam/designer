@@ -32,7 +32,7 @@ export class LoggerPlugin {
       const type = data.type === EVENT_TYPES.CANVAS_ACTIONS_APPEND ? '插入' : ''
       props.logs.push({
         title: `${type}${data.data.title}`,
-        timestamp: new Date().toISOString().split('.').shift()
+        timestamp: new Date().toISOString().split('.').shift().replace('T', ' ')
       })
       // this.appendLog('插入' + data.data.title)
     })
