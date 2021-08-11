@@ -313,7 +313,7 @@ export class Canvas {
       }
       if (!this.$markerEl) {
         this.$markerEl = $('<div>').style({
-          // background: '#eef1db',
+          display: 'flex',
           background: '#1989fa',
           height: '3px',
           pointerEvents: 'auto', // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给marker元素加上 `pointerEvents:none`
@@ -651,32 +651,25 @@ export class Canvas {
         console.log('inner over...')
         const { y, target } = e
         const rectPos = target.getBoundingClientRect()
-        console.log(rectPos.y, rectPos.height, y)
+        // console.log(rectPos.y, rectPos.height, y)
 
         const state = getData()
         const style = {
           width: state.data.isBlock ? e.target.offsetWidth - NODE_BOX_PADDING * 2 + 'px' : '100px'
         }
-        if (e.target.children.length) {
-          const children = e.target.children
-          const lastChild = children[children.length - 1]
-          if (!state.data.isBlock) {
-            style.display = getStyle(lastChild, 'display') === 'block' ? 'block' : 'inline-block'
-          }
-        }
 
-        // 10px是精度，可以调整
-        if (y - rectPos.y <= 10) {
+        // 5px是精度，可以调整
+        if (y - rectPos.y <= 5) {
           this.insertType = InsertTypes.BEFORE
           this.showMarker(style, lookupByClassName(target, NODE_BOX_CLS), this.insertType)
-        } else if (rectPos.y + rectPos.height - y <= 10) {
+        } else if (rectPos.y + rectPos.height - y <= 5) {
           this.insertType = InsertTypes.AFTER
           this.showMarker(style, lookupByClassName(target, NODE_BOX_CLS), this.insertType)
         } else {
           this.insertType = InsertTypes.APPEND
           this.showMarker(style, target, this.insertType)
         }
-        console.log(this.insertType, 'insertPos')
+        // console.log(this.insertType, 'insertPos')
       }, 200),
       { stop: true }
     )

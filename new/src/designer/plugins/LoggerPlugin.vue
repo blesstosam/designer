@@ -21,6 +21,9 @@
 .logger-plugun-wrap .item:hover {
   background-color: #f0f7ff;
 }
+.logger-plugun-wrap .time {
+  font-family: ui-monospace;
+}
 </style>
 
 <template>
@@ -57,7 +60,7 @@
           :key="index"
         >
           <div>{{ log.title }}</div>
-          <div>{{ log.timestamp }}</div>
+          <div class="time">{{ log.timestamp }}</div>
         </div>
       </div>
       <div v-else style="color: #666; text-align: center">暂无日志</div>
