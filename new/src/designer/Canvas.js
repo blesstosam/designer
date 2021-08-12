@@ -170,7 +170,7 @@ export class Canvas {
     // 只拖入子容器 inner enter => inner leave => wrap leave
     // 只拖入父容器 wrap enter => wrap leave
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
-    this.__dragDrop__.bindDrop(this.$canvasEl, ({ getData }) => {
+    this.__dragDrop__.onDrop(this.$canvasEl, ({ getData }) => {
       console.log('wrapper drop...')
       this.removeMarker()
 
@@ -187,7 +187,7 @@ export class Canvas {
       this.resetInsertInfo()
     })
 
-    this.__dragDrop__.bindDragOver(
+    this.__dragDrop__.onDragOver(
       this.$canvasEl,
       throttle(({ $event: e }) => {
         console.log('wrapper over...')
@@ -219,13 +219,13 @@ export class Canvas {
     )
 
     // enter 比 over 先触发
-    this.__dragDrop__.bindDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
+    this.__dragDrop__.onDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
       this.removeTip()
       console.log('wrapper enter...')
     })
 
-    this.__dragDrop__.bindDragLeave(this.$canvasEl, ({ removeDragEnterCls }) => {
+    this.__dragDrop__.onDragLeave(this.$canvasEl, ({ removeDragEnterCls }) => {
       console.log('wrapper leave...')
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
@@ -579,7 +579,7 @@ export class Canvas {
 
     $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', border: '1px solid #dedede' })
 
-    this.__dragDrop__.bindDrop(
+    this.__dragDrop__.onDrop(
       wrapper,
       ({ $event: e, getData }) => {
         console.log('inner drop...')
@@ -645,7 +645,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.bindDragOver(
+    this.__dragDrop__.onDragOver(
       wrapper,
       throttle(({ $event: e, getData }) => {
         console.log('inner over...')
@@ -674,7 +674,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.bindDragEnter(
+    this.__dragDrop__.onDragEnter(
       wrapper,
       ({ $event: e, addDragEnterCls }) => {
         // 当被拖到 布局组件 slot 里才触发
@@ -690,7 +690,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.bindDragLeave(wrapper, ({ $event: e, removeDragEnterCls }) => {
+    this.__dragDrop__.onDragLeave(wrapper, ({ $event: e, removeDragEnterCls }) => {
       console.log('inner leave...')
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = false

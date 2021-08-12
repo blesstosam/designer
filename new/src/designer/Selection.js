@@ -49,11 +49,11 @@ export class Selection {
     }
     window.addEventListener('resize', this._cb)
 
-    this.__designer__.on(EVENT_TYPES.COMPONENTS_DRAG, () => {
+    this.__designer__.on(EVENT_TYPES.COMPONENTS_DRAG_START, () => {
       this.$recEl.style.zIndex = -1
     })
     this.__designer__.on(EVENT_TYPES.COMPONENTS_DROPED, () => {
-      this.$recEl.style.zIndex = 100
+      this.$recEl.style.zIndex = 2
     })
   }
 
