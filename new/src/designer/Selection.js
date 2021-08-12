@@ -8,6 +8,7 @@ const getBtnsWidth = isLayout => (isLayout ? 100 : 75)
 
 export class Selection {
   constructor(desginer) {
+    // ----- for debug -----
     window.selection = this
     this.__designer__ = desginer
     this.DISTANCE_TO_TOP = this.__canvas__.y + DROP_EL_PADDING + 25 // 距离顶部距离,25为按钮的高度

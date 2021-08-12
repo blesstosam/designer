@@ -4,7 +4,6 @@ const nodeMap = new Map()
 
 export class Node {
   constructor(node, parent) {
-    this.__version__ = '1.0.0'
     this.name = node.name
     this.title = node.title
     this.unique = node.unique || randomString()
@@ -13,7 +12,10 @@ export class Node {
     this.props = node.props
     this.attrs = node.attrs
     this.$el = node.$el
-    node.isRoot && (this.isRoot = node.isRoot)
+    if (node.isRoot) {
+      this.isRoot = node.isRoot
+      this.__version__ = '1.0.0'
+    }
 
     this.children = []
     parent && (this.parent = parent)
@@ -55,7 +57,7 @@ export class Node {
   get firstChild() {
     return this.children[0]
   }
-  
+
   get lastChild() {
     return this.children[this.children.length - 1]
   }
@@ -70,13 +72,13 @@ export class Node {
     nodeMap.set(node.$el, node)
   }
 
-  insertBefore(node) {
-    this.parent.children.splice(index, 0, node)
+  before(node) {
+    this.parent.children.splice(this.index, 0, node)
     nodeMap.set(node.$el, node)
   }
 
-  insertAfter(node) {
-    this.parent.children.splice(index+1, 0, node)
+  after(node) {
+    this.parent.children.splice(this.index + 1, 0, node)
     nodeMap.set(node.$el, node)
   }
 

@@ -1,4 +1,3 @@
-import { componentTypes } from './Components'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
@@ -24,10 +23,6 @@ export class Hover {
   get isTargetSelected() {
     return this.selection && this.selection.node.$el === this.node.$el
   }
-
-  // getIsLayout(node) {
-  //   return node.componentType === componentTypes.LAYOUT
-  // }
 
   create(node) {
     this.node = node
@@ -87,7 +82,7 @@ export class Hover {
   _getPos(width, height) {
     return {
       width: width + 'px',
-      height: height + 'px',
+      height: height - 1 + 'px',
       top: 0,
       left: 0
     }

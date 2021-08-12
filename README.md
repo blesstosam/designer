@@ -45,6 +45,8 @@ this.__components__.init(MyComponentsView)
 
 4. 通信机制，eventBus
 
+5. 组件框架无关
+
 # TODO
 
 | todo | 状态 | 增加时间 |
@@ -72,3 +74,5 @@ this.__components__.init(MyComponentsView)
 | 属性面板schema结构去掉嵌套，使用belong标示属于哪个类别 | - | 2021/8/1 |
 | 将hover改为div盒子🧐 | √ | 2021/8/4 |
 | hover效果加一个移动渐变效果 | - | 2021/8/4 |
+| 组件是框架无关的，vue/react/原生/svg/canvas都可以作为组件加载，只要符合组件规范 | - | 2021/8/6 |
+| setDragImage其他方法实现,使用mousemove事件插入自定义元素，改变x，y值 | - | 2021/8/9 |

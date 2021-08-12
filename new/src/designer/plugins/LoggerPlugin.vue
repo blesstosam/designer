@@ -11,14 +11,18 @@
   margin-left: 6px;
   vertical-align: top;
 }
-.logger-plugun-wrap .wrap {
-  padding: 0 8px;
-}
 .logger-plugun-wrap .wrap .item {
-  padding: 8px 0;
+  padding: 8px 8px;
   display: flex;
   justify-content: space-between;
   font-size: 13px;
+  cursor: pointer;
+}
+.logger-plugun-wrap .item:hover {
+  background-color: #f0f7ff;
+}
+.logger-plugun-wrap .time {
+  font-family: ui-monospace;
 }
 </style>
 
@@ -49,12 +53,17 @@
 
     <div class="wrap">
       <div v-if="logs.length">
-        <div class="item" v-for="(log, index) in logs" :key="index">
+        <div
+          :class="{ active: index === activeIndex, item: 1 }"
+          @click="activeIndex = index"
+          v-for="(log, index) in logs"
+          :key="index"
+        >
           <div>{{ log.title }}</div>
-          <div>{{ log.timestamp }}</div>
+          <div class="time">{{ log.timestamp }}</div>
         </div>
       </div>
-      <div v-else style="color: #666">暂无日志</div>
+      <div v-else style="color: #666; text-align: center">暂无日志</div>
     </div>
   </div>
 </template>
@@ -63,6 +72,11 @@
 export default {
   name: 'LoggerPlugin',
   props: ['logs'],
+  data() {
+    return {
+      activeIndex: -1
+    }
+  },
   methods: {}
 }
 </script>

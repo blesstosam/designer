@@ -6,7 +6,6 @@
 .component-left {
   width: 45px;
   border-right: 1px solid #eee;
-  padding-top: 6px;
   text-align: center;
   flex: none;
   box-sizing: border-box;
