@@ -59,10 +59,8 @@ export class Canvas {
       throw new Error('[designer] 请传入画布容器元素 canvasWrap')
     }
     this.__designer__ = designer
-    this.$canvasWrapEl = document.querySelector(this.config.canvasWrap)
     this.$canvasEl = null
     this.$markerEl = null
-    this.$tipEl = null
     this.dropToInnerSlot = false // 是否被拖入 nodebox 的 slot 容器
 
     this.resetInsertInfo()
@@ -104,20 +102,18 @@ export class Canvas {
   }
 
   init(viewModel) {
-    // canvas 的 init 依赖 components 插件
-    // 防止多次触发使用once
+    // canvas 的 init 依赖 components 插件，防止多次触发使用once
     this.__designer__.once(COMPONENTS_INITED, () => {
       const canvasStyle = (viewModel && viewModel.props.style) || this._getDefaultCanvasStyle()
       const div = (this.$canvasEl = $('<div>')
         .addClass('drop')
         .addClass('canvas-root')
         .style(canvasStyle).el)
-      this.$canvasWrapEl.appendChild(div)
+      document.querySelector(this.config.canvasWrap).appendChild(div)
+
       if (viewModel != null) {
         this.model = new Node({ ...viewModel, $el: div })
       } else {
-        // TODO 是否改成 this.showTip(this.model)
-        this.showTip()
         this.model = new Node({
           name: 'canvas',
           $el: div,
@@ -125,6 +121,7 @@ export class Canvas {
           isRoot: true,
           props: { style: canvasStyle }
         })
+        this.showTip(this.model)
       }
       // ------- for debug -----------
       window.model = this.model
@@ -221,7 +218,7 @@ export class Canvas {
     // enter 比 over 先触发
     this.__dragDrop__.onDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
-      this.removeTip()
+      this.removeTip(this.model)
       console.log('wrapper enter...')
     })
 
@@ -230,7 +227,7 @@ export class Canvas {
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
         this.removeMarker()
-        !this.viewModel.children.length && this.showTip()
+        !this.model.children.length && this.showTip(this.model)
         this.resetInsertInfo()
       }
     })
@@ -263,15 +260,15 @@ export class Canvas {
       .text('请将组件拖入这里')
       .addClass(TIP_EL_CLS)
       .style({ textAlign: 'center' }).el
-    if (!node) {
-      if (!this.$tipEl) {
-        const el = this.$tipEl = $(span).style({ paddingTop: '200px' }).el
+    if (node.isRoot) {
+      if (!node.$tipEl) {
+        const el = (node.$tipEl = $(span).style({ paddingTop: '200px' }).el)
         this.$canvasEl.appendChild(el)
       }
     } else {
       const $firstSlotEl = lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
       if ($firstSlotEl) {
-        const el = node.$tipEl = $(span).style({ paddingTop: '20px', color: '#666' }).el
+        const el = (node.$tipEl = $(span).style({ paddingTop: '20px', color: '#666' }).el)
         $firstSlotEl.appendChild(el)
       }
       // const slotElArr = lookdownAllByAttr(newNode.$el.children[0], SLOT_NAME_KEY)
@@ -282,13 +279,8 @@ export class Canvas {
   }
 
   removeTip(node) {
-    if (!node) {
-      this.$tipEl && this.$tipEl.remove()
-      this.$tipEl = null
-    } else {
-      node.$tipEl && node.$tipEl.remove()
-      node.$tipEl = null
-    }
+    node.$tipEl && node.$tipEl.remove()
+    node.$tipEl = null
   }
 
   // TODO 是否用mousemove/mouseup来计算marker位置？
@@ -339,19 +331,10 @@ export class Canvas {
   }
 
   clear() {
-    const canvasStyle =
-      (this.viewModel && this.viewModel.props.style) || this._getDefaultCanvasStyle()
-    this.model = new Node({
-      name: 'canvas',
-      $el: this.viewModel.$el,
-      children: [],
-      isRoot: true,
-      props: { style: canvasStyle }
-    })
-
+    this.model.children = []
     this.$canvasEl.innerHTML = ''
     this.clearSelection()
-    this.showTip()
+    this.showTip(this.model)
     localStorage.clear('viewModel')
     this.__designer__.emit(C_A_D, {
       type: C_A_D,
@@ -400,19 +383,19 @@ export class Canvas {
     this.__designer__.emit(CANVAS_LAYOUTED)
   }
 
-  append(com, container, parent, cancelDispatch = false) {
+  [InsertTypes.APPEND](com, container, parent, cancelDispatch = false) {
     return this.insertNode(com, container, parent, InsertTypes.APPEND, cancelDispatch)
   }
 
-  prepend(com, container, parent, cancelDispatch = false) {
+  [InsertTypes.PREPEND](com, container, parent, cancelDispatch = false) {
     return this.insertNode(com, container, parent, InsertTypes.PREPEND, cancelDispatch)
   }
 
-  after(com, siblingContainer, sibling, cancelDispatch = false) {
+  [InsertTypes.AFTER](com, siblingContainer, sibling, cancelDispatch = false) {
     return this.insertNode(com, siblingContainer, sibling, InsertTypes.AFTER, cancelDispatch)
   }
 
-  before(com, siblingContainer, sibling, cancelDispatch = false) {
+  [InsertTypes.BEFORE](com, siblingContainer, sibling, cancelDispatch = false) {
     return this.insertNode(com, siblingContainer, sibling, InsertTypes.BEFORE, cancelDispatch)
   }
 
