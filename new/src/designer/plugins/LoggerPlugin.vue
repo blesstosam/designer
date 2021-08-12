@@ -24,6 +24,11 @@
 .logger-plugun-wrap .time {
   font-family: ui-monospace;
 }
+.logger-plugun-wrap .no-data {
+  color: #909399;
+  text-align: center;
+  padding: 20px 0;
+}
 </style>
 
 <template>
@@ -63,7 +68,7 @@
           <div class="time">{{ log.timestamp }}</div>
         </div>
       </div>
-      <div v-else style="color: #666; text-align: center">暂无日志</div>
+      <div v-else class="no-data">暂无日志</div>
     </div>
   </div>
 </template>
