@@ -99,7 +99,7 @@ export class Event {
 export const EVENT_TYPES = {
   COMPONENTS_INITED: 'components.inited',
   COMPONENTS_DESTROYED: 'components.destroyed',
-  COMPONENTS_DRAG: 'components.drag',
+  COMPONENTS_DRAG_START: 'components.dragstart',
   COMPONENTS_DROPED: 'components.droped',
 
   COMPONENT_TREE_INITED: 'componentTree.inited',

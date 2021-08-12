@@ -112,7 +112,7 @@ export class DragDrop {
     return el
   }
 
-  bindDragStart(target, cb) {
+  onDragStart(target, cb) {
     target.addEventListener(EventTypes.dragstart, e => {
       e.dataTransfer.effectAllowed = this.effectAllowed
       e.dataTransfer.dropEffect = this.dropEffect
@@ -123,69 +123,69 @@ export class DragDrop {
       this.setData('dragging', true)
       this.setData('target', e.target)
       this.setData('dragImage', dragImage)
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_START)
-      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG, this._getParams(e))
+      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START, this._genParams(e))
     })
   }
 
-  bindDragEnd(target, cb) {
+  onDragEnd(target, cb) {
     target.addEventListener(EventTypes.dragend, e => {
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_END)
       this.resetData()
     })
   }
 
-  bindDrop(target, cb, opts = {}) {
+  onDrop(target, cb, opts = {}) {
     target.addEventListener(EventTypes.drop, e => {
       opts.stop && e.stopPropagation()
       this.removeDragEnterCls()
       state.dropPos.x = e.x
       state.dropPos.y = e.y
 
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_DROPED)
-      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED, this._getParams(e))
+      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED, this._genParams(e))
       this.resetData()
     })
   }
 
-  bindDrag(target, cb, opts = {}) {
+  onDrag(target, cb, opts = {}) {
     target.addEventListener(EventTypes.drag, e => {
       opts.stop && e.stopPropagation()
 
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_DRAG)
     })
   }
 
-  bindDragOver(target, cb, opts = {}) {
+  onDragOver(target, cb, opts = {}) {
     target.addEventListener(EventTypes.dragover, e => {
       e.preventDefault()
       opts.stop && e.stopPropagation()
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_OVER)
     })
   }
 
-  bindDragEnter(target, cb, opts = {}) {
+  onDragEnter(target, cb, opts = {}) {
     target.addEventListener(EventTypes.dragenter, e => {
       opts.stop && e.stopPropagation()
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_ENTER)
     })
   }
 
-  bindDragLeave(target, cb, opts = {}) {
+  onDragLeave(target, cb, opts = {}) {
     target.addEventListener(EventTypes.dragleave, e => {
       opts.stop && e.stopPropagation()
-      cb && cb(this._getParams(e))
+      cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_LEAVE)
     })
   }
 
-  _getParams(e) {
+  _genParams(e) {
     return {
       getData: this.getData,
       setData: this.setData,
