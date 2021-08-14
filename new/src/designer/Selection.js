@@ -170,7 +170,7 @@ export class Selection {
         lineHeight: '21px',
         borderRadius: '2px',
         fontSize: '12px',
-        overflow: 'hidden',
+        whiteSpace: 'nowrap',
         fontWeight: 500,
         pointerEvents: 'all'
       })

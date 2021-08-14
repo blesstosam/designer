@@ -18,6 +18,11 @@
   font-weight: bold;
   font-size: 14px;
 }
+.attr-wrap .no-data {
+  color: #909399;
+  padding-top: 30px;
+  text-align: center;
+}
 </style>
 
 <template>
@@ -45,7 +50,7 @@
       </el-tabs>
     </div>
 
-    <div v-else>暂未选中组件！</div>
+    <div v-else class="no-data">暂未选中组件！</div>
   </div>
 </template>
 

@@ -75,6 +75,25 @@ export function lookdownForAttr(dom, attrname) {
   }
 }
 
+export function isElement(obj) {
+  return typeof HTMLElement === 'object'
+    ? obj instanceof HTMLElement
+    : !!(
+        obj &&
+        typeof obj === 'object' &&
+        (obj.nodeType === 1 || obj.nodeType === 9) &&
+        typeof obj.nodeName === 'string'
+      )
+}
+
+export function getStyle(el, key) {
+  if (el.currentStyle) {
+    return el.currentStyle[key]
+  } else {
+    return window.getComputedStyle(el, false)[key]
+  }
+}
+
 class DomUtil {
   constructor(selector) {
     if (isElement(selector)) {
@@ -152,6 +171,7 @@ class DomUtil {
     if (display === 'none') {
       this.dom.style.display = this._oldDisplay || 'block'
     }
+    return this
   }
 
   hide() {
@@ -160,10 +180,12 @@ class DomUtil {
       this._oldDisplay = this.dom.style.display
       this.dom.style.display = 'none'
     }
+    return this
   }
 
   hover(handlerIn, handlerOut) {
     this.addListener('mouseenter', handlerIn).addListener('mouseleave', handlerOut)
+    return this
   }
 
   addListener(event, handler) {
@@ -174,10 +196,12 @@ class DomUtil {
   // 将元素插入到当前子元素的末尾
   append(newNode) {
     this.dom.appendChild(newNode)
+    return this
   }
   // 将元素插入到当前子元素的开头
   prepend(newNode) {
     this.dom.insertBefore(newNode, this.dom.childNodes[0])
+    return this
   }
   // 将元素插入到当前元素的开头
   after(newNode) {
@@ -191,10 +215,12 @@ class DomUtil {
         this.dom.nextSibling.before(newNode)
       }
     }
+    return this
   }
   // 将元素插入到当前元素的末尾
   before(newNode) {
     this.dom.parentNode.insertBefore(newNode, this.dom)
+    return this
   }
 }
 
@@ -204,23 +230,4 @@ class DomUtil {
  */
 export function $(selector) {
   return new DomUtil(selector)
-}
-
-export function isElement(obj) {
-  return typeof HTMLElement === 'object'
-    ? obj instanceof HTMLElement
-    : !!(
-        obj &&
-        typeof obj === 'object' &&
-        (obj.nodeType === 1 || obj.nodeType === 9) &&
-        typeof obj.nodeName === 'string'
-      )
-}
-
-export function getStyle(el, key) {
-  if (el.currentStyle) {
-    return el.currentStyle[key]
-  } else {
-    return window.getComputedStyle(el, false)[key]
-  }
 }
