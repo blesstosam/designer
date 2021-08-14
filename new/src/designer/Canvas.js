@@ -190,6 +190,8 @@ export class Canvas {
         console.log('wrapper over...')
         const { y, target } = e
         const style = { width: target.offsetWidth - DROP_EL_PADDING * 2 + 'px' }
+        // https://github.com/Shopify/draggable/blob/6f5539b1f396a34b08fcbf0b52651ca1ee669665/examples/src/content/Draggable/DragEvents/index.js#L67
+        // 上面说在拖动过程中使用getBoundingClientRect性能损耗大，后面验证一下
         const rectPos = this.$canvasEl.getBoundingClientRect()
         if (y < rectPos.y + DROP_EL_PADDING) {
           this.insertType = InsertTypes.PREPEND
