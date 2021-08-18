@@ -167,7 +167,7 @@ class DomUtil {
   }
 
   show() {
-    const display = this.dom.style['display']
+    const display = getStyle(this.dom, 'display')
     if (display === 'none') {
       this.dom.style.display = this._oldDisplay || 'block'
     }
@@ -175,9 +175,9 @@ class DomUtil {
   }
 
   hide() {
-    const display = this.dom.style['display']
+    const display = getStyle(this.dom, 'display')
     if (display !== 'none') {
-      this._oldDisplay = this.dom.style.display
+      this._oldDisplay = display
       this.dom.style.display = 'none'
     }
     return this

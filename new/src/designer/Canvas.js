@@ -518,6 +518,10 @@ export class Canvas {
     this._dispathDelete(movedNode)
   }
 
+  toggleDisplay(node, isShow) {
+    isShow ? $(node.$el).show() : $(node.$el).hide()
+  }
+
   handleNodeboxSelect(node) {
     setCurrentViewNodeModel(node)
     this.__attr__.vueInstance.setData(node)

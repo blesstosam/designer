@@ -11,13 +11,31 @@
   margin-left: 6px;
   vertical-align: top;
 }
+.component-tree .custom-tree-node {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.component-tree .custom-tree-node .left img {
+  width: 14px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.component-tree .custom-tree-node .right img {
+  width: 16px;
+  background: #1989fa;
+  padding: 2px;
+  margin-right: 4px;
+}
+.component-tree .custom-tree-node .right img:hover {
+  transform: scale(1.1);
+}
 </style>
 
 <template>
   <div class="component-tree">
     <div class="header">
       <svg
-        t="1624966999151"
         class="icon"
         viewBox="0 0 1024 1024"
         version="1.1"
@@ -48,18 +66,28 @@
       @node-click="handleNodeClick"
     >
       <template #default="{ data }">
-        <span
+        <div
           class="custom-tree-node"
           @mouseenter="handleNodeMouseEnter(data, $event)"
           @mouseleave="handleNodeMouseLeave(data, $event)"
         >
-          <img
-            :src="data.icon && data.icon.value"
-            style="width: 14px; margin-right: 6px; vertical-align: middle"
-          />
-          <span style="color: #333">{{ data.title }}</span>
-          <!-- <span> {{ data }} </span> -->
-        </span>
+          <div class="left">
+            <img :src="data.icon && data.icon.value" />
+            <span style="color: #333">{{ data.title }}</span>
+          </div>
+          <!-- actionShowRow === data.$treeNodeId -->
+          <div
+            class="right"
+            :style="{ visibility: actionShowRow === data.$treeNodeId ? 'visible' : 'hidden' }"
+          >
+            <img
+              :src="data.display ? '/eye.png' : 'eye-close.png'"
+              alt="display"
+              @click.stop="handleDisplay(data, $event)"
+            />
+            <img src="/delete.png" alt="del" @click.stop="handleDel(data, $event)" />
+          </div>
+        </div>
       </template>
     </el-tree>
   </div>
@@ -71,12 +99,15 @@ export default {
   props: {
     tree: Array,
     // vue 实例通过回调函数实现 emit
+    handleDel: Function,
+    handleDisplay: Function,
     handleClick: Function,
     handleMouseEnter: Function,
     handleMouseLeave: Function
   },
   data() {
     return {
+      actionShowRow: -1,
       defaultProps: {
         children: 'children',
         label: 'title'
@@ -89,7 +120,14 @@ export default {
       const tree = this.tree || []
       const treeData = []
       for (const t of tree) {
-        const item = { name: t.name, title: t.title, unique: t.unique, icon: t.icon, children: [] }
+        const item = {
+          name: t.name,
+          title: t.title,
+          unique: t.unique,
+          icon: t.icon,
+          children: [],
+          display: true
+        }
         treeData.push(item)
         if (t.children) {
           const _d = []
@@ -99,7 +137,8 @@ export default {
               title: _t.title,
               unique: _t.unique,
               icon: _t.icon,
-              children: _t.children
+              children: _t.children,
+              display: true
             })
           }
           item.children = _d
@@ -109,10 +148,19 @@ export default {
     }
   },
   methods: {
+    handleDel(d) {
+      this.handleDel && this.handleDel(d)
+    },
+    handleDisplay(d) {
+      d.display = !d.display
+      this.handleDisplay && this.handleDisplay(d, d.display)
+    },
     handleNodeMouseEnter(d) {
+      this.actionShowRow = d.$treeNodeId
       this.handleMouseEnter && this.handleMouseEnter(d)
     },
-    handleNodeMouseLeave() {
+    handleNodeMouseLeave(d) {
+      this.actionShowRow = -1
       this.handleMouseLeave && this.handleMouseLeave()
     },
     handleNodeClick(d) {

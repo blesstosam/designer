@@ -18,7 +18,7 @@
     flex-direction: row;
 
     .left {
-      width: 245px;
+      width: 270px;
       flex: none;
       border-right: 1px solid #eee;
 

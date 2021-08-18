@@ -21,32 +21,45 @@ export class ComponentTree {
   }
 
   init(data) {
-    // Attr.js 里是直接使用 this.vueInstance 调用方法改变数据完成视图更新
-    // 这里使用修改props
+    // Attr.js 里是使用 this.vueInstance 调用方法改变数据完成视图更新;这里使用修改props
     const handleClick = d => {
       const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) {
-        this.__canvas__.handleNodeboxSelect(node)
-      }
+      if (node) this.__canvas__.handleNodeboxSelect(node)
+    }
+    const handleDel = d => {
+      const node = this.__canvas__.model.findByKey('unique', d.unique)
+      if (node) this.__canvas__.remove(node)
+    }
+    const handleDisplay = (d, isShow) => {
+      const node = this.__canvas__.model.findByKey('unique', d.unique)
+      if (node) this.__canvas__.toggleDisplay(node, isShow)
     }
     const handleMouseEnter = d => {
       const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) {
-        this.__canvas__.handleNodeboxHover(node)
-      }
+      if (node) this.__canvas__.handleNodeboxHover(node)
     }
     const handleMouseLeave = () => {
       this.__canvas__.handleNodeboxHoverRemove()
     }
     const props = reactive({
       tree: (data && data.children) || [],
+      handleDel,
+      handleDisplay,
       handleClick,
       handleMouseEnter,
       handleMouseLeave,
       ref: 'componentTree'
     })
     const app = createApp({
-      props: ['tree', 'handleClick', 'handleMouseEnter', 'handleMouseLeave', 'ref'],
+      props: [
+        'tree',
+        'handleDel',
+        'handleDisplay',
+        'handleClick',
+        'handleMouseEnter',
+        'handleMouseLeave',
+        'ref'
+      ],
       render: () => h(ComponentTreeVue, props)
     })
 
