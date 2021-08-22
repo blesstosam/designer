@@ -6,6 +6,11 @@ const PLUGIN_SUPPORT = [
   '__componentTree__'
 ]
 
+// 插件类型
+export const PLUGIN_TYPES = {
+  MENU_BAR: 'menuBar' // 插入到左侧菜单栏的插件
+}
+
 export class Plugin {
   constructor(config, designer) {
     this.config = config || {}
@@ -27,10 +32,13 @@ export class Plugin {
       }
 
       // TODO 获取依赖，在这些依赖初始化之后才能new该插件
-      this.plugins.set(Plugin.$name, { p: new Plugin(...arr) })
+      this.plugins.set(Plugin.$name, {
+        p: new Plugin(...arr),
+        type: Plugin.$type,
+        name: Plugin.$name
+      })
     } else {
       // TODO 如果要替换默认的组件
-
     }
   }
 }

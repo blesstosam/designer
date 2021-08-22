@@ -247,7 +247,7 @@ export class Canvas {
     const span = $('<div>')
       .text('请将组件拖入这里')
       .addClass(TIP_EL_CLS)
-      .style({ textAlign: 'center' }).el
+      .style({ textAlign: 'center', pointerEvents: 'none' }).el
     if (node.isRoot) {
       if (!node.$tipEl) {
         const el = (node.$tipEl = $(span).style({ paddingTop: '200px' }).el)
