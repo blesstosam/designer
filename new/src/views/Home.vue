@@ -82,7 +82,7 @@
 
 <script>
 import { Designer } from '../designer/index'
-import { LoggerPlugin } from '../designer/plugins/LoggerPlugin'
+import { LoggerPlugin } from '../designer/plugins/logger/LoggerPlugin'
 
 export default {
   name: 'Home',

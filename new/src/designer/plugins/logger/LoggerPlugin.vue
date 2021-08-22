@@ -12,7 +12,7 @@
   vertical-align: top;
 }
 .logger-plugun-wrap .wrap .item {
-  padding: 8px 8px;
+  padding: 6px 8px;
   display: flex;
   justify-content: space-between;
   font-size: 13px;
@@ -22,7 +22,14 @@
   background-color: #f0f7ff;
 }
 .logger-plugun-wrap .time {
-  font-family: ui-monospace;
+  font-size: 12px;
+  width: 57%;
+}
+.logger-plugun-wrap .title {
+  width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .logger-plugun-wrap .no-data {
   color: #909399;
@@ -46,7 +53,9 @@
           v-for="(log, index) in logs"
           :key="index"
         >
-          <div>{{ log.title }}</div>
+          <el-tooltip effect="dark" :content="log.title" placement="top">
+            <div class="title">{{ log.title }}</div>
+          </el-tooltip>
           <div class="time">{{ log.timestamp }}</div>
         </div>
       </div>
@@ -56,7 +65,7 @@
 </template>
 
 <script>
-import RecordIcon from '../vue/icons/RecordIcon.vue'
+import RecordIcon from '../../vue/icons/RecordIcon.vue'
 export default {
   name: 'LoggerPlugin',
   components: { RecordIcon },

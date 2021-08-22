@@ -98,7 +98,7 @@
     <el-tabs
       style="width: 100%"
       v-show="activeMenu === 'com'"
-      v-model="activeName"
+      v-model="activeTabName"
       @tab-click="handleClick"
     >
       <el-tab-pane label="组件库" name="component">
@@ -180,6 +180,7 @@ import RecordIcon from './icons/RecordIcon.vue'
 import CodeIcon from './icons/CodeIcon.vue'
 import { componentList, customComList } from '../config'
 import { EVENT_TYPES } from '../Event'
+import { PLUGIN_TYPES } from '../Plugin'
 
 export default {
   name: 'Components',
@@ -192,8 +193,8 @@ export default {
   data() {
     return {
       asyncComRegisterSuccess: true,
-      activeMenu: 'com', // com|tree
-      activeName: 'component', // component|template|history|schema
+      activeMenu: 'com', // com|tree|history|schema
+      activeTabName: 'component', // component|template
       componentList,
       customComList
     }
@@ -222,8 +223,17 @@ export default {
     this.registerCom()
     this.registerCustomCom()
     this.__designer__.initComponentTree('.component-tree-wrap')
-    const loggerPlug = this.__plug__.plugins.get('myLoggerPlugin').p
-    loggerPlug.init('.component-history-wrap')
+
+    // 在这里注册菜单栏插件
+    // todo 改成通用的代码 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器），这里遍历去初始化
+    for (let plug of this.__plug__.plugins.values()) {
+      const { p: plugInstance, type, name } = plug
+      if (type === PLUGIN_TYPES.MENU_BAR) {
+        if (name === 'myLoggerPlugin') {
+          plugInstance.init('.component-history-wrap')
+        }
+      }
+    }
   },
   methods: {
     registerCom() {
@@ -245,8 +255,7 @@ export default {
       this.__components__
         .registerAsyncComponents(modArr)
         .then(res => {
-          // 分发全局事件 组件面板初始化
-          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED) // 分发全局事件 组件面板初始化
         })
         .catch(err => {
           this.asyncComRegisterSuccess = false
