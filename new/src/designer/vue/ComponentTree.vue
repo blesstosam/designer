@@ -21,11 +21,15 @@
   margin-right: 6px;
   vertical-align: middle;
 }
+.component-tree .custom-tree-node .right {
+  display: flex;
+}
 .component-tree .custom-tree-node .right img {
   width: 16px;
   background: #1989fa;
   padding: 2px;
   margin-right: 4px;
+  border-radius: 2px;
 }
 .component-tree .custom-tree-node .right img:hover {
   transform: scale(1.1);
@@ -35,22 +39,7 @@
 <template>
   <div class="component-tree">
     <div class="header">
-      <svg
-        class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="3296"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        fill="#333"
-        width="18"
-        height="18"
-      >
-        <path
-          d="M848 766.4c44.182 0 80 35.818 80 80s-35.818 80-80 80H592c-44.182 0-80-35.818-80-80s35.818-80 80-80h256z m0 48H592c-17.674 0-32 14.326-32 32s14.326 32 32 32h256c17.674 0 32-14.326 32-32s-14.326-32-32-32zM176 96c44.182 0 80 35.818 80 80 0 35.82-23.542 66.144-56 76.336V512h200c13.254 0 24 10.746 24 24s-10.746 24-24 24H200v246.4c0 8.688 6.923 15.757 15.552 15.994l0.448 0.006h232c13.254 0 24 10.746 24 24 0 13.088-10.475 23.728-23.498 23.995l-0.502 0.005H216c-34.992 0-63.426-28.083-63.992-62.942L152 806.4V252.338C119.544 242.146 96 211.82 96 176c0-44.182 35.818-80 80-80z m672 360c44.182 0 80 35.818 80 80s-35.818 80-80 80H592c-44.182 0-80-35.818-80-80s35.818-80 80-80h256z m0 48H592c-17.674 0-32 14.326-32 32s14.326 32 32 32h256c17.674 0 32-14.326 32-32s-14.326-32-32-32z m0-408c44.182 0 80 35.818 80 80s-35.818 80-80 80H400c-44.182 0-80-35.818-80-80s35.818-80 80-80h448z m-672 48c-17.674 0-32 14.326-32 32s14.326 32 32 32 32-14.326 32-32-14.326-32-32-32z m672 0H400c-17.674 0-32 14.326-32 32s14.326 32 32 32h448c17.674 0 32-14.326 32-32s-14.326-32-32-32z"
-          p-id="3297"
-        ></path>
-      </svg>
+      <tree-icon fill="#333" :width="18" />
       <span>组件树</span>
     </div>
 
@@ -83,9 +72,9 @@
             <img
               :src="data.display ? '/eye.png' : 'eye-close.png'"
               alt="display"
-              @click.stop="handleDisplay(data, $event)"
+              @click.stop="handleNodeDisplay(data, $event)"
             />
-            <img src="/delete.png" alt="del" @click.stop="handleDel(data, $event)" />
+            <img src="/delete.png" alt="del" @click.stop="handleNodeDel(data, $event)" />
           </div>
         </div>
       </template>
@@ -94,8 +83,10 @@
 </template>
 
 <script>
+import TreeIcon from './icons/TreeIcon.vue'
 export default {
   name: 'ComponentTree',
+  components: { TreeIcon },
   props: {
     tree: Array,
     // vue 实例通过回调函数实现 emit
@@ -148,10 +139,10 @@ export default {
     }
   },
   methods: {
-    handleDel(d) {
+    handleNodeDel(d) {
       this.handleDel && this.handleDel(d)
     },
-    handleDisplay(d) {
+    handleNodeDisplay(d) {
       d.display = !d.display
       this.handleDisplay && this.handleDisplay(d, d.display)
     },
