@@ -1,3 +1,4 @@
+import { InsertTypes } from './InsertTypes'
 import { randomString } from './lib/util'
 
 const nodeMap = new Map()
@@ -62,22 +63,22 @@ export class Node {
     return this.children[this.children.length - 1]
   }
 
-  append(node) {
+  [InsertTypes.APPEND](node) {
     this.children.push(node)
     nodeMap.set(node.$el, node)
   }
 
-  prepend(node) {
+  [InsertTypes.PREPEND](node) {
     this.children.unshift(node)
     nodeMap.set(node.$el, node)
   }
 
-  before(node) {
+  [InsertTypes.BEFORE](node) {
     this.parent.children.splice(this.index, 0, node)
     nodeMap.set(node.$el, node)
   }
 
-  after(node) {
+  [InsertTypes.AFTER](node) {
     this.parent.children.splice(this.index + 1, 0, node)
     nodeMap.set(node.$el, node)
   }
