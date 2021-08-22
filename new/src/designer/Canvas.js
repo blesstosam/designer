@@ -14,6 +14,7 @@ import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
 import { changeProps } from './components/render-util'
 import { throttle } from './lib/util'
+import { InsertTypes, isPendType } from './InsertTypes'
 
 const {
   SELECTION_DEL_CLICK: F_D_C,
@@ -31,21 +32,6 @@ export const DROP_EL_PADDING = 8,
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
 const NODE_BOX_CLS = 'node-box'
-
-// -----------------------------------------------------------
-// | insertType      | append | prepend | after    | before  |
-// -----------------------------------------------------------
-const InsertTypes = {
-  // value 要和 $及Node 的方法对应上
-  APPEND: 'append',
-  PREPEND: 'prepend',
-  AFTER: 'after',
-  BEFORE: 'before'
-}
-// 是否是 APPEND|PREPEND 类型操作
-function isPendType(type) {
-  return type === InsertTypes.APPEND || type === InsertTypes.PREPEND
-}
 
 function getSlotName(el) {
   return el.getAttribute(SLOT_NAME_KEY)
