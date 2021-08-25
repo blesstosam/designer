@@ -83,10 +83,6 @@ export class Canvas {
     return this.__designer__.__dragDrop__
   }
 
-  get viewModel() {
-    return this.model
-  }
-
   init(viewModel) {
     // canvas 的 init 依赖 components 插件，防止多次触发使用once
     this.__designer__.once(COMPONENTS_INITED, () => {
@@ -134,7 +130,7 @@ export class Canvas {
             }
           }
         }
-        mount([data], this.viewModel)
+        mount([data], this.model)
       }
     })
 
@@ -160,11 +156,11 @@ export class Canvas {
       const state = getData()
       if (state.data.componentType !== LAYOUT) {
         const blockCom = this.__components__.findComByName('VBlock')
-        const wrapNode = this[this.insertType](blockCom, this.$canvasEl, this.viewModel)
+        const wrapNode = this[this.insertType](blockCom, this.$canvasEl, this.model)
         const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
         this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
       } else {
-        const newNode = this[this.insertType](state.data, this.$canvasEl, this.viewModel)
+        const newNode = this[this.insertType](state.data, this.$canvasEl, this.model)
         this.showTip(newNode)
       }
       this.resetInsertInfo()
@@ -218,6 +214,10 @@ export class Canvas {
         !this.model.children.length && this.showTip(this.model)
         this.resetInsertInfo()
       }
+    })
+
+    this.$canvasEl.addEventListener('mouseleave', e => {
+      this.handleNodeboxHoverRemove()
     })
   }
 
@@ -367,7 +367,7 @@ export class Canvas {
       }
     }
 
-    mount(viewModel.children, this.viewModel)
+    mount(viewModel.children, this.model)
     this.__designer__.emit(CANVAS_LAYOUTED)
   }
 
@@ -456,9 +456,9 @@ export class Canvas {
       const node = this.model.findByEl($nodeBoxEl)
       this.handleNodeboxHover(node)
     })
-    wrapper.addEventListener('mouseleave', e => {
-      this.handleNodeboxHoverRemove()
-    })
+    // wrapper.addEventListener('mouseleave', e => {
+    //   this.handleNodeboxHoverRemove()
+    // })
 
     return wrapper
   }
@@ -688,7 +688,7 @@ export class Canvas {
     this.__designer__.emit(C_A_A, {
       type: C_A_A,
       data: node,
-      viewModel: this.viewModel
+      viewModel: this.model
     })
   }
 
@@ -699,7 +699,7 @@ export class Canvas {
     this.__designer__.emit(C_A_D, {
       type: C_A_D,
       data: movedNode,
-      viewModel: this.viewModel
+      viewModel: this.model
     })
   }
 }

@@ -69,7 +69,8 @@ class Designer extends Event {
     // 组件树依赖1.components组件dom渲染完成 2.canvas将组件渲染完成
     this.config.componentTreeWrap = wrap
     this.on(EVENT_TYPES.CANVAS_LAYOUTED, () => {
-      const viewModel = this.__canvas__.model.data
+      const viewModel = this.__canvas__.model
+      console.log(viewModel, 'viewModel')
       this.__componentTree__ = new ComponentTree(this.config, this)
       this.__componentTree__.init(viewModel)
     })

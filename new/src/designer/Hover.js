@@ -23,6 +23,10 @@ export class Hover {
   get isTargetSelected() {
     return this.selection && this.selection.node.$el === this.node.$el
   }
+  get rootNode() {
+    if (this.node) return this.node.getRootNode()
+    return null
+  }
 
   create(node) {
     this.node = node
@@ -37,7 +41,6 @@ export class Hover {
     this.node = node
     if (this.$rectEl) {
       if (!this.isTargetSelected) {
-        this._hideEffect()
         this._updateEffect()
         this.__designer__.emit(EVENT_TYPES.HOVER_UPDATED)
       }
@@ -48,49 +51,54 @@ export class Hover {
 
   remove() {
     this._hideEffect()
+    this.$rectEl = null
     this.__designer__.emit(EVENT_TYPES.HOVER_DEACTIVED)
   }
 
   _showEffect() {
-    const offset = this._getOffset()
-    const { width, height } = offset
-    const div = (this.$rectEl = $('<div>')
-      .style({
-        ...this._getPos(width, height),
-        position: 'absolute',
-        border: '1px dashed #409EFF',
-        zIndex: 0,
-        boxSizing: 'border-box',
-        pointerEvents: 'none'
-      })
-      .addClass('hover').el)
-    this.node.$el.appendChild(div)
-    return div
+    const offset = this._getOffset(this.node.$el)
+    if (!this.$rectEl) {
+      console.log(this.rootNode, 1)
+      this.$rectEl = $('<div>')
+        .style({
+          ...this._getStyle(offset),
+          position: 'absolute',
+          border: '1px dashed #409EFF',
+          zIndex: 0,
+          boxSizing: 'border-box',
+          pointerEvents: 'none',
+          // transition: 'all .3s'
+        })
+        .addClass('hover').el
+    }
+    this.rootNode.$el.appendChild(this.$rectEl)
+    return this.$rectEl
   }
 
   _updateEffect() {
-    const offset = this._getOffset()
-    const { width, height } = offset
-    this.node.$el.appendChild(this.$rectEl)
-    $(this.$rectEl).style(this._getPos(width, height))
+    const offset = this._getOffset(this.node.$el)
+    // this.rootNode.$el.appendChild(this.$rectEl)
+    $(this.$rectEl).style(this._getStyle(offset))
   }
 
   _hideEffect() {
     this.$rectEl && this.$rectEl.remove()
+    this.$rectEl = null
   }
 
-  _getPos(width, height) {
+  _getStyle({ width, height, top, left }) {
+    console.log(top, left, )
     return {
       width: width - 1 + 'px',
       height: height - 1 + 'px',
       top: 0,
-      left: 0
+      left: 0,
+      transform: `translate(${left}px, ${top}px)`
     }
   }
 
-  _getOffset() {
-    const { $el } = this.node
-    const domRect = $el.getBoundingClientRect()
+  _getOffset(el) {
+    const domRect = el.getBoundingClientRect()
     return {
       width: domRect.width,
       height: domRect.height,
