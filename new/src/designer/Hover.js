@@ -57,7 +57,6 @@ export class Hover {
   _showEffect() {
     const offset = this._getOffset(this.node.$el)
     if (!this.$rectEl) {
-      console.log(this.rootNode, 1)
       this.$rectEl = $('<div>')
         .style({
           ...this._getStyle(offset),

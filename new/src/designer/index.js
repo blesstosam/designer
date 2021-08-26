@@ -70,7 +70,6 @@ class Designer extends Event {
     this.config.componentTreeWrap = wrap
     this.on(EVENT_TYPES.CANVAS_LAYOUTED, () => {
       const viewModel = this.__canvas__.model
-      console.log(viewModel, 'viewModel')
       this.__componentTree__ = new ComponentTree(this.config, this)
       this.__componentTree__.init(viewModel)
     })
