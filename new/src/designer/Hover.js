@@ -51,7 +51,6 @@ export class Hover {
 
   remove() {
     this._hideEffect()
-    this.$rectEl = null
     this.__designer__.emit(EVENT_TYPES.HOVER_DEACTIVED)
   }
 
@@ -67,7 +66,7 @@ export class Hover {
           zIndex: 0,
           boxSizing: 'border-box',
           pointerEvents: 'none',
-          // transition: 'all .3s'
+          transition: 'all .2s'
         })
         .addClass('hover').el
     }
@@ -77,7 +76,6 @@ export class Hover {
 
   _updateEffect() {
     const offset = this._getOffset(this.node.$el)
-    // this.rootNode.$el.appendChild(this.$rectEl)
     $(this.$rectEl).style(this._getStyle(offset))
   }
 
@@ -87,7 +85,6 @@ export class Hover {
   }
 
   _getStyle({ width, height, top, left }) {
-    console.log(top, left, )
     return {
       width: width - 1 + 'px',
       height: height - 1 + 'px',
