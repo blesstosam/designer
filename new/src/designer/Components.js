@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { FetchLoader } from './lib/loader'
-import { ElTabs, ElTabPane } from 'element-plus'
+import { ElTabs, ElTabPane, ElCollapse, ElCollapseItem } from 'element-plus'
 import ComponentsVue from './vue/Components.vue'
 import { lookupByClassName, $ } from './lib/dom'
 
@@ -46,6 +46,8 @@ export class Components {
     const app = createApp(com || ComponentsVue)
     app.component(ElTabs.name, ElTabs)
     app.component(ElTabPane.name, ElTabPane)
+    app.component(ElCollapse.name, ElCollapse)
+    app.component(ElCollapseItem.name, ElCollapseItem)
     this.vueInstance = app.mount(this.$wrapEl)
     this.vueInstance.__components__ = this
   }
