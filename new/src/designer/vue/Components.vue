@@ -58,11 +58,6 @@
   margin-bottom: 12px;
   padding: 0 6px;
 }
-.component .content {
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid #eee;
-}
 </style>
 <style>
 .component .el-tabs__item.is-active {
@@ -70,6 +65,19 @@
 }
 .component .el-tabs__active-bar {
   background-color: #1989fa;
+}
+</style>
+
+<style>
+.component .el-tabs__header {
+  margin: 0;
+  padding-left: 8px;
+}
+.component .el-collapse-item__header {
+  padding-left: 8px;
+}
+.component .el-collapse-item__content {
+  padding-bottom: 12px;
 }
 </style>
 
@@ -103,62 +111,42 @@
     >
       <el-tab-pane label="组件库" name="component">
         <div class="component-wrap">
-          <div class="header">布局组件</div>
-          <div ref="layoutWrapEl" class="content">
-            <div
-              class="com-item"
-              v-for="(item, index) in layoutCom"
-              :key="index"
-              :com-name="item.name"
-              :com-title="item.title"
+          <el-collapse v-model="activecollapseNames">
+            <el-collapse-item
+              v-for="(type, _idx) of collapseList"
+              :key="_idx"
+              :title="type.title"
+              :name="type.name"
             >
-              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 2px">{{ item.title }}</div>
-            </div>
-          </div>
-
-          <div class="header">视图组件</div>
-          <div ref="basicWrapEl" class="content">
-            <div
-              class="com-item"
-              v-for="(item, index) in viewCom"
-              :key="index"
-              :com-name="item.name"
-              :com-title="item.title"
-            >
-              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 2px">{{ item.title }}</div>
-            </div>
-          </div>
-
-          <div class="header">表单组件</div>
-          <div ref="formWrapEl" class="content">
-            <div
-              class="com-item"
-              v-for="(item, index) in formCom"
-              :key="index"
-              :com-name="item.name"
-              :com-title="item.title"
-            >
-              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 2px">{{ item.title }}</div>
-            </div>
-          </div>
-
-          <div class="header">自定义组件</div>
-          <div ref="customWrapEl" class="content" v-if="asyncComRegisterSuccess">
-            <div
-              class="custom-com-item"
-              v-for="(item, index) in customComList"
-              :key="index"
-              :com-name="item.name"
-              :com-title="item.title"
-            >
-              <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
-              <div style="margin-top: 2px">{{ item.title }}</div>
-            </div>
-          </div>
-          <div v-else style="color: #f56c6c; padding-left: 6px;">组件加载失败！</div>
+              <div class="content">
+                <div
+                  class="com-item"
+                  v-for="(item, index) in comList(type.key)"
+                  :key="index"
+                  :com-name="item.name"
+                  :com-title="item.title"
+                >
+                  <img width="26" height="26" draggable="false" :src="item.icon.value" alt="" />
+                  <div style="margin-top: 2px">{{ item.title }}</div>
+                </div>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="自定义组件" name="4">
+              <div class="content" v-if="asyncComRegisterSuccess">
+                <div
+                  class="custom-com-item"
+                  v-for="(item, index) in customComList"
+                  :key="index"
+                  :com-name="item.name"
+                  :com-title="item.title"
+                >
+                  <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
+                  <div style="margin-top: 2px">{{ item.title }}</div>
+                </div>
+              </div>
+              <div v-else style="color: #f56c6c; padding-left: 6px;">组件加载失败！</div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </el-tab-pane>
       <el-tab-pane label="模板" name="template">模板</el-tab-pane>
@@ -196,12 +184,24 @@ export default {
       activeMenu: 'com', // com|tree|history|schema
       activeTabName: 'component', // component|template
       componentList,
-      customComList
+      customComList,
+      activecollapseNames: ['1', '2', '3', '4'],
+      collapseList: [
+        { name: '1', title: '布局组件', key: 'layoutCom' },
+        { name: '2', title: '视图组件', key: 'viewCom' },
+        { name: '3', title: '表单组件', key: 'formCom' },
+        // { name: '4', title: '自定义组件', key: 'customComList' }
+      ]
     }
   },
   computed: {
     activeBarTopVal() {
       return this.activeMenu === 'com' ? 0 : this.activeMenu === 'tree' ? '37px' : '74px'
+    },
+    comList() {
+      return (key) => {
+        return this[key]
+      }
     },
     layoutCom() {
       return this.componentList.filter(i => i.componentType === componentTypes.LAYOUT)
