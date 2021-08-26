@@ -152,9 +152,9 @@ export default {
       this.designer.__canvas__.clear()
     },
     save() {
-      const { viewModel } = this.designer.__canvas__
-      const transformed = this.transform(viewModel.children)
-      localStorage.setItem('viewModel', JSON.stringify({ ...viewModel, children: transformed }))
+      const { model } = this.designer.__canvas__
+      const transformed = this.transform(model.children)
+      localStorage.setItem('viewModel', JSON.stringify({ ...model, children: transformed }))
       ElMessage.success({
         duration: 1000,
         message: 'save succeed!'
