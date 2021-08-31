@@ -1,6 +1,7 @@
 <style scoped>
 .logger-plugun-wrap {
   border-top: 1px solid #eee;
+  height: 100%;
 }
 .logger-plugun-wrap .header {
   border-bottom: 1px solid #dedede;
@@ -36,6 +37,19 @@
   text-align: center;
   padding: 20px 0;
 }
+.logger-plugun-wrap .wrap {
+  height: 100%;
+  overflow-y: auto;
+}
+.logger-plugun-wrap .wrap::-webkit-scrollbar {
+  width: 8px;
+  height: 12px;
+  background-color: transparent;
+}
+.logger-plugun-wrap .wrap::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 8px;
+}
 </style>
 
 <template>
@@ -53,7 +67,7 @@
           v-for="(log, index) in logs"
           :key="index"
         >
-          <el-tooltip effect="dark" :content="log.title" placement="top">
+          <el-tooltip effect="dark" :show-after="200" :content="log.title" placement="top">
             <div class="title">{{ log.title }}</div>
           </el-tooltip>
           <div class="time">{{ log.timestamp }}</div>

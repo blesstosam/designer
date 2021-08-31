@@ -21,6 +21,7 @@
       width: 270px;
       flex: none;
       border-right: 1px solid #eee;
+      height: calc(100vh - 57px);
 
       .component-tepl {
         height: 100%;
