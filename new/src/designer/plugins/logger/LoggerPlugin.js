@@ -42,7 +42,7 @@ export class LoggerPlugin {
       } else {
         title = `设置${data.item.title || data.item.id}为${data.val}`
       }
-      props.logs.push({
+      props.logs.unshift({
         title,
         timestamp: new Date()
           .toISOString()
