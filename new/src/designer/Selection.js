@@ -160,8 +160,10 @@ export class Selection {
       height: '20px',
       width: this.isLayout ? '99px' : '76px',
       lineHeight: '21px',
-      pointerEvents: 'all',
+      pointerEvents: 'all'
     }).el)
+    // remove hover!
+    $(div).hover(() => this.__canvas__.handleNodeboxHoverRemove())
     this.$recEl.appendChild(div)
     return div
   }
@@ -170,7 +172,7 @@ export class Selection {
     $(this.$btnWrap).style({
       ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
       top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
-      width: this.isLayout ? '99px' : '76px',
+      width: this.isLayout ? '99px' : '76px'
     })
   }
 
@@ -208,7 +210,7 @@ export class Selection {
       position: 'absolute',
       ...this._getBtnHPos(type),
       top: 0,
-      cursor: type === 'move' ? 'move' : 'pointer',
+      cursor: type === 'move' ? 'move' : 'pointer'
     }).el
     const img = $('<img>')
       .attr('src', `/${type}.png`)
@@ -253,9 +255,7 @@ export class Selection {
       copy: this.$recCopyBtn,
       move: this.$recMoveBtn
     }
-    $(map[type]).style({
-      ...this._getBtnHPos(type),
-    })
+    $(map[type]).style({ ...this._getBtnHPos(type) })
   }
 
   _hideBtn(type) {
