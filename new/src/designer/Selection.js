@@ -16,6 +16,8 @@ export class Selection {
     this.node = null
 
     this.$recEl = null
+    this.$btnWrap = null
+    this.$recTitle = null
     this.$recDelBtn = null
     this.$recCopyBtn = null
     this.$recMoveBtn = null
@@ -77,6 +79,7 @@ export class Selection {
     const offset = this._getOffset()
     this.decideBtnPos(offset.top, offset.width + offset.left)
     this._createSelection(offset)
+    this._createBtnWrap(offset)
     this._createTitle(offset)
     this._createBtn('delete', offset)
     this._createBtn('move', offset)
@@ -96,6 +99,7 @@ export class Selection {
     const offset = this._getOffset()
     this.decideBtnPos(offset.top, offset.width + offset.left)
     this._updateSelection(offset)
+    this._updateBtnWrap(offset)
     this._updateTitle(offset)
     this._updateBtn('delete', offset)
     this._updateBtn('move', offset)
@@ -110,13 +114,6 @@ export class Selection {
       this._hideBtn('copy')
     }
     this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED, node)
-  }
-
-  updateSize() {
-    const { $el } = this.node
-    this.$recEl.style.width = $el.offsetWidth
-    this.$recEl.style.height = $el.offsetHeight
-    this.__designer__.emit(EVENT_TYPES.SELECTION_RESIZE)
   }
 
   remove() {
@@ -155,12 +152,36 @@ export class Selection {
     })
   }
 
+  _createBtnWrap(offset) {
+    const div = (this.$btnWrap = $('<div>').style({
+      position: 'absolute',
+      ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
+      top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
+      height: '20px',
+      width: this.isLayout ? '99px' : '76px',
+      lineHeight: '21px',
+      pointerEvents: 'all'
+    }).el)
+    // remove hover!
+    $(div).hover(() => this.__canvas__.handleNodeboxHoverRemove())
+    this.$recEl.appendChild(div)
+    return div
+  }
+
+  _updateBtnWrap(offset) {
+    $(this.$btnWrap).style({
+      ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
+      top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
+      width: this.isLayout ? '99px' : '76px'
+    })
+  }
+
   _createTitle(offset) {
-    const div = (this.$recTitleEl = $('<div>')
+    const div = (this.$recTitle = $('<div>')
       .style({
         position: 'absolute',
         ...this._getBtnHPos('title'),
-        top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`,
+        top: 0,
         cursor: 'pointer',
         background: '#1989fa',
         color: 'white',
@@ -171,30 +192,25 @@ export class Selection {
         borderRadius: '2px',
         fontSize: '12px',
         whiteSpace: 'nowrap',
-        fontWeight: 500,
-        pointerEvents: 'all'
+        fontWeight: 500
       })
       .text(this.node.title).el)
-    this.$recEl.appendChild(div)
+    this.$btnWrap.appendChild(div)
     return div
   }
 
   _updateTitle(offset) {
-    $(this.$recTitleEl)
+    $(this.$recTitle)
       .text(this.node.title)
-      .style({
-        ...this._getBtnHPos('title'),
-        top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`
-      })
+      .style({ ...this._getBtnHPos('title') })
   }
 
   _createBtn(type, offset) {
     const div = $('<div>').style({
       position: 'absolute',
       ...this._getBtnHPos(type),
-      top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`,
-      cursor: type === 'move' ? 'move' : 'pointer',
-      pointerEvents: 'all'
+      top: 0,
+      cursor: type === 'move' ? 'move' : 'pointer'
     }).el
     const img = $('<img>')
       .attr('src', `/${type}.png`)
@@ -205,22 +221,17 @@ export class Selection {
         borderRadius: '2px'
       }).el
     div.appendChild(img)
-    this.$recEl.appendChild(div)
+    this.$btnWrap.appendChild(div)
     $(div).hover(
-      () => {
-        $(div).style({ transform: 'scale(1.1)' })
-      },
-      () => {
-        $(div).removeStyle('transform')
-      }
+      () => $(div).style({ transform: 'scale(1.1)' }),
+      () => $(div).removeStyle('transform')
     )
-    if (type === 'delete') {
-      this.$recDelBtn = div
-    } else if (type === 'copy') {
-      this.$recCopyBtn = div
-    } else if (type === 'move') {
-      this.$recMoveBtn = div
+    const obj = {
+      copy: '$recCopyBtn',
+      delete: '$recDelBtn',
+      move: '$recMoveBtn'
     }
+    this[obj[type]] = div
     if (type === 'delete' || type === 'copy') {
       div.addEventListener('click', e => {
         e.stopPropagation()
@@ -244,10 +255,7 @@ export class Selection {
       copy: this.$recCopyBtn,
       move: this.$recMoveBtn
     }
-    $(map[type]).style({
-      ...this._getBtnHPos(type),
-      top: this.btnVPos === 'top' ? '-21px' : `${offset.height}px`
-    })
+    $(map[type]).style({ ...this._getBtnHPos(type) })
   }
 
   _hideBtn(type) {

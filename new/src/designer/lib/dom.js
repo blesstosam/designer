@@ -189,7 +189,7 @@ class DomUtil {
   }
 
   addListener(event, handler) {
-    this.dom.addEventListener(event, handler)
+    handler && this.dom.addEventListener(event, handler)
     return this
   }
 
