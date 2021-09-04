@@ -15,6 +15,7 @@ import { Hover } from './Hover'
 import { changeProps } from './components/render-util'
 import { throttle } from './lib/util'
 import { InsertTypes, isPendType } from './InsertTypes'
+import cloneDeep from 'lodash.clonedeep'
 
 const {
   SELECTION_DEL_CLICK: F_D_C,
@@ -400,7 +401,7 @@ export class Canvas {
     const { APPEND, PREPEND } = InsertTypes
     const parent =
       insertType === APPEND || insertType === PREPEND ? parentOrSibling : parentOrSibling.parent
-    const newNode = new Node({ ...com, $el: wrap }, parent)
+    const newNode = new Node({ ...com, attrs: cloneDeep(com.attrs), $el: wrap }, parent)
     parentOrSibling[insertType](newNode)
     !cancelDispatch && this._dispathAppend(newNode)
     return newNode
@@ -489,7 +490,6 @@ export class Canvas {
         }
       }
     }
-
     if (node && node.props) {
       changeProps({ [item.id]: val }, node.props)
       node.transformProps && node.transformProps(node.props)
