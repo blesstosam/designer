@@ -174,7 +174,6 @@ export class Selection {
 
   _createCover() {
     const { width, height, left, top } = this.offset
-    console.log(this.offset, 'offset')
     $(this.$recEl).style({ border: 'none' })
     const el = (this.$coverEl = $('<div>').style({
       position: 'absolute',

@@ -27,7 +27,6 @@ export class Components {
     }
     this.__designer__ = designer
     this._hasRegistered = []
-    window._hasRegistered = this._hasRegistered
     this.$wrapEl = document.querySelector(this.config.componentsWrap)
     this.loader = null
   }

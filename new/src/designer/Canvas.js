@@ -21,6 +21,9 @@ const {
   SELECTION_DEL_CLICK: F_D_C,
   SELECTION_COPY_CLICK: F_C_C,
   CANVAS_ACTIONS_APPEND: C_A_A,
+  CANVAS_ACTIONS_PREPEND,
+  CANVAS_ACTIONS_AFTER,
+  CANVAS_ACTIONS_BEFORE,
   CANVAS_ACTIONS_DELETE: C_A_D,
   CANVAS_ACTIONS_CLEAR: C_A_C,
   COMPONENTS_INITED,
@@ -606,13 +609,13 @@ export class Canvas {
             const $slotDom = lookdownByAttr(dropedNode.$el.children[0], SLOT_NAME_KEY)
             $($slotDom)[this.insertType](state.data.$el)
             if (state.data.getIsMyParent(dropedNode)) {
-              // C. inner to inner(same container)
+              // inner to inner(same container)
               // 2-1 操作model
               const fromIndex = dropedNode.children.findIndex(i => i.$el === state.data.$el)
               const toIndex = dropedNode.children.length
               arrayMoveMutable(dropedNode.children, fromIndex, toIndex)
             } else {
-              // D. inner to inner(other container)
+              // inner to inner(other container)
               // 2-2 操作model
               state.data.remove()
               dropedNode[this.insertType](state.data)
@@ -648,10 +651,8 @@ export class Canvas {
             // if after or before
             if (dropedNode) {
               // 找到其父级node
-              const [parentComponentMeta, $parentNodeboxEl] = getComponentMetaData(
-                $nodeboxEl.parentNode
-              )
-              if ($parentNodeboxEl && parentComponentMeta) {
+              const [parentComponentMeta] = getComponentMetaData($nodeboxEl.parentNode)
+              if (parentComponentMeta) {
                 if (parentComponentMeta.accept.includes(state.data.name)) {
                   this[this.insertType](
                     { ...state.data },
@@ -766,10 +767,10 @@ export class Canvas {
   _dispathInsert(type, node) {
     const { APPEND, PREPEND, AFTER, BEFORE } = InsertTypes
     const map = {
-      [APPEND]: EVENT_TYPES.CANVAS_ACTIONS_APPEND,
-      [PREPEND]: EVENT_TYPES.CANVAS_ACTIONS_PREPEND,
-      [AFTER]: EVENT_TYPES.CANVAS_ACTIONS_AFTER,
-      [BEFORE]: EVENT_TYPES.CANVAS_ACTIONS_BEFORE
+      [APPEND]: C_A_A,
+      [PREPEND]: CANVAS_ACTIONS_PREPEND,
+      [AFTER]: CANVAS_ACTIONS_AFTER,
+      [BEFORE]: CANVAS_ACTIONS_BEFORE
     }
     this.__designer__.emit(map[type], {
       type: map[type],
