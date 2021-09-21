@@ -36,6 +36,9 @@ export class Node {
     // function
     this.render = node.render
     node.transformProps && (this.transformProps = node.transformProps)
+
+    // store to nodeMap
+    nodeMap.set(node.$el, this)
   }
 
   get index() {
@@ -65,22 +68,30 @@ export class Node {
 
   [InsertTypes.APPEND](node) {
     this.children.push(node)
-    nodeMap.set(node.$el, node)
+    if (node.parent !== this) node.parent = this
   }
 
   [InsertTypes.PREPEND](node) {
     this.children.unshift(node)
-    nodeMap.set(node.$el, node)
+    if (node.parent !== this) node.parent = this
   }
 
   [InsertTypes.BEFORE](node) {
     this.parent.children.splice(this.index, 0, node)
-    nodeMap.set(node.$el, node)
+    if (node.parent !== this.parent) node.parent = this.parent
   }
 
   [InsertTypes.AFTER](node) {
     this.parent.children.splice(this.index + 1, 0, node)
-    nodeMap.set(node.$el, node)
+    if (node.parent !== this.parent) node.parent = this.parent
+  }
+
+  // remove self
+  remove() {
+    if (this.parent) {
+      const [removedNode] = this.parent.children.splice(this.index, 1)
+      return removedNode
+    }
   }
 
   removeByKey(key, val, arr) {
@@ -116,6 +127,15 @@ export class Node {
 
   findByEl(el) {
     return nodeMap.get(el)
+  }
+
+  getIsSibling(node) {
+    if (!this.parent) return false
+    return this.parent === node.parent
+  }
+
+  getIsMyParent(node) {
+    return this.parent === node
   }
 
   getRootNode() {

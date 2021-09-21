@@ -13,7 +13,7 @@ import { Node } from './Node'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
 import { changeProps } from './components/render-util'
-import { throttle } from './lib/util'
+import { arrayMoveMutable, throttle } from './lib/util'
 import { InsertTypes, isPendType } from './InsertTypes'
 import cloneDeep from 'lodash.clonedeep'
 
@@ -21,7 +21,11 @@ const {
   SELECTION_DEL_CLICK: F_D_C,
   SELECTION_COPY_CLICK: F_C_C,
   CANVAS_ACTIONS_APPEND: C_A_A,
+  CANVAS_ACTIONS_PREPEND,
+  CANVAS_ACTIONS_AFTER,
+  CANVAS_ACTIONS_BEFORE,
   CANVAS_ACTIONS_DELETE: C_A_D,
+  CANVAS_ACTIONS_CLEAR: C_A_C,
   COMPONENTS_INITED,
   CANVAS_INITED,
   CANVAS_LAYOUTED
@@ -34,9 +38,7 @@ const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
 const NODE_BOX_CLS = 'node-box'
 
-function getSlotName(el) {
-  return el.getAttribute(SLOT_NAME_KEY)
-}
+const getSlotName = el => el.getAttribute(SLOT_NAME_KEY)
 
 export class Canvas {
   constructor(config, designer) {
@@ -125,7 +127,7 @@ export class Canvas {
           for (const node of nodeArr) {
             const com = this.__components__.findComByName(node.name)
             const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-            const newNode = this.append(com, targetEl, parent)
+            const newNode = this[InsertTypes.APPEND](com, targetEl, parent)
             if (node.children && node.children.length) {
               mount(node.children, newNode)
             }
@@ -154,17 +156,46 @@ export class Canvas {
       console.log('wrapper drop...')
       this.removeMarker()
 
+      // canvas容器只有两种情况 prepend&append
       const state = getData()
-      if (state.data.componentType !== LAYOUT) {
-        const blockCom = this.__components__.findComByName('VBlock')
-        const wrapNode = this[this.insertType](blockCom, this.$canvasEl, this.model)
-        const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
-        this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
+      if (state.isMove) {
+        if (state.data.componentType !== LAYOUT) {
+          // inner to wrap
+          // 1. 包一层wrap
+          const blockCom = this.__components__.findComByName('VBlock')
+          const wrapNode = this[this.insertType](blockCom, this.$canvasEl, this.model)
+          // 2. 移动dom到新容器
+          wrapNode.$el.children[0].appendChild(state.data.$el)
+          // 3. 操作model
+          state.data.remove()
+          wrapNode[InsertTypes.APPEND](state.data)
+        } else {
+          // B. wrap to wrap
+          // 1. 移动dom
+          $(this.$canvasEl)[this.insertType](state.data.$el)
+          // 2. 操作model
+          const fromIndex = this.model.children.findIndex(i => i.$el === state.data.$el)
+          const toIndex = this.insertType === InsertTypes.APPEND ? this.model.children.length : 0
+          arrayMoveMutable(this.model.children, fromIndex, toIndex)
+          // 3. 更新selection位置
+          this.selection && this.selection.update()
+        }
       } else {
-        const newNode = this[this.insertType](state.data, this.$canvasEl, this.model)
-        this.showTip(newNode)
+        if (state.data.componentType !== LAYOUT) {
+          this.wrapBlockThenInsert({
+            insertType: this.insertType,
+            state,
+            siblingOrParentDom: this.$canvasEl,
+            parentNode: this.model
+          })
+        } else {
+          const newNode = this[this.insertType](state.data, this.$canvasEl, this.model)
+          this.showTip(newNode)
+        }
       }
+
       this.resetInsertInfo()
+      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED)
     })
 
     this.__dragDrop__.onDragOver(
@@ -325,10 +356,7 @@ export class Canvas {
     this.clearSelection()
     this.showTip(this.model)
     localStorage.clear('viewModel')
-    this.__designer__.emit(C_A_D, {
-      type: C_A_D,
-      viewModel: []
-    })
+    this.__designer__.emit(C_A_C, { type: C_A_C, viewModel: [] })
   }
 
   clearSelection() {
@@ -361,7 +389,7 @@ export class Canvas {
         com.transformProps && (node.transformProps = com.transformProps)
 
         const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-        nodeArr[i] = this.append(node, targetEl, parent, true)
+        nodeArr[i] = this[InsertTypes.APPEND](node, targetEl, parent, true)
         if (node.children && node.children.length) {
           mount(node.children, nodeArr[i])
         }
@@ -391,7 +419,7 @@ export class Canvas {
   /**
    * @param {object} com 组件元数据
    * @param {HTMLElement} container dom容器
-   * @param {object} parent 父级节点
+   * @param {object} parentOrSibling 父级节点或兄弟节点
    * @param {InsertTypes} insertType 插入类型
    * @param {boolean} cancelDispatch 是否触发事件
    * @returns {object}
@@ -403,7 +431,7 @@ export class Canvas {
       insertType === APPEND || insertType === PREPEND ? parentOrSibling : parentOrSibling.parent
     const newNode = new Node({ ...com, attrs: cloneDeep(com.attrs), $el: wrap }, parent)
     parentOrSibling[insertType](newNode)
-    !cancelDispatch && this._dispathAppend(newNode)
+    !cancelDispatch && this._dispathInsert(insertType, newNode)
     return newNode
   }
 
@@ -415,23 +443,23 @@ export class Canvas {
    */
   insertDom(d, container, type) {
     const isLayout = d.componentType === LAYOUT
-    const wrapper = this._createNodebox(isLayout, d.isBlock)
-    const res = d.$el || d.render() // 如果是点击下一步按钮，此时的$el已经生成了，可以复用
-    $(res).attr({ 'data-name': d.name })
-    wrapper.appendChild(res)
+    let wrapper = d.$el // 如果是上一步/下一步这种操作，可以复用dom结构
+    if (!wrapper) {
+      wrapper = this._createNodebox(isLayout, d.isBlock)
+      const res = d.render()
+      $(res).attr({ 'data-name': d.name })
+      wrapper.appendChild(res)
+    }
 
-    // 当组件的slotname 为 default 时，直接插入到容器的末尾
-    // 当组件的slotname 不为 default 时，需要查找对应的容器
+    // 当组件的slotname 为 default 时，直接插入到容器的末尾；不为 default 时，需要查找对应的容器
     const slotName = d.slotName || 'default'
     let realContainer = container
     if (slotName !== 'default') {
       realContainer = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
     } else {
-      //  TODO 是否去掉该分支 明确要求布局组件要有c-slot-name属性
+      /* TODO 是否去掉该分支 明确要求布局组件要有c-slot-name属性 */
     }
-    if (realContainer) {
-      $(realContainer)[type](wrapper)
-    }
+    if (realContainer) $(realContainer)[type](wrapper)
 
     let $parentContainer = realContainer
     if (!isPendType(type)) $parentContainer = realContainer.parentNode
@@ -554,6 +582,13 @@ export class Canvas {
 
     $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', border: '1px solid #dedede' })
 
+    const getComponentMetaData = targetEl => {
+      const $nodeboxEl = lookupByClassName(targetEl, NODE_BOX_CLS)
+      if (!$nodeboxEl) return []
+      const targetComName = $($nodeboxEl).firstElement.getAttribute('data-name')
+      return [this.__components__.findComByName(targetComName), $nodeboxEl]
+    }
+
     this.__dragDrop__.onDrop(
       wrapper,
       ({ $event: e, getData }) => {
@@ -561,61 +596,94 @@ export class Canvas {
         this.dropToInnerSlot = false
         this.removeMarker()
 
+        // nodebox有三种情况 append & before & after
         // 找到node-box节点的子节点
         const slotName = getSlotName(e.target) || 'default'
-        const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
-        // console.log($nodeboxEl, '=========$nodeboxEl=======')
-        const targetComName = $($nodeboxEl).firstElement.getAttribute('data-name')
-        const component = this.__components__.findComByName(targetComName)
-
+        const [componentMeta, $nodeboxEl] = getComponentMetaData(e.target)
+        const dropedNode = this.model.findByEl($nodeboxEl)
         const state = getData()
-        if (isPendType(this.insertType)) {
-          if (component.accept.includes(state.data.name)) {
-            const dropedNode = this.model.findByEl($nodeboxEl)
-            // console.log(this.insertType, '==========>')
-            if (dropedNode) {
-              this[this.insertType]({ ...state.data, slotName }, e.target, dropedNode)
+        if (state.isMove) {
+          if (isPendType(this.insertType)) {
+            // 只能是append
+            // 1. 移动dom 找到dropedNode的slot TODO 如果有多个slot怎么办??
+            const $slotDom = lookdownByAttr(dropedNode.$el.children[0], SLOT_NAME_KEY)
+            $($slotDom)[this.insertType](state.data.$el)
+            if (state.data.getIsMyParent(dropedNode)) {
+              // inner to inner(same container)
+              // 2-1 操作model
+              const fromIndex = dropedNode.children.findIndex(i => i.$el === state.data.$el)
+              const toIndex = dropedNode.children.length
+              arrayMoveMutable(dropedNode.children, fromIndex, toIndex)
+            } else {
+              // inner to inner(other container)
+              // 2-2 操作model
+              state.data.remove()
+              dropedNode[this.insertType](state.data)
             }
+            // 3. 更新selection
+            this.selection && this.selection.update()
+          } else {
+            // 可能是after或before
+            // 1. 移动dom
+            $(dropedNode.$el)[this.insertType](state.data.$el)
+            if (state.data.getIsMyParent(dropedNode.parent)) {
+              // inner to inner(same container)
+              // 2-1 操作model
+              const fromIndex = dropedNode.parent.children.findIndex(i => i.$el === state.data.$el)
+              const toIndex = dropedNode.index
+              arrayMoveMutable(dropedNode.parent.children, fromIndex, toIndex)
+            } else {
+              // inner to inner(other container)
+              // 2-2 操作model
+              state.data.remove()
+              dropedNode[this.insertType](state.data)
+            }
+            // 3. 更新selection
+            this.selection && this.selection.update()
           }
         } else {
-          const dropedNode = this.model.findByEl($nodeboxEl)
-          // console.log(this.insertType, '==========>2')
-          if (dropedNode) {
-            // 找到其父级node
-            const $parentNodeboxEl = lookupByClassName($nodeboxEl.parentNode, NODE_BOX_CLS)
-            if ($parentNodeboxEl) {
-              const targetParentComName = $($parentNodeboxEl).firstElement.getAttribute('data-name')
-              const parentComponent = this.__components__.findComByName(targetParentComName)
-              if (parentComponent.accept.includes(state.data.name)) {
-                this[this.insertType](
-                  { ...state.data },
-                  lookupByClassName(e.target, NODE_BOX_CLS),
-                  dropedNode
-                )
-              }
-            } else {
-              // 如果没有父级nodebox，则父级为 canvas-root
-              if (state.data.componentType !== LAYOUT) {
-                const blockCom = this.__components__.findComByName('VBlock')
-                const wrapNode = this[this.insertType](
-                  blockCom,
-                  lookupByClassName(e.target, NODE_BOX_CLS),
-                  dropedNode
-                )
-                const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
-                this.append({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
+          if (isPendType(this.insertType)) {
+            // if append or prepend
+            if (dropedNode && componentMeta.accept.includes(state.data.name)) {
+              this[this.insertType]({ ...state.data, slotName }, e.target, dropedNode)
+            }
+          } else {
+            // if after or before
+            if (dropedNode) {
+              // 找到其父级node
+              const [parentComponentMeta] = getComponentMetaData($nodeboxEl.parentNode)
+              if (parentComponentMeta) {
+                if (parentComponentMeta.accept.includes(state.data.name)) {
+                  this[this.insertType](
+                    { ...state.data },
+                    lookupByClassName(e.target, NODE_BOX_CLS),
+                    dropedNode
+                  )
+                }
               } else {
-                const newNode = this[this.insertType](
-                  { ...state.data },
-                  lookupByClassName(e.target, NODE_BOX_CLS),
-                  dropedNode
-                )
-                this.showTip(newNode)
+                // 如果没有父级nodebox，则父级为canvas-root
+                if (state.data.componentType !== LAYOUT) {
+                  this.wrapBlockThenInsert({
+                    insertType: this.insertType,
+                    state,
+                    siblingOrParentDom: lookupByClassName(e.target, NODE_BOX_CLS),
+                    parentNode: dropedNode
+                  })
+                } else {
+                  const newNode = this[this.insertType](
+                    { ...state.data },
+                    lookupByClassName(e.target, NODE_BOX_CLS),
+                    dropedNode
+                  )
+                  this.showTip(newNode)
+                }
               }
             }
           }
         }
+
         this.resetInsertInfo()
+        this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED)
       },
       { stop: true }
     )
@@ -628,22 +696,27 @@ export class Canvas {
         const rectPos = target.getBoundingClientRect()
         // console.log(rectPos.y, rectPos.height, y)
 
+        const [componentMeta] = getComponentMetaData(e.target)
         const state = getData()
+        const canInsert = (componentMeta.accept || []).includes(state.data.name)
         const style = {
           width: state.data.isBlock ? e.target.offsetWidth - NODE_BOX_PADDING * 2 + 'px' : '100px'
         }
+        !canInsert && (style.background = 'red')
 
         // 5px是精度，可以调整
+        let realTarget
         if (y - rectPos.y <= 5) {
           this.insertType = InsertTypes.BEFORE
-          this.showMarker(style, lookupByClassName(target, NODE_BOX_CLS), this.insertType)
+          realTarget = lookupByClassName(target, NODE_BOX_CLS)
         } else if (rectPos.y + rectPos.height - y <= 5) {
           this.insertType = InsertTypes.AFTER
-          this.showMarker(style, lookupByClassName(target, NODE_BOX_CLS), this.insertType)
+          realTarget = lookupByClassName(target, NODE_BOX_CLS)
         } else {
           this.insertType = InsertTypes.APPEND
-          this.showMarker(style, target, this.insertType)
+          realTarget = target
         }
+        this.showMarker(style, realTarget, this.insertType)
         // console.log(this.insertType, 'insertPos')
       }, 200),
       { stop: true }
@@ -681,12 +754,26 @@ export class Canvas {
     return wrapper
   }
 
+  wrapBlockThenInsert({ insertType, state, siblingOrParentDom, parentNode }) {
+    const blockCom = this.__components__.findComByName('VBlock')
+    const wrapNode = this[insertType](blockCom, siblingOrParentDom, parentNode)
+    const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
+    this[InsertTypes.APPEND]({ ...state.data, slotName }, wrapNode.$el.children[0], wrapNode)
+  }
+
   /**
    * 发送全局事件-添加节点
    */
-  _dispathAppend(node) {
-    this.__designer__.emit(C_A_A, {
-      type: C_A_A,
+  _dispathInsert(type, node) {
+    const { APPEND, PREPEND, AFTER, BEFORE } = InsertTypes
+    const map = {
+      [APPEND]: C_A_A,
+      [PREPEND]: CANVAS_ACTIONS_PREPEND,
+      [AFTER]: CANVAS_ACTIONS_AFTER,
+      [BEFORE]: CANVAS_ACTIONS_BEFORE
+    }
+    this.__designer__.emit(map[type], {
+      type: map[type],
       data: node,
       viewModel: this.model
     })

@@ -3,6 +3,7 @@ import { FetchLoader } from './lib/loader'
 import { ElTabs, ElTabPane, ElCollapse, ElCollapseItem } from 'element-plus'
 import ComponentsVue from './vue/Components.vue'
 import { lookupByClassName, $ } from './lib/dom'
+import { EVENT_TYPES } from './Event'
 
 const COMPONENT_EL_CLS = 'component-item'
 
@@ -58,6 +59,7 @@ export class Components {
       console.log('drag start...')
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLS)
       setData('data', this.findComByName($componentItem.getAttribute('com-name')) || {})
+      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START)
     })
 
     this.__dragDrop__.onDragEnd(target, () => { console.log('drag end...') })

@@ -25,6 +25,7 @@
 .logger-plugun-wrap .time {
   font-size: 12px;
   width: 57%;
+  line-height: 20px;
 }
 .logger-plugun-wrap .title {
   width: 42%;

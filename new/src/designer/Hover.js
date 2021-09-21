@@ -65,7 +65,7 @@ export class Hover {
           zIndex: 0,
           boxSizing: 'border-box',
           pointerEvents: 'none',
-          transition: 'all .2s'
+          transition: 'all .1s'
         })
         .addClass('hover').el
     }

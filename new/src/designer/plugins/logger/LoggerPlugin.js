@@ -5,7 +5,11 @@ import { ElTooltip } from 'element-plus'
 
 const {
   CANVAS_ACTIONS_APPEND: C_A_A,
+  CANVAS_ACTIONS_PREPEND: C_A_P,
+  CANVAS_ACTIONS_AFTER: C_A_AFTER,
+  CANVAS_ACTIONS_BEFORE: C_A_BEFORE,
   CANVAS_ACTIONS_DELETE: C_A_D,
+  CANVAS_ACTIONS_CLEAR: C_A_C,
   ATTRPANEL_SET_ATTR: A_S_A
 } = EVENT_TYPES
 
@@ -31,14 +35,22 @@ export class LoggerPlugin {
     this.vueInstance = app.mount(document.querySelector(wrap))
     this.vueInstance.__componentTree__ = this
 
-    this.__designer__.on([C_A_A, C_A_D, A_S_A], d => {
+    this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], d => {
       console.log('logger...', d)
       const { type, data } = d
       let title = ''
-      if (type === C_A_A) {
-        title = `插入${data.title}`
-      } else if (type === C_A_D) {
-        title = `删除${data.title}`
+      if ([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D].includes(type)) {
+        const map = {
+          [C_A_A]: 'APPEND',
+          [C_A_P]: 'PREPEND',
+          [C_A_AFTER]: 'AFTER',
+          [C_A_BEFORE]: 'BEFORE',
+          [C_A_D]: '删除'
+        }
+        const actionName = map[type]
+        title = `${actionName}${data.title}`
+      } else if (type === C_A_C) {
+        title = '清空画布'
       } else {
         title = `设置${data.item.title || data.item.id}为${data.val}`
       }

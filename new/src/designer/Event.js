@@ -109,7 +109,13 @@ export const EVENT_TYPES = {
   CANVAS_LAYOUTED: 'canvas.layouted',
   CANVAS_DESTROYED: 'canvas.destroyed',
   CANVAS_ACTIONS_APPEND: 'canvas.actions.append',
+  CANVAS_ACTIONS_PREPEND: 'canvas.actions.prepend',
+  CANVAS_ACTIONS_AFTER: 'canvas.actions.after',
+  CANVAS_ACTIONS_BEFORE: 'canvas.actions.before',
   CANVAS_ACTIONS_DELETE: 'canvas.actions.delete',
+  CANVAS_ACTIONS_CLEAR: 'canvas.actions.clear',
+  CANVAS_ACTIONS_MOVE_START: 'canvas.actions.move.start',
+  CANVAS_ACTIONS_MOVE_END: 'canvas.actions.move.end',
 
   // element 为画布中元素节点
   ELEMENT_CLICK: 'element.click',
