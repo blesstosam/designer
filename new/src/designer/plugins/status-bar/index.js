@@ -43,7 +43,6 @@ export class StatusBar {
       if (node) {
         const pathArr = []
         getParentTitle(node, pathArr)
-        console.log(node, pathArr)
         props.pathArr = ['Cancas', ...pathArr]
       }
     })
