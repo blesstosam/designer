@@ -32,7 +32,7 @@
   display: inline-block;
   padding: 6px;
   width: 40px;
-  margin-right: 12px;
+  margin-right: 22px;
   margin-bottom: 8px;
   font-size: 12px;
   text-align: center;
@@ -236,7 +236,7 @@ export default {
     for (let plug of this.__plug__.plugins.values()) {
       const { p: plugInstance, type, name } = plug
       if (type === PLUGIN_TYPES.MENU_BAR) {
-        if (name === 'myLoggerPlugin') {
+        if (name === 'MyLoggerPlugin') {
           plugInstance.init('.component-history-wrap')
         }
       }
