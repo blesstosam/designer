@@ -1,12 +1,12 @@
 <style>
 /* 该样式只在画布里才有 */
-.canvas-wrapper .v-column {
+.canvas-wrap .v-column {
   /* border: 1px dashed #aaa; */
   background-color: #fff;
   min-height: 80px;
   /* margin: 4px 0; */
 }
-.canvas-wrapper .v-column .content {
+.canvas-wrap .v-column .content {
   border: solid 1px #ddd;
   min-height: 72px;
   margin-top: 4px;

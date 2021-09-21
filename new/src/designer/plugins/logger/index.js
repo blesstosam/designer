@@ -2,6 +2,7 @@ import { createApp, reactive, h } from 'vue'
 import { EVENT_TYPES } from '../../Event'
 import LoggerPluginVue from './LoggerPlugin.vue'
 import { ElTooltip } from 'element-plus'
+import { PLUGIN_TYPES } from '../../Plugin'
 
 const {
   CANVAS_ACTIONS_APPEND: C_A_A,
@@ -33,7 +34,6 @@ export class LoggerPlugin {
     }).component(ElTooltip.name, ElTooltip)
 
     this.vueInstance = app.mount(document.querySelector(wrap))
-    this.vueInstance.__componentTree__ = this
 
     this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], d => {
       console.log('logger...', d)
@@ -67,5 +67,5 @@ export class LoggerPlugin {
 }
 
 LoggerPlugin.$inject = ['__attr__']
-LoggerPlugin.$name = 'myLoggerPlugin'
-LoggerPlugin.$type = 'menuBar'
+LoggerPlugin.$name = 'MyLoggerPlugin'
+LoggerPlugin.$type = PLUGIN_TYPES.MENU_BAR

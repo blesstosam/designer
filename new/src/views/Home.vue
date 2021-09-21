@@ -31,10 +31,18 @@
     .center {
       flex: 1;
 
-      .canvas-wrapper {
+      .canvas-wrap {
         height: calc(100vh - 55px);
         overflow-y: auto;
         background: #ddd;
+      }
+
+      .status-bar-wrap {
+        height: 30px;
+        position: absolute;
+        bottom 0;
+        background #fff;
+        width: calc(100% - 570px)
       }
     }
 
@@ -48,10 +56,11 @@
       &::-webkit-scrollbar {
         width: 8px;
         height: 12px;
-        background-color: transparent; 
+        background-color: transparent;
       }
+
       &::-webkit-scrollbar-thumb {
-        background-color: #ddd 
+        background-color: #ddd;
         border-radius: 8px;
       }
     }
@@ -71,7 +80,8 @@
       </div>
 
       <div class="center">
-        <div class="canvas-wrapper"></div>
+        <div class="canvas-wrap"></div>
+        <div class="status-bar-wrap"></div>
       </div>
 
       <div class="right">
@@ -83,22 +93,30 @@
 
 <script>
 import { Designer } from '../designer/index'
-import { LoggerPlugin } from '../designer/plugins/logger/LoggerPlugin'
+import { LoggerPlugin } from '../designer/plugins/logger/index'
+import { StatusBar } from '../designer/plugins/status-bar/index.js'
 
 export default {
   name: 'Home',
   mounted() {
-    console.log('mounted...')
     this.designer = new Designer({
       componentsWrap: '.component-tepl',
-      canvasWrap: '.canvas-wrapper',
+      canvasWrap: '.canvas-wrap',
       toolbarWrap: '.toolbar-wrap',
       attrWrap: '#attr',
-      plugins: [LoggerPlugin]
+      plugins: [LoggerPlugin, StatusBar]
     })
     this.designer.__vueApp__ = this
     // for debug
     window.designer = this.designer
+    
+    // handle plugins
+    for (let plug of designer.__plug__.plugins.values()) {
+       const { p: plugInstance, name } = plug
+       if (name === 'StatusBar') {
+         plugInstance.init('.status-bar-wrap')
+       }
+    }
   }
 }
 </script>
