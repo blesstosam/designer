@@ -1,5 +1,5 @@
 // -----------------------------------------------------------
-// | insertType      | append | prepend | after    | before  |
+// | insertType      | append | prepend | after | before  |
 // -----------------------------------------------------------
 export const InsertTypes = {
   // value 要和 $及Node 的方法对应上

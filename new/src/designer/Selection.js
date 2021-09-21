@@ -4,7 +4,11 @@ import { DROP_EL_PADDING } from './Canvas'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
+const { COMPONENTS_DRAG_START: C_D_S, COMPONENTS_DROPED: C_D, DRAG_END: D_E } = EVENT_TYPES
+
 const getBtnsWidth = isLayout => (isLayout ? 100 : 75)
+
+const SELECTION_BORDER_STYLE = '1px solid rgb(70, 128, 255)'
 
 export class Selection {
   constructor(desginer) {
@@ -21,6 +25,7 @@ export class Selection {
     this.$recDelBtn = null
     this.$recCopyBtn = null
     this.$recMoveBtn = null
+    this.$coverEl = null
 
     this.btnVPos = 'top'
     this.btnHPos = 'right'
@@ -41,8 +46,23 @@ export class Selection {
     return this.__designer__.__canvas__
   }
 
+  get __dragDrop__() {
+    return this.__designer__.__dragDrop__
+  }
+
   get isLayout() {
     return this.node.componentType === componentTypes.LAYOUT
+  }
+
+  get offset() {
+    const { $el } = this.node
+    const domRect = $el.getBoundingClientRect()
+    return {
+      width: domRect.width,
+      height: domRect.height,
+      top: domRect.top,
+      left: domRect.left
+    }
   }
 
   initListener() {
@@ -51,10 +71,10 @@ export class Selection {
     }
     window.addEventListener('resize', this._cb)
 
-    this.__designer__.on(EVENT_TYPES.COMPONENTS_DRAG_START, () => {
+    this.__designer__.on(C_D_S, () => {
       this.$recEl.style.zIndex = -1
     })
-    this.__designer__.on(EVENT_TYPES.COMPONENTS_DROPED, () => {
+    this.__designer__.on([C_D, D_E], () => {
       this.$recEl.style.zIndex = 2
     })
   }
@@ -76,14 +96,14 @@ export class Selection {
 
   create(node) {
     this.node = node
-    const offset = this._getOffset()
+    const offset = this.offset
     this.decideBtnPos(offset.top, offset.width + offset.left)
-    this._createSelection(offset)
-    this._createBtnWrap(offset)
-    this._createTitle(offset)
-    this._createBtn('delete', offset)
-    this._createBtn('move', offset)
-    this.isLayout && this._createBtn('copy', offset)
+    this._createSelection()
+    this._createBtnWrap()
+    this._createTitle()
+    this._createBtn('delete')
+    this._createBtn('move')
+    this.isLayout && this._createBtn('copy')
     this.observe()
     this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED, node)
   }
@@ -96,7 +116,7 @@ export class Selection {
       this.observe()
     }
 
-    const offset = this._getOffset()
+    const offset = this.offset
     this.decideBtnPos(offset.top, offset.width + offset.left)
     this._updateSelection(offset)
     this._updateBtnWrap(offset)
@@ -122,8 +142,8 @@ export class Selection {
     this.__designer__.emit(EVENT_TYPES.SELECTION_DEACTIVED)
   }
 
-  _createSelection(offset) {
-    const { width, height } = offset
+  _createSelection() {
+    const { width, height } = this.offset
     const div = (this.$recEl = $('<div>')
       .style({
         width: width + 'px',
@@ -131,7 +151,7 @@ export class Selection {
         top: 0,
         left: 0,
         position: 'absolute',
-        border: '1px solid rgb(70, 128, 255)',
+        border: SELECTION_BORDER_STYLE,
         zIndex: 2,
         boxSizing: 'border-box',
         pointerEvents: 'none'
@@ -152,11 +172,33 @@ export class Selection {
     })
   }
 
-  _createBtnWrap(offset) {
+  _createCover() {
+    const { width, height, left, top } = this.offset
+    console.log(this.offset, 'offset')
+    $(this.$recEl).style({ border: 'none' })
+    const el = (this.$coverEl = $('<div>').style({
+      position: 'absolute',
+      width: width + 'px',
+      height: height + 'px',
+      top: top + 'px',
+      left: left + 'px',
+      background: 'rgba(23,142,230,0.2)',
+      zIndex: 3
+    }).el)
+    document.body.appendChild(el)
+  }
+
+  _removeCover() {
+    this.$coverEl && this.$coverEl.remove()
+    this.$coverEl = null
+    $(this.$recEl).style({ border: SELECTION_BORDER_STYLE })
+  }
+
+  _createBtnWrap() {
     const div = (this.$btnWrap = $('<div>').style({
       position: 'absolute',
       ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
+      top: this.btnVPos === 'top' ? '-22px' : `${this.offset.height}px`,
       height: '20px',
       width: this.isLayout ? '99px' : '76px',
       lineHeight: '21px',
@@ -176,7 +218,7 @@ export class Selection {
     })
   }
 
-  _createTitle(offset) {
+  _createTitle() {
     const div = (this.$recTitle = $('<div>')
       .style({
         position: 'absolute',
@@ -199,13 +241,13 @@ export class Selection {
     return div
   }
 
-  _updateTitle(offset) {
+  _updateTitle() {
     $(this.$recTitle)
       .text(this.node.title)
       .style({ ...this._getBtnHPos('title') })
   }
 
-  _createBtn(type, offset) {
+  _createBtn(type) {
     const div = $('<div>').style({
       position: 'absolute',
       ...this._getBtnHPos(type),
@@ -213,7 +255,10 @@ export class Selection {
       cursor: type === 'move' ? 'move' : 'pointer'
     }).el
     const img = $('<img>')
-      .attr('src', `/${type}.png`)
+      .attr({
+        src: `/${type}.png`,
+        draggable: false
+      })
       .style({
         width: '16px',
         background: '#1989fa',
@@ -222,10 +267,12 @@ export class Selection {
       }).el
     div.appendChild(img)
     this.$btnWrap.appendChild(div)
-    $(div).hover(
-      () => $(div).style({ transform: 'scale(1.1)' }),
-      () => $(div).removeStyle('transform')
-    )
+    $(div)
+      .hover(
+        () => $(div).style({ transform: 'scale(1.1)' }),
+        () => $(div).removeStyle('transform')
+      )
+      .attr('draggable', true)
     const obj = {
       copy: '$recCopyBtn',
       delete: '$recDelBtn',
@@ -242,14 +289,22 @@ export class Selection {
           data: this.node
         })
       })
-    } else {
-      // todo 绑定拖动事件
+    } else if (type === 'move') {
+      this.__dragDrop__.onDragStart(div, ({ renderDragImg, setData }) => {
+        renderDragImg(this.node.title)
+        setData('data', this.node)
+        setData('isMove', true)
+        this._createCover() // add cover
+      })
+      this.__dragDrop__.onDragEnd(div, () => {
+        this._removeCover()
+      })
     }
 
     return div
   }
 
-  _updateBtn(type, offset) {
+  _updateBtn(type) {
     const map = {
       delete: this.$recDelBtn,
       copy: this.$recCopyBtn,
@@ -291,16 +346,5 @@ export class Selection {
       title: 0
     }
     return { left: map[type], right: null }
-  }
-
-  _getOffset() {
-    const { $el } = this.node
-    const domRect = $el.getBoundingClientRect()
-    return {
-      width: domRect.width,
-      height: domRect.height,
-      top: domRect.top,
-      left: domRect.left
-    }
   }
 }

@@ -3,6 +3,7 @@ import { $ } from './lib/dom'
 
 const state = {
   dragging: false, // 是否在拖拽
+  isMove: false, // 是否是移动操作
   dragImage: null,
   target: null, // 当前被拖拽的组件dom
   dropEnterTarget: null, // 拖入目标触发dropEnter的dom
@@ -75,6 +76,7 @@ export class DragDrop {
 
   resetData() {
     state.dragging = false
+    state.isMove = false
     state.dragImage && state.dragImage.remove()
     state.dragImage = null
     state.target = null
@@ -92,7 +94,7 @@ export class DragDrop {
     state.dropEnterTarget && state.dropEnterTarget.classList.remove(DRAG_ENTER_CONTAINER_CLS)
   }
 
-  renderDragImage(target) {
+  renderDragImg(txt) {
     const el = $('<div>')
       .style({
         position: 'fixed',
@@ -102,13 +104,10 @@ export class DragDrop {
         background: '#222',
         color: '#fff'
       })
-      .text(
-        $(target)
-          .addClass('drag-image')
-          .getAttr('com-title')
-      ).el
+      .text(txt).el
     // the drag image need to append to dom
     document.body.appendChild(el)
+    this.setData('dragImage', el)
     return el
   }
 
@@ -117,15 +116,19 @@ export class DragDrop {
       e.dataTransfer.effectAllowed = this.effectAllowed
       e.dataTransfer.dropEffect = this.dropEffect
 
-      const dragImage = this.renderDragImage(e.target)
-      e.dataTransfer.setDragImage(dragImage, 0, 0)
-
       this.setData('dragging', true)
       this.setData('target', e.target)
-      this.setData('dragImage', dragImage)
       cb && cb(this._genParams(e))
+
+      if (state.dragImage == null) {
+        const txt = $(target)
+          .addClass('drag-image')
+          .getAttr('com-title')
+        this.renderDragImg(txt)  
+      }
+      e.dataTransfer.setDragImage(state.dragImage, 0, 0)
+
       this.__designer__.emit(EVENT_TYPES.DRAG_START)
-      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START, this._genParams(e))
     })
   }
 
@@ -146,7 +149,6 @@ export class DragDrop {
 
       cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_DROPED)
-      this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED, this._genParams(e))
       this.resetData()
     })
   }
@@ -192,6 +194,7 @@ export class DragDrop {
       resetData: this.resetData,
       addDragEnterCls: this.addDragEnterCls,
       removeDragEnterCls: this.removeDragEnterCls,
+      renderDragImg: this.renderDragImg.bind(this),
       $event: e
     }
   }
