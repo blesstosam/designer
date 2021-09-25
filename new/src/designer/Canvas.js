@@ -1,12 +1,5 @@
 import { setCurrentViewNodeModel } from './config'
-import {
-  lookupByClassName,
-  lookdownByAttr,
-  lookdownForAttr,
-  getStyle,
-  $,
-  lookdownAllByAttr
-} from './lib/dom'
+import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { Selection } from './Selection'
 import { componentTypes } from './Components'
 import { Node } from './Node'
@@ -18,8 +11,8 @@ import { InsertTypes, isPendType } from './InsertTypes'
 import cloneDeep from 'lodash.clonedeep'
 
 const {
-  SELECTION_DEL_CLICK: F_D_C,
-  SELECTION_COPY_CLICK: F_C_C,
+  SELECTION_DEL_CLICK: S_D_C,
+  SELECTION_COPY_CLICK: S_C_C,
   CANVAS_ACTIONS_APPEND: C_A_A,
   CANVAS_ACTIONS_PREPEND,
   CANVAS_ACTIONS_AFTER,
@@ -39,6 +32,7 @@ const TIP_EL_CLS = 'canvas-tip'
 const NODE_BOX_CLS = 'node-box'
 
 const getSlotName = el => el.getAttribute(SLOT_NAME_KEY)
+const getFirstSlotElOfNode = node => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
 
 export class Canvas {
   constructor(config, designer) {
@@ -118,22 +112,25 @@ export class Canvas {
   }
 
   initListener() {
-    this.__designer__.on([F_D_C, F_C_C], payload => {
+    this.__designer__.on([S_D_C, S_C_C], payload => {
       const { type, data } = payload
-      if (type === F_D_C) {
+      if (type === S_D_C) {
         this.remove(data)
-      } else if (type === F_C_C) {
+      } else if (type === S_C_C) {
         const mount = (nodeArr, parent) => {
           for (const node of nodeArr) {
             const com = this.__components__.findComByName(node.name)
-            const targetEl = parent.$el === this.$canvasEl ? this.$canvasEl : parent.$el.children[0]
-            const newNode = this[InsertTypes.APPEND](com, targetEl, parent)
+            const $targetEl =
+              parent.$el === this.$canvasEl ? this.$canvasEl : getFirstSlotElOfNode(parent)
+            const newNode = this[InsertTypes.APPEND](com, $targetEl, parent)
             if (node.children && node.children.length) {
               mount(node.children, newNode)
             }
           }
         }
-        mount([data], this.model)
+        const com = this.__components__.findComByName(data.name)
+        const newNode = this[InsertTypes.AFTER](com, data.$el, data)
+        mount(data.children, newNode)
       }
     })
 
@@ -202,6 +199,14 @@ export class Canvas {
       this.$canvasEl,
       throttle(({ $event: e }) => {
         console.log('wrapper over...')
+        this.__designer__.__cursor__.setPosition({
+          pageX: e.pageX,
+          pageY: e.pageY,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          offsetX: e.offsetX,
+          offsetY: e.offsetY
+        })
         const { y, target } = e
         const style = { width: target.offsetWidth - DROP_EL_PADDING * 2 + 'px' }
         // https://github.com/Shopify/draggable/blob/6f5539b1f396a34b08fcbf0b52651ca1ee669665/examples/src/content/Draggable/DragEvents/index.js#L67
@@ -286,7 +291,7 @@ export class Canvas {
         this.$canvasEl.appendChild(el)
       }
     } else {
-      const $firstSlotEl = lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
+      const $firstSlotEl = getFirstSlotElOfNode(node)
       if ($firstSlotEl) {
         const el = (node.$tipEl = $(span).style({ paddingTop: '20px', color: '#666' }).el)
         $firstSlotEl.appendChild(el)
@@ -606,8 +611,8 @@ export class Canvas {
           if (isPendType(this.insertType)) {
             // 只能是append
             // 1. 移动dom 找到dropedNode的slot TODO 如果有多个slot怎么办??
-            const $slotDom = lookdownByAttr(dropedNode.$el.children[0], SLOT_NAME_KEY)
-            $($slotDom)[this.insertType](state.data.$el)
+            const $firstSlotEl = getFirstSlotElOfNode(dropedNode)
+            $($firstSlotEl)[this.insertType](state.data.$el)
             if (state.data.getIsMyParent(dropedNode)) {
               // inner to inner(same container)
               // 2-1 操作model

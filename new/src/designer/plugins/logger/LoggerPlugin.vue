@@ -39,7 +39,7 @@
   padding: 20px 0;
 }
 .logger-plugun-wrap .wrap {
-  height: 100%;
+  height: calc(100vh - 115px);
   overflow-y: auto;
 }
 .logger-plugun-wrap .wrap::-webkit-scrollbar {
