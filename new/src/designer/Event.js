@@ -133,6 +133,7 @@ export const EVENT_TYPES = {
   SELECTION_DEACTIVED: 'selection.deactived',
   SELECTION_DEL_CLICK: 'selection.delClick',
   SELECTION_COPY_CLICK: 'selection.copyClick',
+  SELECTION_MOVE_START: 'selection.moveStart',
   SELECTION_RESIZE: 'selection.resize',
 
   HOVER_ACTIVED: 'hover.actived',

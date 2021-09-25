@@ -49,7 +49,7 @@ export class DragDrop {
   constructor(config = {}, designer) {
     const {
       dropEffect = 'move',
-      effectAllowed = 'move',
+      effectAllowed = 'copyMove',
       dragEnterContainerCls = DRAG_ENTER_CONTAINER_CLS
     } = config
     if (dropEffect && !DropEffects[dropEffect]) throw new Error(`DragDrop: dropEffect invalid`)
@@ -63,6 +63,10 @@ export class DragDrop {
     // todo marker 应该放到里面
 
     // this.cbStore = new WeakMap()
+  }
+
+  __cursor__() {
+    return this.__designer__.__cursor__
   }
 
   getData(key) {
@@ -114,7 +118,6 @@ export class DragDrop {
   onDragStart(target, cb) {
     target.addEventListener(EventTypes.dragstart, e => {
       e.dataTransfer.effectAllowed = this.effectAllowed
-      e.dataTransfer.dropEffect = this.dropEffect
 
       this.setData('dragging', true)
       this.setData('target', e.target)
@@ -129,11 +132,14 @@ export class DragDrop {
       e.dataTransfer.setDragImage(state.dragImage, 0, 0)
 
       this.__designer__.emit(EVENT_TYPES.DRAG_START)
+      this.__cursor__.setType('move')
     })
   }
 
   onDragEnd(target, cb) {
     target.addEventListener(EventTypes.dragend, e => {
+      this.__cursor__.resetType()
+      this.__cursor__.resetPosition()
       cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_END)
       this.resetData()
@@ -165,6 +171,8 @@ export class DragDrop {
   onDragOver(target, cb, opts = {}) {
     target.addEventListener(EventTypes.dragover, e => {
       e.preventDefault()
+      e.dataTransfer.dropEffect = this.dropEffect
+
       opts.stop && e.stopPropagation()
       cb && cb(this._genParams(e))
       this.__designer__.emit(EVENT_TYPES.DRAG_OVER)

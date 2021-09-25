@@ -4,7 +4,17 @@ import { DROP_EL_PADDING } from './Canvas'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
-const { COMPONENTS_DRAG_START: C_D_S, COMPONENTS_DROPED: C_D, DRAG_END: D_E } = EVENT_TYPES
+const {
+  COMPONENTS_DRAG_START: C_D_S,
+  COMPONENTS_DROPED: C_D,
+  DRAG_END: D_E,
+  SELECTION_UPDATED,
+  SELECTION_DEL_CLICK,
+  SELECTION_COPY_CLICK,
+  SELECTION_MOVE_START,
+  SELECTION_ACTIVED,
+  SELECTION_DEACTIVED
+} = EVENT_TYPES
 
 const getBtnsWidth = isLayout => (isLayout ? 100 : 75)
 
@@ -105,7 +115,7 @@ export class Selection {
     this._createBtn('move')
     this.isLayout && this._createBtn('copy')
     this.observe()
-    this.__designer__.emit(EVENT_TYPES.SELECTION_ACTIVED, node)
+    this.__designer__.emit(SELECTION_ACTIVED, node)
   }
 
   update(node) {
@@ -133,13 +143,13 @@ export class Selection {
     } else {
       this._hideBtn('copy')
     }
-    this.__designer__.emit(EVENT_TYPES.SELECTION_UPDATED, node)
+    this.__designer__.emit(SELECTION_UPDATED, node)
   }
 
   remove() {
     this.$recEl.remove()
     window.removeEventListener('resize', this._cb)
-    this.__designer__.emit(EVENT_TYPES.SELECTION_DEACTIVED)
+    this.__designer__.emit(SELECTION_DEACTIVED)
   }
 
   _createSelection() {
@@ -281,19 +291,22 @@ export class Selection {
     if (type === 'delete' || type === 'copy') {
       div.addEventListener('click', e => {
         e.stopPropagation()
-        const eType =
-          type === 'delete' ? EVENT_TYPES.SELECTION_DEL_CLICK : EVENT_TYPES.SELECTION_COPY_CLICK
+        const eType = type === 'delete' ? SELECTION_DEL_CLICK : SELECTION_COPY_CLICK
         this.__designer__.emit(eType, {
           type: eType,
           data: this.node
         })
       })
     } else if (type === 'move') {
+      this.__designer__.emit(SELECTION_MOVE_START, {
+        type: SELECTION_MOVE_START,
+        data: this.node
+      })
       this.__dragDrop__.onDragStart(div, ({ renderDragImg, setData }) => {
         renderDragImg(this.node.title)
         setData('data', this.node)
         setData('isMove', true)
-        this._createCover() // add cover
+        this._createCover()
       })
       this.__dragDrop__.onDragEnd(div, () => {
         this._removeCover()

@@ -42,7 +42,7 @@
         position: absolute;
         bottom 0;
         background #fff;
-        width: calc(100% - 570px)
+        width: calc(100% - 550px)
       }
     }
 

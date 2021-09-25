@@ -7,6 +7,7 @@ import { Toolbar } from './Toolbar.js'
 import { KeyBoard } from './Keyboard'
 import { Plugin } from './Plugin.js'
 import { DragDrop } from './DragDrop.js'
+import { Cursor } from './Cursor'
 
 // 页面模型数据 应该是一个 json 或 json schema
 // 参考 virtual dom 树型数据结构 =>
@@ -36,6 +37,8 @@ class Designer extends Event {
     this.initToolbar()
 
     this.initKeyboard()
+
+    this.initCursor()
 
     this.initPluginSystem()
 
@@ -86,6 +89,10 @@ class Designer extends Event {
       console.log('keyboard.redo')
       this.emit(EVENT_TYPES.KEYBOARD_REDO)
     })
+  }
+
+  initCursor() {
+    this.__cursor__ = new Cursor(this.config, this)
   }
 
   initPluginSystem() {
