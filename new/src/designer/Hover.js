@@ -17,8 +17,14 @@ export class Hover {
     })
   }
 
+  get __canvas__() {
+    return this.__designer__.__canvas__
+  }
   get selection() {
-    return this.__designer__.__canvas__.selection
+    return this.__canvas__.selection
+  }
+  get model() {
+    return this.__canvas__.model
   }
   get isTargetSelected() {
     return this.selection && this.selection.node.$el === this.node.$el
@@ -84,12 +90,13 @@ export class Hover {
   }
 
   _getStyle({ width, height, top, left }) {
+    const { top: rootElTop, left: rootElLeft } = this._getOffset(this.model.$el)
     return {
       width: width - 1 + 'px',
       height: height - 1 + 'px',
       top: 0,
       left: 0,
-      transform: `translate(${left}px, ${top}px)`
+      transform: `translate(${left - rootElLeft}px, ${top - rootElTop}px)`
     }
   }
 

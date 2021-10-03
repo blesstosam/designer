@@ -23,7 +23,7 @@ export class StatusBar {
 
   init(wrap) {
     const props = reactive({
-      pathArr: ['Cancas'],
+      pathArr: [],
     })
     const app = createApp({
       props: ['pathArr'],
@@ -43,7 +43,7 @@ export class StatusBar {
       if (node) {
         const pathArr = []
         getParentTitle(node, pathArr)
-        props.pathArr = ['Cancas', ...pathArr]
+        props.pathArr = [...pathArr]
       }
     })
   }

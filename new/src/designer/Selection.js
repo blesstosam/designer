@@ -109,11 +109,13 @@ export class Selection {
     const offset = this.offset
     this.decideBtnPos(offset.top, offset.width + offset.left)
     this._createSelection()
-    this._createBtnWrap()
-    this._createTitle()
-    this._createBtn('delete')
-    this._createBtn('move')
-    this.isLayout && this._createBtn('copy')
+    if (!node.isRoot) {
+      this._createBtnWrap()
+      this._createTitle()
+      this._createBtn('delete')
+      this._createBtn('move')
+      this.isLayout && this._createBtn('copy')
+    }
     this.observe()
     this.__designer__.emit(SELECTION_ACTIVED, node)
   }
@@ -129,20 +131,30 @@ export class Selection {
     const offset = this.offset
     this.decideBtnPos(offset.top, offset.width + offset.left)
     this._updateSelection(offset)
-    this._updateBtnWrap(offset)
-    this._updateTitle(offset)
-    this._updateBtn('delete', offset)
-    this._updateBtn('move', offset)
-    if (this.isLayout) {
-      if (this.$recCopyBtn) {
-        this._updateBtn('copy', offset)
-        this._showBtn('copy')
+
+    if (this.$btnWrap) {
+      this._updateBtnWrap(offset)
+      this._updateTitle(offset)
+      this._updateBtn('delete', offset)
+      this._updateBtn('move', offset)
+      if (this.isLayout) {
+        if (this.$recCopyBtn) {
+          this._updateBtn('copy', offset)
+          this._showBtn('copy')
+        } else {
+          this._createBtn('copy', offset)
+        }
       } else {
-        this._createBtn('copy', offset)
+        this._hideBtn('copy')
       }
     } else {
-      this._hideBtn('copy')
+      this._createBtnWrap()
+      this._createTitle()
+      this._createBtn('delete')
+      this._createBtn('move')
+      this.isLayout && this._createBtn('copy')
     }
+
     this.__designer__.emit(SELECTION_UPDATED, node)
   }
 

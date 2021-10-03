@@ -95,6 +95,7 @@ export class Canvas {
       } else {
         this.model = new Node({
           name: 'canvas',
+          title: 'root',
           $el: div,
           children: [],
           isRoot: true,
@@ -107,6 +108,7 @@ export class Canvas {
       this.bindCanvasEvents()
       this.layout(viewModel)
       this.initListener()
+      this.handleNodeboxSelect(this.model)
       this.__designer__.emit(CANVAS_INITED)
     })
   }
@@ -216,9 +218,9 @@ export class Canvas {
           this.insertType = InsertTypes.PREPEND
           this.showMarker(style, e.target, InsertTypes.PREPEND)
         } else {
-          const children = e.target.children
+          const children = this.model.children
           if (children.length) {
-            const lastChild = children[children.length - 1]
+            const lastChild = children[children.length - 1].$el
             const rectPos = lastChild.getBoundingClientRect()
             if (rectPos.height + rectPos.y < y) {
               // 有子元素但是在后面
@@ -265,6 +267,7 @@ export class Canvas {
   _getDefaultCanvasStyle() {
     const { config } = this
     return {
+      position: 'relative',
       width: config.width || window.innerWidth - 550 + 'px', // 550为左右的宽度加边距
       height: config.height || '100%',
       minWidth: '100%',
@@ -458,6 +461,9 @@ export class Canvas {
 
     // 当组件的slotname 为 default 时，直接插入到容器的末尾；不为 default 时，需要查找对应的容器
     const slotName = d.slotName || 'default'
+    // TODO 这里的container可以去掉 由parentNode.$el 计算
+    // 1. 当是append或prepend的时候，查找其 slot容器元素
+    // 2. 当是after或before时候，直接使用siblingNode.$el
     let realContainer = container
     if (slotName !== 'default') {
       realContainer = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)

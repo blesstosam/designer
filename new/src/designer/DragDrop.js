@@ -65,7 +65,7 @@ export class DragDrop {
     // this.cbStore = new WeakMap()
   }
 
-  __cursor__() {
+  get __cursor__() {
     return this.__designer__.__cursor__
   }
 
