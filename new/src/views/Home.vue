@@ -32,7 +32,7 @@
       flex: 1;
 
       .canvas-wrap {
-        height: calc(100vh - 55px);
+        height: calc(100vh - 85px);
         overflow-y: auto;
         background: #ddd;
       }
