@@ -7,11 +7,7 @@
   font-size: 12px;
 }
 .logo img {
-  padding-top: 5px;
-  width: 96px;
-}
-.toolbar .logo {
-  font-size: 20px;
+  height: 33px;
 }
 .toolbar i {
   font-size: 20px;
@@ -37,7 +33,7 @@
 <template>
   <div class="toolbar">
     <div class="logo">
-      <img src="/logo.jpg" alt="" />
+      <img src="/logo.png" alt="logo" />
     </div>
     <div class="toolbar-content">
       <span class="tool-item" :class="{ disabled: !prevStatus }" @click="undo">

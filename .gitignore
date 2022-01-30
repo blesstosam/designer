@@ -23,6 +23,5 @@ pnpm-debug.log*
 *.sw?
 .cache
 
-/execl
-/new/src/designer/Injector.js
-/new/dist
+/web/src/designer/Injector.js
+/web/dist
