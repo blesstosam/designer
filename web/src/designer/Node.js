@@ -3,6 +3,9 @@ import { randomString } from './lib/util'
 
 const nodeMap = new Map()
 
+// TODO 关于树的增删改查 参考 fre conf 章总的ppt
+// 维护一个拍平的栈，用来查引用，然后将引用修改反馈到树上
+
 export class Node {
   constructor(node, parent) {
     this.name = node.name

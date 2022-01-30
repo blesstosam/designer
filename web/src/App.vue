@@ -3,13 +3,7 @@
 </template>
 
 <script>
-// test import a var from a .vue file
-// import { test } from './views/Home.vue'
-// export default {
-//   created() {
-//     console.log(test)
-//   }
-// }
+
 </script>
 
 <style lang="stylus">

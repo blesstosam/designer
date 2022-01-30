@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
 import { FetchLoader } from './lib/loader'
-import { ElTabs, ElTabPane, ElCollapse, ElCollapseItem } from 'element-plus'
-import ComponentsVue from './vue/Components.vue'
 import { lookupByClassName, $ } from './lib/dom'
 import { EVENT_TYPES } from './Event'
+import { ElTabs, ElTabPane, ElCollapse, ElCollapseItem } from 'element-plus'
+import ComponentsVue from './vue/Components.vue'
 
 const COMPONENT_EL_CLS = 'component-item'
 
