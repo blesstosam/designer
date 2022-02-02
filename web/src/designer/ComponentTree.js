@@ -1,6 +1,4 @@
-import { createApp, reactive, h } from 'vue'
-import { ElTree } from 'element-plus'
-import ComponentTreeVue from './vue/ComponentTree.vue'
+import { reactive } from 'vue'
 import { EVENT_TYPES } from './Event'
 
 const { CANVAS_ACTIONS_DELETE: C_A_D, CANVAS_ACTIONS_APPEND: C_A_A } = EVENT_TYPES
@@ -10,9 +8,6 @@ export class ComponentTree {
     this.name = '__componentTree__'
     this.config = config || {}
     this.__designer__ = designer
-    if (!this.config.componentTreeWrap) {
-      throw new Error('[designer] 请传入组件树的容器元素')
-    }
     this.$componentTreeWrapEle = document.querySelector(this.config.componentTreeWrap)
   }
 
@@ -20,8 +15,9 @@ export class ComponentTree {
     return this.__designer__.__canvas__
   }
 
-  init(data) {
-    // Attr.js 里是使用 this.vueInstance 调用方法改变数据完成视图更新;这里使用修改props
+  init(renderUI) {
+    const data = this.__canvas__.model
+    // Attr.js 里是使用 this.uiInstance 调用方法改变数据完成视图更新;这里使用修改props
     const handleClick = d => {
       const node = this.__canvas__.model.findByKey('unique', d.unique)
       if (node) this.__canvas__.handleNodeboxSelect(node)
@@ -50,8 +46,10 @@ export class ComponentTree {
       handleMouseLeave,
       ref: 'componentTree'
     })
-    const app = createApp({
-      props: [
+
+    this.uiInstance = renderUI({
+      props,
+      propsArr: [
         'tree',
         'handleDel',
         'handleDisplay',
@@ -59,13 +57,10 @@ export class ComponentTree {
         'handleMouseEnter',
         'handleMouseLeave',
         'ref'
-      ],
-      render: () => h(ComponentTreeVue, props)
+      ]
     })
-
-    app.component(ElTree.name, ElTree)
-    this.vueInstance = app.mount(this.config.componentTreeWrap)
-    this.vueInstance.__componentTree__ = this
+    this.uiInstance.__componentTree__ = this
+    this.$wrapEl= this.uiInstance.$el.parentNode
     this.__designer__.on([C_A_D, C_A_A], payload => {
       const { type, viewModel: { children = [] } } = payload
       // TODO 要使用浅拷贝一遍才会触发视图更新?
@@ -74,6 +69,6 @@ export class ComponentTree {
   }
 
   setCurrentKey(key) {
-    this.vueInstance && this.vueInstance.$refs.componentTree.setCurrentKey(key)
+    this.uiInstance && this.uiInstance.$refs.componentTree.setCurrentKey(key)
   }
 }

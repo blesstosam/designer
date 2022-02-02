@@ -19,6 +19,14 @@ export function joinLink(prefix, suffix) {
   return prefix + '/' + suffix
 }
 
-export function isPromise(o) {
-  return Object.prototype.toString.call(o) === '[object Promise]'
+function genPublicPathVarName(plugId) {
+  return '__DAVINCI_PUBLIC_PATH_' + plugId + '__'
+}
+
+export function setPublicPath(plugId, publicPath) {
+  window[genPublicPathVarName(plugId)] = publicPath
+}
+
+export function getPublicPath(plugId) {
+  return window[genPublicPathVarName(plugId)]
 }

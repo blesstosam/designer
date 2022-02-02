@@ -8,7 +8,8 @@ const PLUGIN_SUPPORT = [
 
 // 插件类型
 export const PLUGIN_TYPES = {
-  MENU_BAR: 'menuBar' // 插入到左侧菜单栏的插件
+  MENU_BAR: 'menuBar', // 左侧菜单栏插件，属于ui插件
+  UI: 'ui', // 普通 ui 插件
 }
 
 export class Plugin {

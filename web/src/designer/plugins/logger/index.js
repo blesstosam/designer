@@ -33,7 +33,7 @@ export class LoggerPlugin {
       render: () => h(LoggerPluginVue, props)
     }).component(ElTooltip.name, ElTooltip)
 
-    this.vueInstance = app.mount(document.querySelector(wrap))
+    this.uiInstance = app.mount(document.querySelector(wrap))
 
     this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], d => {
       console.log('logger...', d)
@@ -69,3 +69,4 @@ export class LoggerPlugin {
 LoggerPlugin.$inject = ['__attr__']
 LoggerPlugin.$name = 'MyLoggerPlugin'
 LoggerPlugin.$type = PLUGIN_TYPES.MENU_BAR
+LoggerPlugin.$deps = [EVENT_TYPES.COMPONENTS_UI_INITED] // 依赖的事件

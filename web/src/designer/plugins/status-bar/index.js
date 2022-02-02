@@ -2,6 +2,7 @@ import { createApp, reactive, h } from 'vue'
 import { EVENT_TYPES } from '../../Event'
 import StatusBarVue from './StatusBar.vue'
 import { ElTooltip } from 'element-plus'
+import { PLUGIN_TYPES } from '../../Plugin'
 
 const {
   SELECTION_ACTIVED,
@@ -30,7 +31,7 @@ export class StatusBar {
       render: () => h(StatusBarVue, props)
     }).component(ElTooltip.name, ElTooltip)
 
-    this.vueInstance = app.mount(document.querySelector(wrap))
+    this.uiInstance = app.mount(document.querySelector(wrap))
 
     const getParentTitle= (node, arr) => {
       node.title && arr.unshift(node.title)
@@ -51,3 +52,5 @@ export class StatusBar {
 
 StatusBar.$inject = ['__canvas__']
 StatusBar.$name = 'StatusBar'
+StatusBar.$type = PLUGIN_TYPES.UI
+StatusBar.$deps = [] // 依赖的事件

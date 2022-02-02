@@ -7,7 +7,7 @@ import { Toolbar } from './Toolbar.js'
 import { KeyBoard } from './Keyboard'
 import { Plugin } from './Plugin.js'
 import { DragDrop } from './DragDrop.js'
-import { Cursor } from './Cursor'
+import { Cursor } from './Cursor.js'
 
 // 页面模型数据 应该是一个 json 或 json schema
 // 参考 virtual dom 树型数据结构 =>
@@ -32,6 +32,8 @@ class Designer extends Event {
 
     this.initCanvas()
 
+    this.initComponentTree()
+
     this.initAttr()
 
     this.initToolbar()
@@ -54,38 +56,42 @@ class Designer extends Event {
 
   initAttr() {
     this.__attr__ = new Attr(this.config, this)
-    this.__attr__.init()
+    this.__attr__.init(this.config.renderAttr)
   }
 
   initComponents() {
     this.__dragDrop__ = new DragDrop({}, this)
     this.__components__ = new Components(this.config, this)
-    this.__components__.init()
+    this.__components__.init(this.config.renderComponents)
   }
 
   initToolbar() {
     this.__toolbar__ = new Toolbar(this.config, this)
-    this.__toolbar__.init()
+    this.__toolbar__.init(this.config.renderToolbar)
   }
 
-  initComponentTree(wrap) {
-    // 组件树依赖1.components组件dom渲染完成 2.canvas将组件渲染完成
-    this.config.componentTreeWrap = wrap
-    this.on(EVENT_TYPES.CANVAS_LAYOUTED, () => {
-      const viewModel = this.__canvas__.model
-      this.__componentTree__ = new ComponentTree(this.config, this)
-      this.__componentTree__.init(viewModel)
+  initComponentTree() {
+    // 组件树依赖
+    // 1.components组件dom渲染完成
+    // 2.canvas将组件渲染完成
+    let index = 0
+    this.on([EVENT_TYPES.CANVAS_LAYOUTED, EVENT_TYPES.COMPONENTS_UI_INITED], () => {
+      index++
+      if (index === 2) {
+        this.__componentTree__ = new ComponentTree(this.config, this)
+        this.__componentTree__.init(this.config.renderComponentTree)
+      }
     })
   }
 
   initKeyboard() {
     this.__keyboard__ = new KeyBoard()
     this.__keyboard__.bind('keydown')
-    this.__keyboard__.onUndo(e => {
+    this.__keyboard__.onUndo((e) => {
       console.log('keyboard.undo')
       this.emit(EVENT_TYPES.KEYBOARD_UNDO)
     })
-    this.__keyboard__.onRedo(e => {
+    this.__keyboard__.onRedo((e) => {
       console.log('keyboard.redo')
       this.emit(EVENT_TYPES.KEYBOARD_REDO)
     })

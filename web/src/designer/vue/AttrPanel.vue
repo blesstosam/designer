@@ -44,7 +44,7 @@
           <StylePanel :attr="__attr__" :formList="formList" ref="stylePanel" />
         </el-tab-pane>
         <el-tab-pane label="事件" name="event">
-          <EventPanel :attr="__attr__" :formList="formList" ref="eventPanel"  />
+          <EventPanel :attr="__attr__" :formList="formList" ref="eventPanel" />
         </el-tab-pane>
         <el-tab-pane label="数据" name="data">数据</el-tab-pane>
       </el-tabs>
@@ -93,10 +93,13 @@ export default {
   },
   computed: {
     designer() {
-      return this.__attr__.__designer__
+      return this.__designer__
+    },
+    __attr__() {
+      return this.__designer__.__attr__
     },
     canvas() {
-      return this.designer.__canvas__
+      return this.__designer__.__canvas__
     }
   },
   methods: {

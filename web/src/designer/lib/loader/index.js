@@ -2,7 +2,7 @@ import { createSandbox, SandboxTypes } from './sandbox/index'
 import { createStore, LoadStatus, MountStatus } from './store'
 import { event } from './state'
 import { process } from './sandbox/css'
-import { isPlainObject, checkUriValid, isPromise } from './util'
+import { isPlainObject, checkUriValid, getPublicPath, setPublicPath } from './util'
 import { prefetcher } from './prefetch'
 const Promise = window.Promise
 
@@ -65,10 +65,9 @@ function fetch(url, opts = {}) {
     finalModuleData[moduleName] = scriptSrc
 
     // auto set publicPath
-    const prefix = moduleName.split('_')[0]
+    const prefix = moduleName.split('_').shift()
     // 如果外面手动设置了 publicPath 则使用外面的
     if (!getPublicPath(prefix)) {
-      // important genPublicPath 生成的路径末尾不带 / 这里需要加一下
       setPublicPath(prefix, genPublicPath(scriptSrc) + '/')
     }
   })
@@ -94,7 +93,6 @@ class FetchLoader {
   getModule(name) {
     const rawMod = this.moduleStore.get(name)
     if (rawMod && rawMod.mod) {
-      // 每次返回一个新的对象
       return this._getRealMod({ moduleName: name, mod: rawMod.mod })
     }
   }
@@ -103,12 +101,6 @@ class FetchLoader {
     return this.moduleStore.getStatus(name)
   }
 
-  /**
-   * 预加载
-   * 现在市面上基本都是用 requestIdleCallback 来实现空闲加载
-   * requestIdleCallback 比 prefetch更好的是不受开发者工具 disable cache 的限制
-   * @param {*} moduleData
-   */
   prefetch(moduleData) {
     if (!isPlainObject(moduleData)) throw new Error('FetchLoader.prefetch: moduleData 请传入对象')
     const { status, data } = _handleModuleSrc(moduleData, this.baseUrl)
@@ -126,54 +118,6 @@ class FetchLoader {
     }
   }
 
-  /**
-   * 加载逻辑微组件：只加载js；处理main入口函数
-   */
-  fetchFn(moduleData, cb, errorCb) {
-    if (!Promise) throw new Error('FetchLoader: window.Promise not found, please polyfill it!')
-    if (!isPlainObject(moduleData)) throw new Error(`FetchLoader.fetchFn: moduleData 请传入对象`)
-
-    const { status, data } = _handleModuleSrc(moduleData, this.baseUrl)
-    if (status === 'ok') {
-      // 保存到 store 此时为 not_load
-      Object.keys(data).forEach((name) => {
-        if (!this.moduleStore.has(name)) {
-          this.moduleStore.set(name, data[name], true)
-        }
-      })
-
-      this._fetchScript(data, { loadFn: true })
-        .then((res) => {
-          if (cb) {
-            cb(
-              ...res.map((m) => (payload = {}) => {
-                try {
-                  const fnRes = m.main({ ...payload, event })
-                  // 规范：如果自定义函数里有异步操作，需要封装成promise
-                  if (isPromise(fnRes)) return fnRes
-                  return Promise.resolve(fnRes)
-                } catch (err) {
-                  this._handleError(err, 'mainCallError', errorCb)
-                  return Promise.reject(err)
-                }
-              })
-            )
-          }
-        })
-        .catch((err) => {
-          this._handleError(err, 'fetchScript', errorCb)
-        })
-    } else {
-      this._handleError(data, 'fetchFn', errorCb)
-    }
-  }
-
-  /**
-   * 加载微组件：加载js和css；处理mount和unmount勾子函数
-   * @param {*} moduleData
-   * @param {*} cb 只作用于js的回调
-   * @param {*} errorCb 分别作用于js和css
-   */
   fetch(moduleData, cb, errorCb) {
     if (!Promise) throw new Error('FetchLoader: window.Promise not found, please polyfill it!')
     if (!isPlainObject(moduleData)) throw new Error(`FetchLoader.fetch: moduleData 请传入对象`)
@@ -201,7 +145,7 @@ class FetchLoader {
   /**
    * @param {Object} moduleData eg: { 'A': 'http://domain/a.js', 'B': 'http://domain/b.js' }
    */
-  _fetchScript(moduleData, { loadFn } = { loadFn: false }) {
+  _fetchScript(moduleData) {
     const promiseArr = []
     Object.keys(moduleData).forEach((moduleName) => {
       const scriptSrc = moduleData[moduleName]
@@ -252,21 +196,6 @@ class FetchLoader {
                   this.moduleStore.setStatus(moduleName, EXECTED_ERR)
                   this.moduleStore.setError(moduleName, err)
                   throw err
-                }
-
-                // 加载自定义函数
-                if (loadFn) {
-                  if (!mod.main) {
-                    const err = new Error(
-                      'FetchLoader: 微组件-逻辑组件需要暴露 main 方法，请查看微组件-逻辑组件开发文档'
-                    )
-                    this.moduleStore.setStatus(moduleName, EXECTED_ERR)
-                    this.moduleStore.setError(moduleName, err)
-                    throw err
-                  }
-                  this.moduleStore.set(moduleName, mod) // 此时module已经加载 将状态修改为loaded
-                  event.emit(`__fetch_module_${moduleName}__`, mod) // 发送事件，通知模块已经加载成功
-                  return mod
                 }
 
                 // 加载自定义组件
@@ -326,7 +255,6 @@ class FetchLoader {
       if (!/^https?/.test(url)) {
         promiseArr.push(Promise.reject(`FetchLoader.fetchCss: url '${url}' 格式不正确`))
       } else {
-        // 去掉注释正则 => /(?:^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/g
         promiseArr.push(fetch(url).then((res) => ({ styleText: res })))
       }
     })

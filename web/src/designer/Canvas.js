@@ -19,7 +19,7 @@ const {
   CANVAS_ACTIONS_BEFORE,
   CANVAS_ACTIONS_DELETE: C_A_D,
   CANVAS_ACTIONS_CLEAR: C_A_C,
-  COMPONENTS_INITED,
+  COMPONENTS_REGISTER_END,
   CANVAS_INITED,
   CANVAS_LAYOUTED
 } = EVENT_TYPES
@@ -82,7 +82,7 @@ export class Canvas {
 
   init(viewModel) {
     // canvas 的 init 依赖 components 插件，防止多次触发使用once
-    this.__designer__.once(COMPONENTS_INITED, () => {
+    this.__designer__.once(COMPONENTS_REGISTER_END, () => {
       const canvasStyle = (viewModel && viewModel.props.style) || this._getDefaultCanvasStyle()
       const div = (this.$canvasEl = $('<div>')
         .addClass('drop')
@@ -371,7 +371,7 @@ export class Canvas {
     if (this.selection) {
       this.selection.remove()
       this.selection = null
-      this.__attr__.vueInstance.resetData()
+      this.__attr__.uiInstance.resetData()
     }
   }
 
@@ -549,7 +549,7 @@ export class Canvas {
 
   handleNodeboxSelect(node) {
     setCurrentViewNodeModel(node)
-    this.__attr__.vueInstance.setData(node)
+    this.__attr__.uiInstance.setData(node)
 
     if (this.selection) {
       this.selection.update(node)

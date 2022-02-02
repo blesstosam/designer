@@ -1,9 +1,12 @@
-import { createApp } from 'vue'
 import { FetchLoader } from './lib/loader'
 import { lookupByClassName, $ } from './lib/dom'
 import { EVENT_TYPES } from './Event'
-import { ElTabs, ElTabPane, ElCollapse, ElCollapseItem } from 'element-plus'
-import ComponentsVue from './vue/Components.vue'
+
+// 架构
+// 1. 组件 VBlock; 渲染层 genVueInstance
+// 2. 组件 RBlock; 渲染层 genReactInstance
+// 3. 纯js JBlock; 渲染层 实现一下响应式
+// 将 patch render改为直接修改 node.props
 
 const COMPONENT_EL_CLS = 'component-item'
 
@@ -22,12 +25,8 @@ export class Components {
   constructor(config, designer) {
     this.name = '__components__'
     this.config = config || {}
-    if (!this.config.componentsWrap) {
-      throw new Error('[designer] 请传入组件框容器元素 componentsWrap')
-    }
     this.__designer__ = designer
     this._hasRegistered = []
-    this.$wrapEl = document.querySelector(this.config.componentsWrap)
     this.loader = null
   }
 
@@ -43,14 +42,11 @@ export class Components {
     return this._hasRegistered
   }
 
-  init(com) {
-    const app = createApp(com || ComponentsVue)
-    app.component(ElTabs.name, ElTabs)
-    app.component(ElTabPane.name, ElTabPane)
-    app.component(ElCollapse.name, ElCollapse)
-    app.component(ElCollapseItem.name, ElCollapseItem)
-    this.vueInstance = app.mount(this.$wrapEl)
-    this.vueInstance.__components__ = this
+  init(renderUI) {
+    this.uiInstance = renderUI()
+    this.uiInstance.__designer__ = this.__designer__
+    this.$wrapEl = this.uiInstance.$el.parentNode
+    this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
   }
 
   // 给组件绑定数据和事件

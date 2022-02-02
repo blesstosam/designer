@@ -40,9 +40,9 @@
       .status-bar-wrap {
         height: 30px;
         position: absolute;
-        bottom 0;
-        background #fff;
-        width: calc(100% - 550px)
+        bottom: 0;
+        background: #fff;
+        width: calc(100% - 550px);
       }
     }
 
@@ -92,30 +92,73 @@
 </template>
 
 <script>
+import { createApp, h, nextTick } from 'vue'
 import { Designer } from '../designer/index'
 import { LoggerPlugin } from '../designer/plugins/logger/index'
-import { StatusBar } from '../designer/plugins/status-bar/index.js'
+import { StatusBar } from '../designer/plugins/status-bar/index'
+import { EVENT_TYPES } from '../designer/Event'
+import { PLUGIN_TYPES } from '../designer/Plugin'
+import ElementPlus from 'element-plus'
+import Components from '../designer/vue/Components.vue'
+import ComponentTree from '../designer/vue/ComponentTree.vue'
+import ToolBar from '../designer/vue/ToolBar.vue'
+import AttrPanel from '../designer/vue/AttrPanel.vue'
 
 export default {
   name: 'Home',
   mounted() {
+    const renderComponents = () => {
+      const app = createApp(Components)
+      app.use(ElementPlus)
+      return app.mount('.component-tepl')
+    }
+    const renderToolbar = () => {
+      const app = createApp(ToolBar)
+      return app.mount('.toolbar-wrap')
+    }
+    const renderAttr = () => {
+      const app = createApp(AttrPanel)
+      app.use(ElementPlus)
+      return app.mount('#attr')
+    }
+    const renderComponentTree = ({ props, propsArr }) => {
+      const app = createApp({
+        props: propsArr,
+        render: () => h(ComponentTree, props)
+      })
+      app.use(ElementPlus)
+      return app.mount('.component-tree-wrap')
+    }
+
     this.designer = new Designer({
-      componentsWrap: '.component-tepl',
+      renderComponents,
+      renderToolbar,
+      renderAttr,
+      renderComponentTree,
       canvasWrap: '.canvas-wrap',
-      toolbarWrap: '.toolbar-wrap',
-      attrWrap: '#attr',
       plugins: [LoggerPlugin, StatusBar]
     })
     this.designer.__vueApp__ = this
     // for debug
     window.designer = this.designer
-    
-    // handle plugins
-    for (let plug of designer.__plug__.plugins.values()) {
-       const { p: plugInstance, name } = plug
-       if (name === 'StatusBar') {
-         plugInstance.init('.status-bar-wrap')
-       }
+
+    // 处理插件，为插件设置容器dom
+    for (let plug of this.designer.__plug__.plugins.values()) {
+      const { p: plugInstance, type, name } = plug
+      if (name === 'StatusBar') {
+        plugInstance.init('.status-bar-wrap')
+      }
+      if (type === PLUGIN_TYPES.MENU_BAR) {
+        // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器），这里遍历去初始化
+        // 容器应该是现create的dom
+        this.designer.on(EVENT_TYPES.COMPONENTS_UI_INITED, () => {
+          // const wrapName = this.designer.__components__.uiInstance.addPlugin(plug)
+          // nextTick(() => {
+          //   plugInstance.init(wrapName)
+          // })
+          plugInstance.init('.component-MyLoggerPlugin-wrap')
+        })
+      }
     }
   }
 }

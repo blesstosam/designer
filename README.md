@@ -1,9 +1,9 @@
-
 <p align="center">
   <img src="./resource/logo.png" />
 </p>
 
 ---
+
 # 预览图
 
 ![Preview](https://static01.imgkr.com/temp/6194a12b297c4218aba90e3720efe059.png)
@@ -15,8 +15,9 @@ $ cd new && npm install && npm run serve
 ```
 
 # Core
+
 1. 依赖注入
-2. 视图使用vue3渲染，和设计器核心类可以通过**props传递回调函数**，**vue实例调用方法** 来交互；canvas里的组件使用vue3来渲染。两者均可以使用其他框架来渲染，和核心api无关。
+2. 视图使用 vue3 渲染，和设计器核心类可以通过**props 传递回调函数**，**vue 实例调用方法** 来交互；canvas 里的组件使用 vue3 来渲染。两者均可以使用其他框架来渲染，和核心 api 无关。
 
 # 扩展机制
 
@@ -31,23 +32,24 @@ const designer = new Designer({
 })
 ```
 
-2. 每个插件需要实现核心 api，视图里面可以拿到这些核心 api 调用，完成视图的绘制，目前只支持 vue component
+2. 每个插件需要实现核心 api，视图里面可以拿到这些核心 api 调用，完成视图的绘制，支持任意框架
 
 ```js
 class Components {
-  init(com) {
-    const app = createApp(com || defaultCom)
-    this.vueInstance = app.mount(this.config.componentsWrap)
-    this.vueInstance.__components__ = this
+  init(renderUI) {
+    this.uiInstance = renderUI()
+    this.uiInstance.__designer__ = this.__designer__
   }
   registerComponent() {}
 }
-
-this.__components__.init(MyComponentsView)
+const _renderUI = () => {
+  return createApp(Com)
+}
+this.__components__.init(_renderUI)
 ```
 
 3. 属性面板本质上是表单，所以使用 json schema 去描述。  
-定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
+   定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
 
 4. 通信机制，eventBus
 
@@ -57,32 +59,32 @@ this.__components__.init(MyComponentsView)
 
 | todo | 状态 | 增加时间 |
 | --- | --- | --- |
-| 自定义组件集成 |  √ | 2021/7/1 |
+| 自定义组件集成 | √ | 2021/7/1 |
 | 自定义组件预览页面集成 | √ | 2021/7/1 |
 | 自定义组件的属性面板 | - | 2021/7/1 |
-| 扩展机制，参考bpmn.js | - | 2021/7/1 |
+| 扩展机制，参考 bpmn.js | - | 2021/7/1 |
 | viewModel 抽象类 | √ | 2021/7/1 |
-| 定义事件类型，每一个操作都对应一种操作，进行全局分发，各插件可以根据需求自行监听| √ | 2021/7/1 |
-| 属性面板增加公共样式调整，支持margin，padding，border | √ | 2021/7/6 |
-| 缩放功能 |  - | 2021/7/7 |
-| undo&redo |  √  | 2021/7/7 |
-| event抽成eventbus |  - | 2021/7/7 |
-| 改成lerna管理，分为核心库和应用层 |  - | 2021/7/7 |
-| 使用vercel部署 |  √  | 2021/7/7 |
+| 定义事件类型，每一个操作都对应一种操作，进行全局分发，各插件可以根据需求自行监听 | √ | 2021/7/1 |
+| 属性面板增加公共样式调整，支持 margin，padding，border | √ | 2021/7/6 |
+| 缩放功能 | - | 2021/7/7 |
+| undo&redo | √ | 2021/7/7 |
+| event 抽成 eventbus | - | 2021/7/7 |
+| 改成 lerna 管理，分为核心库和应用层 | - | 2021/7/7 |
+| 使用 vercel 部署 | √ | 2021/7/7 |
 | viewModel 数据结构增加根节点 | √ | 2021/7/11 |
-| 增加 hover效果 | √ | 2021/7/13 |
+| 增加 hover 效果 | √ | 2021/7/13 |
 | 加入代码编辑功能 | - | 2021/7/16 |
-| di机制 | - | 2021/7/16 |
+| di 机制 | - | 2021/7/16 |
 | cursor 逻辑 | - | 2021/7/16 |
-| 写一个log插件，记录每一次操作，打印在左侧角落 | √ | 2021/7/16 |
-| 原生event绑定 | - | 2021/7/21 |
-| 组件event绑定，参数通过定义的schema传递过来 | - | 2021/7/27 |
-| viewModel去掉，使用Node | √ | 2021/8/1 |
-| 属性面板schema结构去掉嵌套，使用belong标示属于哪个类别 | - | 2021/8/1 |
-| 将hover改为div盒子 | √ | 2021/8/4 |
-| hover效果加一个移动渐变效果 | √ | 2021/8/4 |
-| 组件是框架无关的，vue/react/原生/svg/canvas都可以作为组件加载，只要符合组件规范 | - | 2021/8/6 |
-| setDragImage其他方法实现,使用mousemove事件插入自定义元素，改变x，y值 | - | 2021/8/9 |
+| 写一个 log 插件，记录每一次操作，打印在左侧角落 | √ | 2021/7/16 |
+| 原生 event 绑定 | - | 2021/7/21 |
+| 组件 event 绑定，参数通过定义的 schema 传递过来 | - | 2021/7/27 |
+| viewModel 去掉，使用 Node | √ | 2021/8/1 |
+| 属性面板 schema 结构去掉嵌套，使用 belong 标示属于哪个类别 | - | 2021/8/1 |
+| 将 hover 改为 div 盒子 | √ | 2021/8/4 |
+| hover 效果加一个移动渐变效果 | √ | 2021/8/4 |
+| 组件是框架无关的，vue/react/原生/svg/canvas 都可以作为组件加载，只要符合组件规范 | - | 2021/8/6 |
+| setDragImage 其他方法实现,使用 mousemove 事件插入自定义元素，改变 x，y 值 | - | 2021/8/9 |
 | 画布下面添加路径，eg: canvas=>container=>text，使用插件的方式 | √ | 2021/9/10 |
 | 兼容绝对定位布局&文档流布局 | - | 2021/9/15 |
-| 自定义组件逻辑重写| - | 2021/9/25 |
+| 自定义组件逻辑重写 | - | 2021/9/25 |

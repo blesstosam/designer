@@ -98,9 +98,12 @@ export class Event {
 // 定义好各个插件要分发的事件
 export const EVENT_TYPES = {
   COMPONENTS_INITED: 'components.inited',
+  COMPONENTS_REGISTER_START: 'components.register.start',
+  COMPONENTS_REGISTER_END: 'components.register.end',
   COMPONENTS_DESTROYED: 'components.destroyed',
   COMPONENTS_DRAG_START: 'components.dragstart',
   COMPONENTS_DROPED: 'components.droped',
+  COMPONENTS_UI_INITED: 'components.ui.inited',
 
   COMPONENT_TREE_INITED: 'componentTree.inited',
   COMPONENT_TREE_DESTROYED: 'componentTree.destroyed',

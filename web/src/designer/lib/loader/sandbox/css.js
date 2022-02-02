@@ -2,8 +2,8 @@
 // 1. 不会改写 @import @page @keyframes
 // 2. 如果dom超出container之外，样式会丢失，所以建议避免这种情况发生
 
-// TODO
-// 1. 主应用全局样式可能会插件样式 通过class
+// 缺陷
+// 1. 主应用全局样式可能会污染插件样式 通过class，即里面的出不来，外面的可以进去
 // ```
 // .main { color: red } // 主应用样式
 // <div class="main"></div> // 插件的dom，并且插件并没有实现该class的样式，所以直接就使用了主应用的样式

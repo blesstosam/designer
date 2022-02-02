@@ -65,9 +65,8 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import cloneDeep from 'lodash.clonedeep'
 
 export default {
   name: 'ToolBar',
@@ -99,15 +98,18 @@ export default {
   },
   computed: {
     designer() {
-      return this.__toolbar__.__designer__
+      return this.__designer__
+    },
+    toolbar() {
+      return this.__designer__.__toolbar__
     }
   },
   methods: {
     undo() {
-      this.__toolbar__.undo()
+      this.toolbar.undo()
     },
     redo() {
-      this.__toolbar__.redo()
+      this.toolbar.redo()
     },
     transform(arr) {
       const origin = []
@@ -159,8 +161,6 @@ export default {
     preview() {
       this.save()
       window.open(location.origin + '/#/preview')
-      // const vueApp = this.designer.__vueApp__
-      // vueApp.$router.push('/preview')
     }
   }
 }

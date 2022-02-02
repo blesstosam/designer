@@ -21,9 +21,6 @@
 <script>
 export default {
   name: 'StatusBar',
-  props: ['pathArr'],
-  data() {
-    return {}
-  }
+  props: ['pathArr']
 }
 </script>

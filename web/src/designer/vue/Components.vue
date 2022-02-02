@@ -99,8 +99,13 @@
         <tree-icon :active="activeMenu === 'tree'" :width="20" />
       </div>
 
-      <div :class="{ 'menu-item': true }" @click="activeMenu = 'history'">
-        <record-icon :active="activeMenu === 'history'" :width="20" />
+      <div
+        v-for="(item, index) in menubarPlugins"
+        :key="index"
+        :class="{ 'menu-item': true }"
+        @click="activeMenu = item.name"
+      >
+        <record-icon :active="activeMenu === item.name" :width="20" />
       </div>
 
       <!-- <div :class="{ 'menu-item': true }" @click="activeMenu = 'schema'">
@@ -117,7 +122,7 @@
       >
         <el-tab-pane label="组件库" name="component">
           <div class="component-wrap">
-            <el-collapse v-model="activecollapseNames">
+            <el-collapse v-model="activeCollapseNames">
               <el-collapse-item
                 v-for="(type, _idx) of collapseList"
                 :key="_idx"
@@ -150,7 +155,7 @@
                     <div style="margin-top: 2px">{{ item.title }}</div>
                   </div>
                 </div>
-                <div v-else style="color: #f56c6c; padding-left: 6px;">组件加载失败！</div>
+                <div v-else style="color: #f56c6c; padding-left: 6px">组件加载失败！</div>
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -160,7 +165,12 @@
 
       <div v-show="activeMenu === 'tree'" class="component-tree-wrap"></div>
 
-      <div v-show="activeMenu === 'history'" class="component-history-wrap"></div>
+      <div
+        v-for="(item, index) in menubarPlugins"
+        :key="index"
+        v-show="activeMenu === item.name"
+        :class="genClsName(item.name)"
+      ></div>
 
       <!-- <div v-show="activeMenu === 'schema'">schema 开发</div> -->
     </div>
@@ -175,7 +185,6 @@ import RecordIcon from './icons/RecordIcon.vue'
 import CodeIcon from './icons/CodeIcon.vue'
 import { componentList, customComList } from '../config'
 import { EVENT_TYPES } from '../Event'
-import { PLUGIN_TYPES } from '../Plugin'
 
 export default {
   name: 'Components',
@@ -189,10 +198,13 @@ export default {
     return {
       asyncComRegisterSuccess: true,
       activeMenu: 'com', // com|tree|history|schema
+      menubarPlugins: [
+        { name: 'MyLoggerPlugin' }
+      ],
       activeTabName: 'component', // component|template
       componentList,
       customComList,
-      activecollapseNames: ['1', '2', '3', '4'],
+      activeCollapseNames: ['1', '2', '3', '4'],
       collapseList: [
         { name: '1', title: '布局组件', key: 'layoutCom' },
         { name: '2', title: '视图组件', key: 'viewCom' },
@@ -206,48 +218,41 @@ export default {
       return this.activeMenu === 'com' ? '6px' : this.activeMenu === 'tree' ? '42px' : '80px'
     },
     comList() {
-      return key => {
+      return (key) => {
         return this[key]
       }
     },
     layoutCom() {
-      return this.componentList.filter(i => i.componentType === componentTypes.LAYOUT)
+      return this.componentList.filter((i) => i.componentType === componentTypes.LAYOUT)
     },
     viewCom() {
-      return this.componentList.filter(i => i.componentType === componentTypes.VIEW)
+      return this.componentList.filter((i) => i.componentType === componentTypes.VIEW)
     },
     formCom() {
-      return this.componentList.filter(i => i.componentType === componentTypes.FORM)
+      return this.componentList.filter((i) => i.componentType === componentTypes.FORM)
     },
-    __designer__() {
-      return this.__components__.__designer__
-    },
-    __plug__() {
-      return this.__designer__.__plug__
+    __components__() {
+      return this.__designer__.__components__
     }
   },
   mounted() {
     this.registerCom()
     this.registerCustomCom()
-    this.__designer__.initComponentTree('.component-tree-wrap')
-
-    // 在这里注册菜单栏插件
-    // todo 改成通用的代码 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器），这里遍历去初始化
-    for (let plug of this.__plug__.plugins.values()) {
-      const { p: plugInstance, type, name } = plug
-      if (type === PLUGIN_TYPES.MENU_BAR) {
-        if (name === 'MyLoggerPlugin') {
-          plugInstance.init('.component-history-wrap')
-        }
-      }
-    }
+    this.__designer__.emit(EVENT_TYPES.COMPONENTS_UI_INITED)
   },
   methods: {
+    addPlugin(plug) {
+      this.menubarPlugins.push(plug)
+      return '.' + this.genClsName( plug.name)
+    },
+    genClsName(name) {
+      return `component-${name}-wrap`
+    },
     registerCom() {
       const comItems = document.querySelectorAll('.com-item')
       for (const el of comItems) {
         const comName = el.getAttribute('com-name')
-        const com = componentList.find(i => i.name === comName)
+        const com = componentList.find((i) => i.name === comName)
         this.__components__.registerComponent(el, com)
       }
     },
@@ -256,17 +261,17 @@ export default {
       const modArr = []
       for (const el of comItems) {
         const comName = el.getAttribute('com-name')
-        const com = customComList.find(i => i.name === comName)
+        const com = customComList.find((i) => i.name === comName)
         modArr.push({ comEl: el, com })
       }
       this.__components__
         .registerAsyncComponents(modArr)
-        .then(res => {
-          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED) // 分发全局事件 组件面板初始化
+        .then((res) => {
+          this.__designer__.emit(EVENT_TYPES.COMPONENTS_REGISTER_END) // 分发全局事件 组件面板初始化
         })
-        .catch(err => {
+        .catch((err) => {
           this.asyncComRegisterSuccess = false
-          this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+          this.__designer__.emit(EVENT_TYPES.COMPONENTS_REGISTER_END)
         })
     },
     handleClick() {}
