@@ -149,14 +149,12 @@ export default {
         plugInstance.init('.status-bar-wrap')
       }
       if (type === PLUGIN_TYPES.MENU_BAR) {
-        // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器），这里遍历去初始化
-        // 容器应该是现create的dom
+        // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器）
         this.designer.on(EVENT_TYPES.COMPONENTS_UI_INITED, () => {
-          // const wrapName = this.designer.__components__.uiInstance.addPlugin(plug)
-          // nextTick(() => {
-          //   plugInstance.init(wrapName)
-          // })
-          plugInstance.init('.component-MyLoggerPlugin-wrap')
+          const wrapName = this.designer.__components__.uiInstance.addPlugin(plug)
+          nextTick(() => {
+            plugInstance.init(wrapName)
+          })
         })
       }
     }

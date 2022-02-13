@@ -16,7 +16,7 @@ const {
   SELECTION_DEACTIVED
 } = EVENT_TYPES
 
-const getBtnsWidth = (isLayout) => (isLayout ? 100 : 75)
+const getBtnsWidth = isLayout => (isLayout ? 100 : 75)
 
 const SELECTION_BORDER_STYLE = '1px solid rgb(70, 128, 255)'
 
@@ -248,10 +248,11 @@ export class Selection {
         cursor: 'pointer',
         background: '#1989fa',
         color: 'white',
-        height: '18px',
+        height: '20px',
         textAlign: 'center',
         padding: '0 3px',
-        lineHeight: '19px',
+        lineHeight: '21px',
+        borderRadius: '2px',
         fontSize: '12px',
         whiteSpace: 'nowrap',
         fontWeight: 500
@@ -280,9 +281,10 @@ export class Selection {
         draggable: false
       })
       .style({
-        width: '14px',
+        width: '16px',
         background: '#1989fa',
         padding: '2px',
+        borderRadius: '2px'
       }).el
     div.appendChild(img)
     this.$btnWrap.appendChild(div)
@@ -299,7 +301,7 @@ export class Selection {
     }
     this[obj[type]] = div
     if (type === 'delete' || type === 'copy') {
-      div.addEventListener('click', (e) => {
+      div.addEventListener('click', e => {
         e.stopPropagation()
         const eType = type === 'delete' ? SELECTION_DEL_CLICK : SELECTION_COPY_CLICK
         this.__designer__.emit(eType, {
@@ -355,15 +357,15 @@ export class Selection {
     if (this.btnHPos === 'right') {
       const map = {
         delete: 0,
-        copy: '21px',
-        move: this.isLayout ? 21 * 2 + 'px' : 21 * 1 + 'px',
-        title: this.isLayout ? 21 * 3 + 'px' : 21 * 2 +'px'
+        copy: '23px',
+        move: this.isLayout ? '46px' : '23px',
+        title: this.isLayout ? '69px' : '46px'
       }
       return { left: null, right: map[type] }
     }
     const map = {
-      delete: this.isLayout ? '77px' : '53px',
-      copy: '53px',
+      delete: this.isLayout ? '80px' : '56px',
+      copy: '56px',
       move: '33px',
       title: 0
     }
