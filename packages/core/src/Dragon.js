@@ -45,16 +45,16 @@ const EventTypes = {
 
 const DRAG_ENTER_CONTAINER_CLS = 'dragenter-actived'
 
-export class DragDrop {
+export class Dragon {
   constructor(config = {}, designer) {
     const {
       dropEffect = 'move',
       effectAllowed = 'copyMove',
       dragEnterContainerCls = DRAG_ENTER_CONTAINER_CLS
     } = config
-    if (dropEffect && !DropEffects[dropEffect]) throw new Error(`DragDrop: dropEffect invalid`)
+    if (dropEffect && !DropEffects[dropEffect]) throw new Error(`Dragon: dropEffect invalid`)
     if (effectAllowed && !EffectsAllowed[effectAllowed])
-      throw new Error('DragDrop: effectAllowed invalid')
+      throw new Error('Dragon: effectAllowed invalid')
 
     this.__designer__ = designer
     this.dropEffect = dropEffect

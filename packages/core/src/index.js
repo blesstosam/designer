@@ -6,7 +6,7 @@ import { ComponentTree } from './ComponentTree'
 import { Toolbar } from './Toolbar'
 import { KeyBoard } from './Keyboard'
 import { Plugin } from './Plugin'
-import { DragDrop } from './DragDrop'
+import { Dragon } from './Dragon'
 import { Cursor } from './Cursor'
 
 // 页面模型数据 应该是一个 json
@@ -56,7 +56,7 @@ class Designer extends Event {
   }
 
   initComponents() {
-    this.__dragDrop__ = new DragDrop({}, this)
+    this.__dragon__ = new Dragon({}, this)
     this.__components__ = new Components(this.config, this)
     this.__components__.init(this.config.renderComponents)
   }

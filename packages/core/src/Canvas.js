@@ -76,8 +76,8 @@ export class Canvas {
   get __componentTree__() {
     return this.__designer__.__componentTree__
   }
-  get __dragDrop__() {
-    return this.__designer__.__dragDrop__
+  get __dragon__() {
+    return this.__designer__.__dragon__
   }
 
   init(viewModel) {
@@ -151,7 +151,7 @@ export class Canvas {
     // 只拖入子容器 inner enter => inner leave => wrap leave
     // 只拖入父容器 wrap enter => wrap leave
     // 嵌套div拖入 wrap enter => inner enter => wrap leave => inside enter => inner leave => ...
-    this.__dragDrop__.onDrop(this.$canvasEl, ({ getData }) => {
+    this.__dragon__.onDrop(this.$canvasEl, ({ getData }) => {
       console.log('wrapper drop...')
       this.removeMarker()
 
@@ -197,7 +197,7 @@ export class Canvas {
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DROPED)
     })
 
-    this.__dragDrop__.onDragOver(
+    this.__dragon__.onDragOver(
       this.$canvasEl,
       throttle(({ $event: e }) => {
         console.log('wrapper over...')
@@ -239,13 +239,13 @@ export class Canvas {
     )
 
     // enter 比 over 先触发
-    this.__dragDrop__.onDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
+    this.__dragon__.onDragEnter(this.$canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
       this.removeTip(this.model)
       console.log('wrapper enter...')
     })
 
-    this.__dragDrop__.onDragLeave(this.$canvasEl, ({ removeDragEnterCls }) => {
+    this.__dragon__.onDragLeave(this.$canvasEl, ({ removeDragEnterCls }) => {
       console.log('wrapper leave...')
       if (!this.dropToInnerSlot) {
         removeDragEnterCls()
@@ -600,7 +600,7 @@ export class Canvas {
       return [this.__components__.findComByName(targetComName), $nodeboxEl]
     }
 
-    this.__dragDrop__.onDrop(
+    this.__dragon__.onDrop(
       wrapper,
       ({ $event: e, getData }) => {
         console.log('inner drop...')
@@ -699,7 +699,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.onDragOver(
+    this.__dragon__.onDragOver(
       wrapper,
       throttle(({ $event: e, getData }) => {
         console.log('inner over...')
@@ -733,7 +733,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.onDragEnter(
+    this.__dragon__.onDragEnter(
       wrapper,
       ({ $event: e, addDragEnterCls }) => {
         // 当被拖到 布局组件 slot 里才触发
@@ -749,7 +749,7 @@ export class Canvas {
       { stop: true }
     )
 
-    this.__dragDrop__.onDragLeave(wrapper, ({ $event: e, removeDragEnterCls }) => {
+    this.__dragon__.onDragLeave(wrapper, ({ $event: e, removeDragEnterCls }) => {
       console.log('inner leave...')
       if (getSlotName(e.target) != null) {
         this.dropToInnerSlot = false

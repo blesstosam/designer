@@ -29,8 +29,8 @@ export class Components {
     this.loader = null
   }
 
-  get __dragDrop__() {
-    return this.__designer__.__dragDrop__
+  get __dragon__() {
+    return this.__designer__.__dragon__
   }
 
   get __componentTree__() {
@@ -54,14 +54,14 @@ export class Components {
 
   // 给组件绑定数据和事件
   _bindEvent(target) {
-    this.__dragDrop__.onDragStart(target, ({ $event: e, setData }) => {
+    this.__dragon__.onDragStart(target, ({ $event: e, setData }) => {
       console.log('drag start...')
       const $componentItem = lookupByClassName(e.target, COMPONENT_EL_CLS)
       setData('data', this.findComByName($componentItem.getAttribute('com-name')) || {})
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START)
     })
 
-    this.__dragDrop__.onDragEnd(target, () => { console.log('drag end...') })
+    this.__dragon__.onDragEnd(target, () => { console.log('drag end...') })
   }
  
   /**
