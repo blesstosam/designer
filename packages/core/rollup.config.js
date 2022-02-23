@@ -25,22 +25,22 @@ const cfg = {
   input: 'src/index.js',
   output: [
     {
-      file: isProd ? 'lib/loader.common.prod.js' : 'lib/loader.common.js',
-      name: 'QPaasLoader',
+      file: isProd ? 'lib/index.common.prod.js' : 'lib/index.common.js',
+      name: 'DavinciDesginer',
       format: 'umd',
-      globals: {
-        vue: 'Vue'
-      },
+      // globals: {
+      //   vue: 'Vue'
+      // },
       banner
     },
     {
       file: isProd ? 'lib/loader.prod.js' : 'lib/loader.js',
-      name: 'QPaasLoader',
+      name: 'DavinciDesginer',
       format: 'esm',
       banner
     }
   ],
-  external: ['vue'],
+  // external: ['vue'],
   plugins: isProd ? [...plugs, terser()] : plugs
 }
 
