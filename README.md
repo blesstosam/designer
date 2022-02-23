@@ -11,7 +11,24 @@
 # 设计器开发
 
 ```shell
-$ cd new && npm install && npm run serve
+$ npm run dev
+```
+
+# 使用
+
+通过构造 designer 对象并传入对应渲染组件的方法（遵循一定规范），就可以构建出自己的设计器。设计器的 UI 完全可以由用户自己决定，在 UI 组件对象上可以获取设计器的核心 API，通过核心API 可以控制设计器的行为。
+
+```js
+const designer = new Designer({
+  canvasWrap: '.canvas-wrap',
+  renderComponents,
+  renderComponentTree,
+  renderToolbar,
+  renderAttr,
+  plugins: [LoggerPlugin, StatusBar]
+})
+// eg: 通过组件模块动态注册组件
+designer.__components__.registerComponent()
 ```
 
 # Core
@@ -21,7 +38,7 @@ $ cd new && npm install && npm run serve
 
 # 扩展机制
 
-1. 提供插件机制，通过传入插件，替代默认实现的插件，达到替换视图的目的，在自定义插件里传入相关的 api 和配置, 参考 bpmn
+1. 提供插件机制，通过传入插件，替代默认实现的插件和添加自己的插件，达到替换视图的目的，在自定义插件里传入相关的 api 和配置
 
 ```js
 class MyComponents {

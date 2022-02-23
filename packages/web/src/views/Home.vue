@@ -132,11 +132,11 @@ export default {
     }
 
     this.designer = new Designer({
+      canvasWrap: '.canvas-wrap',
       renderComponents,
+      renderComponentTree,
       renderToolbar,
       renderAttr,
-      renderComponentTree,
-      canvasWrap: '.canvas-wrap',
       plugins: [LoggerPlugin, StatusBar]
     })
     this.designer.__vueApp__ = this
