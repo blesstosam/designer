@@ -56,8 +56,8 @@ export class Selection {
     return this.__designer__.__canvas__
   }
 
-  get __dragDrop__() {
-    return this.__designer__.__dragDrop__
+  get __dragon__() {
+    return this.__designer__.__dragon__
   }
 
   get isLayout() {
@@ -312,13 +312,13 @@ export class Selection {
         type: SELECTION_MOVE_START,
         data: this.node
       })
-      this.__dragDrop__.onDragStart(div, ({ renderDragImg, setData }) => {
+      this.__dragon__.onDragStart(div, ({ renderDragImg, setData }) => {
         renderDragImg(this.node.title)
         setData('data', this.node)
         setData('isMove', true)
         this._createCover()
       })
-      this.__dragDrop__.onDragEnd(div, () => {
+      this.__dragon__.onDragEnd(div, () => {
         this._removeCover()
       })
     }
