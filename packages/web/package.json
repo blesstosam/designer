@@ -1,0 +1,56 @@
+{
+  "name": "@davincid/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@davincid/core": "^1.0.0",
+    "@juggle/resize-observer": "^3.3.1",
+    "core-js": "^3.6.5",
+    "element-plus": "^1.0.2-beta.55",
+    "lodash.clonedeep": "^4.5.0",
+    "monaco-editor": "^0.26.1",
+    "vue": "^3.2.26",
+    "vue-router": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.1.0",
+    "lint-staged": "^9.5.0",
+    "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2",
+    "vite": "^2.7.13",
+    "vite-plugin-monaco-editor": "^1.0.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
+      "@vue/prettier"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue}": [
+      "git add"
+    ]
+  }
+}

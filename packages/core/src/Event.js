@@ -125,6 +125,7 @@ export const EVENT_TYPES = {
   ELEMENT_HOVER: 'element.hover',
 
   ATTRPANEL_INITED: 'attrpanel.inited',
+  ATTRPANEL_UI_INITED: 'attrpanel.ui.inited',
   ATTRPANEL_DESTROYED: 'attrpanel.destroyed',
   ATTRPANEL_SET_ATTR: 'attrpanel.setAttr',
 

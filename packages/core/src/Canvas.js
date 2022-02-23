@@ -1,13 +1,12 @@
-import { setCurrentViewNodeModel } from './config'
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { Selection } from './Selection'
 import { componentTypes } from './Components'
 import { Node } from './Node'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
-import { changeProps } from './components/render-util'
+import { InsertTypes, isPendType, setCurrentViewNodeModel } from './Util'
 import { arrayMoveMutable, throttle } from './lib/util'
-import { InsertTypes, isPendType } from './InsertTypes'
+import { changeProps } from './lib/render-util'  // TODO how to drop changeProps
 import cloneDeep from 'lodash.clonedeep'
 
 const {
@@ -34,6 +33,7 @@ const NODE_BOX_CLS = 'node-box'
 const getSlotName = el => el.getAttribute(SLOT_NAME_KEY)
 const getFirstSlotElOfNode = node => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
 
+// TODO canvas should extends from DropSource
 export class Canvas {
   constructor(config, designer) {
     this.name = '__canvas__'

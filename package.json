@@ -7,7 +7,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap --no-ci",
     "changelog": "lerna run changelog",
-    "dev": "cd web && npm run dev"
+    "dev": "cd packages/web && npm run dev"
   },
   "keywords": [],
   "author": "",

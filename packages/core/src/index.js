@@ -9,7 +9,7 @@ import { Plugin } from './Plugin'
 import { DragDrop } from './DragDrop'
 import { Cursor } from './Cursor'
 
-// 页面模型数据 应该是一个 json 或 json schema
+// 页面模型数据 应该是一个 json
 // 参考 virtual dom 树型数据结构 =>
 // { tag: 'div', { style: { width: '50%' } },  children: [ text : 'Hello'] }
 // 然后把 tag 换成 componentName，把布局 css 换成特定的约定 比如 column span 等
@@ -70,8 +70,9 @@ class Designer extends Event {
     // 组件树依赖
     // 1.components组件dom渲染完成
     // 2.canvas将组件渲染完成
+    const { CANVAS_LAYOUTED, COMPONENTS_UI_INITED } = EVENT_TYPES
     let index = 0
-    this.on([EVENT_TYPES.CANVAS_LAYOUTED, EVENT_TYPES.COMPONENTS_UI_INITED], () => {
+    this.on([CANVAS_LAYOUTED, COMPONENTS_UI_INITED], () => {
       index++
       if (index === 2) {
         this.__componentTree__ = new ComponentTree(this.config, this)

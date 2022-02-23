@@ -2,7 +2,6 @@ import { FetchLoader } from './lib/loader'
 import { lookupByClassName, $ } from './lib/dom'
 import { EVENT_TYPES } from './Event'
 
-// 架构
 // 1. 组件 VBlock; 渲染层 genVueInstance
 // 2. 组件 RBlock; 渲染层 genReactInstance
 // 3. 纯js JBlock; 渲染层 实现一下响应式
@@ -47,6 +46,10 @@ export class Components {
     this.uiInstance.__designer__ = this.__designer__
     this.$wrapEl = this.uiInstance.$el.parentNode
     this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
+  }
+
+  triggerUIInit() {
+    this.__designer__.emit(EVENT_TYPES.COMPONENTS_UI_INITED)
   }
 
   // 给组件绑定数据和事件
@@ -144,6 +147,6 @@ export class Components {
   }
 
   renderComponent() {
-    // todo 是否将render相关逻辑从canvas里抽出来
+    // TODO 是否将render相关逻辑从canvas里抽出来
   }
 }

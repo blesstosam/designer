@@ -8,16 +8,8 @@ import { VTagComponent } from './components/tag'
 import { VImageComponent } from './components/image'
 import { VDividerComponent } from './components/divider'
 
-// 当前被选中的dom节点所在数据
-let currentViewNodeModel = {}
-export function getCurrentViewNodeModel() {
-  return currentViewNodeModel
-}
-export function setCurrentViewNodeModel(m) {
-  currentViewNodeModel = m
-}
 
-// 不管是左侧的组件列表，还是画布上组件的实际渲染，还是右侧的属性面板都是从这个配置文件里获取信息去渲染
+// 不管是左侧的组件列表，还是画布上组件的实际渲染，还是右侧的属性面板都是从这个配置文件里获取必要信息去渲染
 // 和vue的option api类似 一个组件即一个对象 需要有哪几个key都是规定好的
 export const componentList = [
   VBlockComponent,

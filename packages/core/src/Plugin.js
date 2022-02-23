@@ -36,7 +36,8 @@ export class Plugin {
       this.plugins.set(Plugin.$name, {
         p: new Plugin(...arr),
         type: Plugin.$type,
-        name: Plugin.$name
+        name: Plugin.$name,
+        deps: Plugin.$deps
       })
     } else {
       // TODO 如果要替换默认的组件

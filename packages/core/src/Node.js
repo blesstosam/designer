@@ -1,9 +1,11 @@
-import { InsertTypes } from './InsertTypes'
+import { InsertTypes } from './Util'
 import { randomString } from './lib/util'
 
 const nodeMap = new Map()
 
-// TODO 关于树的增删改查 参考 fre conf 章总的ppt
+export const VERSION_NO = '1.0.0'
+
+// TODO https://github.com/07akioni/treemate
 // 维护一个拍平的栈，用来查引用，然后将引用修改反馈到树上
 
 export class Node {
@@ -18,7 +20,7 @@ export class Node {
     this.$el = node.$el
     if (node.isRoot) {
       this.isRoot = node.isRoot
-      this.__version__ = '1.0.0'
+      this.__version__ = VERSION_NO
     }
 
     this.children = []

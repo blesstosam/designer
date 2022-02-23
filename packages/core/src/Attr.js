@@ -13,4 +13,9 @@ export class Attr {
     this.$wrapEl = this.uiInstance.$el.parentNode
     this.__designer__.emit(EVENT_TYPES.ATTRPANEL_INITED)
   }
+
+  triggerUIInit() {
+    this.__designer__.emit(EVENT_TYPES.ATTRPANEL_UI_INITED)
+  }
 }
+ 
