@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { isPlainObject } from '../designer/lib/util'
+import { isPlainObject } from '../util'
 import { loader } from './loader'
 
 const DELAY_LOADING_TIME = 200
