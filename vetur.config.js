@@ -1,3 +1,3 @@
 module.exports = {
-  projects: ['web']
+  projects: ['packages/web']
 }

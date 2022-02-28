@@ -106,6 +106,7 @@ export const EVENT_TYPES = {
   COMPONENTS_UI_INITED: 'components.ui.inited',
 
   COMPONENT_TREE_INITED: 'componentTree.inited',
+  COMPONENT_TREE_DATA_UPDATE: 'componentTree.data.update',
   COMPONENT_TREE_DESTROYED: 'componentTree.destroyed',
 
   CANVAS_INITED: 'canvas.inited',

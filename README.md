@@ -16,7 +16,7 @@ $ npm run dev
 
 # 使用
 
-通过构造 designer 对象并传入对应渲染组件的方法（遵循一定规范），就可以构建出自己的设计器。设计器的 UI 完全可以由用户自己决定，在 UI 组件对象上可以获取设计器的核心 API，通过核心API 可以控制设计器的行为。
+通过构造 designer 对象并传入对应渲染组件的方法（遵循一定规范），就可以构建出自己的设计器。设计器的 UI 完全可以由用户自己决定，在 UI 组件对象上可以获取设计器的核心 API，通过核心 API 可以控制设计器的行为。
 
 ```js
 const designer = new Designer({
@@ -34,7 +34,12 @@ designer.__components__.registerComponent()
 # Core
 
 1. 依赖注入
-2. 视图使用 vue3 渲染，和设计器核心类可以通过**props 传递回调函数**，**vue 实例调用方法** 来交互；canvas 里的组件使用 vue3 来渲染。两者均可以使用其他框架来渲染，和核心 api 无关。
+2. 视图使用 vue3 渲染，和设计器核心类可以通过 **vue 实例调用方法和核心类调用 vue 实例方法（即 UI 必须实现该方法）** 来交互；canvas 里的组件使用 vue3 来渲染。两者均可以使用其他框架来渲染，和核心 api 无关。
+
+```js
+this.__componentTree__.uiInstance.callMethod() // core call ui method
+uiInstance.__componentTree__.callMethod() // ui call core method
+```
 
 # 扩展机制
 

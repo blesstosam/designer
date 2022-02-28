@@ -1,4 +1,3 @@
-import { reactive } from '@vue/reactivity'
 import { EVENT_TYPES } from './Event'
 
 const { CANVAS_ACTIONS_DELETE: C_A_D, CANVAS_ACTIONS_APPEND: C_A_A } = EVENT_TYPES
@@ -17,60 +16,58 @@ export class ComponentTree {
 
   init(renderUI) {
     const data = this.__canvas__.model
-    // Attr.js 里是使用 this.uiInstance 调用方法改变数据完成视图更新;这里使用修改props
-    const handleClick = (d) => {
-      const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) this.__canvas__.handleNodeboxSelect(node)
-    }
-    const handleDel = (d) => {
-      const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) this.__canvas__.remove(node)
-    }
-    const handleDisplay = (d, isShow) => {
-      const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) this.__canvas__.toggleDisplay(node, isShow)
-    }
-    const handleMouseEnter = (d) => {
-      const node = this.__canvas__.model.findByKey('unique', d.unique)
-      if (node) this.__canvas__.handleNodeboxHover(node)
-    }
-    const handleMouseLeave = () => {
-      this.__canvas__.handleNodeboxHoverRemove()
-    }
-    const props = reactive({
-      tree: (data && data.children) || [],
-      handleDel,
-      handleDisplay,
-      handleClick,
-      handleMouseEnter,
-      handleMouseLeave,
-      ref: 'componentTree'
+    // 初始化UI的时候可以传递参数
+    this.uiInstance = renderUI({
+      props: { tree: (data && data.children) || [] }
     })
 
-    this.uiInstance = renderUI({
-      props,
-      propsArr: [
-        'tree',
-        'handleDel',
-        'handleDisplay',
-        'handleClick',
-        'handleMouseEnter',
-        'handleMouseLeave',
-        'ref'
-      ]
-    })
-    this.uiInstance.__componentTree__ = this
+    this.uiInstance.__designer__ = this.__designer__
     this.$wrapEl = this.uiInstance.$el.parentNode
     this.__designer__.on([C_A_D, C_A_A], (payload) => {
       const {
         type,
         viewModel: { children = [] }
       } = payload
-      props.tree = [...children]
+      this.setData([...children])
     })
   }
 
+  // ui 可以调用 core 的方法，core 也可以调用 ui 的方法(即ui必须实现该方法，如果没有实现就报错)
+  // core => init UI(listen core data change & provide some method) => mount UI => call core method
+  // core => update data => update ui
+  // core => call ui method
+
+  selectNode(d) {
+    const node = this.__canvas__.model.findByKey('unique', d.unique)
+    if (node) this.__canvas__.handleNodeboxSelect(node)
+  }
+  delNode(d) {
+    const node = this.__canvas__.model.findByKey('unique', d.unique)
+    if (node) this.__canvas__.remove(node)
+  }
+  toggleNodeDisplay(d, isShow) {
+    const node = this.__canvas__.model.findByKey('unique', d.unique)
+    if (node) this.__canvas__.toggleDisplay(node, isShow)
+  }
+  hoverNode(d) {
+    const node = this.__canvas__.model.findByKey('unique', d.unique)
+    if (node) this.__canvas__.handleNodeboxHover(node)
+  }
+  removeNodeHover() {
+    this.__canvas__.handleNodeboxHoverRemove()
+  }
   setCurrentKey(key) {
-    this.uiInstance && this.uiInstance.$refs.componentTree.setCurrentKey(key)
+    if (this.uiInstance && this.uiInstance.setCurrentKey) {
+      this.uiInstance.setCurrentKey(key)
+    } else {
+      throw new Error('componentTree UI need to implement setCurrentKey method')
+    }
+  }
+  setData(d) {
+    if (this.uiInstance && this.uiInstance.setData) {
+      this.uiInstance.setData(d)
+    } else {
+      throw new Error('componentTree UI need to implement setData method')
+    }
   }
 }

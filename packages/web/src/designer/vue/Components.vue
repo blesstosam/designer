@@ -92,11 +92,11 @@
       <div class="active-bar" :style="{ top: activeBarTopVal }"></div>
 
       <div :class="{ 'menu-item': true }" @click="activeMenu = 'com'">
-        <lego-icon :active="activeMenu === 'com'" :width="20" />
+        <lego-icon :active="activeMenu === 'com'" :width="24" />
       </div>
 
       <div :class="{ 'menu-item': true }" @click="activeMenu = 'tree'">
-        <tree-icon :active="activeMenu === 'tree'" :width="20" />
+        <tree-icon :active="activeMenu === 'tree'" :width="24" />
       </div>
 
       <div
@@ -105,11 +105,11 @@
         :class="{ 'menu-item': true }"
         @click="activeMenu = item.name"
       >
-        <record-icon :active="activeMenu === item.name" :width="20" />
+        <record-icon :active="activeMenu === item.name" :width="24" />
       </div>
 
       <!-- <div :class="{ 'menu-item': true }" @click="activeMenu = 'schema'">
-        <code-icon :active="activeMenu === 'schema'" :width="20" />
+        <code-icon :active="activeMenu === 'schema'" :width="24" />
       </div> -->
     </div>
 

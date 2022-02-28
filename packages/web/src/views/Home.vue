@@ -121,11 +121,8 @@ export default {
       app.use(ElementPlus)
       return app.mount('#attr')
     }
-    const renderComponentTree = ({ props, propsArr }) => {
-      const app = createApp({
-        props: propsArr,
-        render: () => h(ComponentTree, props)
-      })
+    const renderComponentTree = ({ props }) => {
+      const app = createApp(ComponentTree, props)
       app.use(ElementPlus)
       registerCom(app)
       return app.mount('.component-tree-wrap')

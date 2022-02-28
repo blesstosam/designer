@@ -82,20 +82,19 @@
 
 <script>
 import TreeIcon from './icons/TreeIcon.vue'
+
 export default {
   name: 'ComponentTree',
   components: { TreeIcon },
   props: {
-    tree: Array,
-    // vue 实例通过回调函数实现 emit
-    handleDel: Function,
-    handleDisplay: Function,
-    handleClick: Function,
-    handleMouseEnter: Function,
-    handleMouseLeave: Function
+    tree: Array
+  },
+  created() {
+    this.innerTree = this.tree
   },
   data() {
     return {
+      innerTree: [],
       actionShowRow: -1,
       defaultProps: {
         children: 'children',
@@ -106,7 +105,7 @@ export default {
   },
   computed: {
     treeData() {
-      const tree = this.tree || []
+      const tree = this.innerTree || []
       const treeData = []
       for (const t of tree) {
         const item = {
@@ -134,29 +133,37 @@ export default {
         }
       }
       return treeData
+    },
+    __componentTree__() {
+      return this.__designer__.__componentTree__
     }
   },
   methods: {
+    // 必须实现的api
+    setCurrentKey(key) {
+      this.$refs.tree.setCurrentKey(key)
+    },
+    setData(d) {
+      this.innerTree = d
+    },
+
+    handleNodeClick(d) {
+      this.__componentTree__.selectNode(d)
+    },
     handleNodeDel(d) {
-      this.handleDel && this.handleDel(d)
+      this.__componentTree__.delNode(d)
     },
     handleNodeDisplay(d) {
       d.display = !d.display
-      this.handleDisplay && this.handleDisplay(d, d.display)
+      this.__componentTree__.toggleNodeDisplay(d, d.display)
     },
     handleNodeMouseEnter(d) {
       this.actionShowRow = d.$treeNodeId
-      this.handleMouseEnter && this.handleMouseEnter(d)
+      this.__componentTree__.hoverNode(d)
     },
     handleNodeMouseLeave(d) {
       this.actionShowRow = -1
-      this.handleMouseLeave && this.handleMouseLeave()
-    },
-    handleNodeClick(d) {
-      this.handleClick && this.handleClick(d)
-    },
-    setCurrentKey(key) {
-      this.$refs.tree.setCurrentKey(key)
+      this.__componentTree__.removeNodeHover()
     }
   }
 }
