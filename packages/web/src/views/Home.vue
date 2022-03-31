@@ -103,6 +103,7 @@ import AttrPanel from '../designer/vue/AttrPanel.vue'
 import { registerCom } from '../components/registerCom'
 import { Designer } from '@davincid/core/src/index'
 import { PLUGIN_TYPES } from '@davincid/core/src/Plugin'
+import { UtilTypes } from '@davincid/core/src/Util'
 
 export default {
   name: 'Home',
@@ -134,7 +135,12 @@ export default {
       renderComponentTree,
       renderToolbar,
       renderAttr,
-      plugins: [LoggerPlugin, StatusBar]
+      plugins: [LoggerPlugin, StatusBar],
+      utils: [{
+        name: 'createApp',
+        type: UtilTypes.Function,
+        value: createApp
+      }]
     })
     this.designer.__vueApp__ = this
     // for debug
@@ -149,7 +155,7 @@ export default {
       if (type === PLUGIN_TYPES.MENU_BAR) {
         // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器）
         this.designer.on(deps, () => {
-          const wrapName = this.designer.__components__.uiInstance.addPlugin(plug)
+          const wrapName = this.designer.__components__.uiInstance.registerPlug(plug)
           nextTick(() => {
             plugInstance.init(wrapName)
           })

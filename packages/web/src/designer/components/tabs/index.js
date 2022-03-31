@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 import { parseProps, genVueInstance } from '../render-util'
 import VTabs from './VTabs.vue'
-import VTabsCfg from './config'
+import Attr from './attr'
 
 const VTabsComponent = {
   name: 'VTabs',
@@ -11,10 +11,11 @@ const VTabsComponent = {
     type: 'img',
     value: '/tabs.png'
   },
-  componentType: componentTypes.LAYOUT,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.LAYOUT,
   $el: null,
   vm: null,
-  attrs: VTabsCfg,
+  attrs: Attr,
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))

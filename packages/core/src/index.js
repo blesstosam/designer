@@ -8,6 +8,7 @@ import { KeyBoard } from './Keyboard'
 import { Plugin } from './Plugin'
 import { Dragon } from './Dragon'
 import { Cursor } from './Cursor'
+import { Util } from './Util'
 
 // 页面模型数据 应该是一个 json
 // 参考 virtual dom 树型数据结构 =>
@@ -43,6 +44,8 @@ class Designer extends Event {
     this.initCursor()
 
     this.initPluginSystem()
+
+    this.initUtil()
   }
 
   initCanvas() {
@@ -102,7 +105,14 @@ class Designer extends Event {
     this.__plug__ = new Plugin(this.config, this)
     const plugs = this.config.plugins || []
     for (const p of plugs) {
-      this.__plug__.add(p)
+      this.__plug__.register(p)
+    }
+  }
+
+  initUtil() {
+    this.__util__ = new Util(this.config, this)
+    for (const u of  (this.config.utils||[]))  {
+      this.__util__.register(u)
     }
   }
 }

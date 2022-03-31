@@ -1,6 +1,10 @@
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
+// TODO 参考 lowcode-engine 的定位方式
+// 1. 计算画布和容器组件的坐标
+// 2. 拖动过程中获取组件的坐标
+// 3. 通过计算规则决定插入的位置
 const state = {
   dragging: false, // 是否在拖拽
   isMove: false, // 是否是移动操作

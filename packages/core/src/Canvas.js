@@ -1,12 +1,12 @@
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { Selection } from './Selection'
-import { componentTypes } from './Components'
+import { ComponentTypes } from './Components'
 import { Node } from './Node'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
-import { InsertTypes, isPendType, setCurrentViewNodeModel } from './Util'
+import { InsertTypes, isPendType, setCurrentViewNodeModel } from './Help'
 import { arrayMoveMutable, throttle } from './lib/util'
-import { changeProps } from './lib/render-util'  // TODO how to drop changeProps
+import { changeProps } from './lib/render-util' // TODO how to drop changeProps
 import cloneDeep from 'lodash.clonedeep'
 
 const {
@@ -23,15 +23,15 @@ const {
   CANVAS_LAYOUTED
 } = EVENT_TYPES
 
-const { LAYOUT } = componentTypes
+const { LAYOUT } = ComponentTypes
 export const DROP_EL_PADDING = 8,
   NODE_BOX_PADDING = 0
 const SLOT_NAME_KEY = 'c-slot-name'
 const TIP_EL_CLS = 'canvas-tip'
 const NODE_BOX_CLS = 'node-box'
 
-const getSlotName = el => el.getAttribute(SLOT_NAME_KEY)
-const getFirstSlotElOfNode = node => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
+const getSlotName = (el) => el.getAttribute(SLOT_NAME_KEY)
+const getFirstSlotElOfNode = (node) => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
 
 // TODO canvas should extends from DropSource
 export class Canvas {
@@ -114,9 +114,17 @@ export class Canvas {
   }
 
   initListener() {
-    this.__designer__.on([S_D_C, S_C_C], payload => {
+    this.__designer__.on([S_D_C, S_C_C], (payload) => {
       const { type, data } = payload
       if (type === S_D_C) {
+        // TODO 怎么让用户拦截这个操作，参考lowcode-engine
+        // 参考api
+        // event.on(S_D_C, ({ next }) => {
+        //   // 做一些逻辑，比如弹框；根据用户输入控制是否调用 next 完成这次操作或不调用 next
+        //   if (status === 'ok') {
+        //     next()
+        //   }
+        // })
         this.remove(data)
       } else if (type === S_C_C) {
         const mount = (nodeArr, parent) => {
@@ -173,7 +181,7 @@ export class Canvas {
           // 1. 移动dom
           $(this.$canvasEl)[this.insertType](state.data.$el)
           // 2. 操作model
-          const fromIndex = this.model.children.findIndex(i => i.$el === state.data.$el)
+          const fromIndex = this.model.children.findIndex((i) => i.$el === state.data.$el)
           const toIndex = this.insertType === InsertTypes.APPEND ? this.model.children.length : 0
           arrayMoveMutable(this.model.children, fromIndex, toIndex)
           // 3. 更新selection位置
@@ -255,7 +263,7 @@ export class Canvas {
       }
     })
 
-    this.$canvasEl.addEventListener('mouseleave', e => {
+    this.$canvasEl.addEventListener('mouseleave', (e) => {
       this.handleNodeboxHoverRemove()
     })
   }
@@ -482,7 +490,7 @@ export class Canvas {
 
     wrapper.addEventListener(
       'click',
-      e => {
+      (e) => {
         e.stopPropagation()
         // 查找 node-box 节点 更新当前节点 通知属性面板更新
         const $nodeboxEl = lookupByClassName(e.target, NODE_BOX_CLS)
@@ -491,7 +499,7 @@ export class Canvas {
       }
       // true
     )
-    wrapper.addEventListener('mouseover', e => {
+    wrapper.addEventListener('mouseover', (e) => {
       const $nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
       const node = this.model.findByEl($nodeBoxEl)
       this.handleNodeboxHover(node)
@@ -578,12 +586,10 @@ export class Canvas {
    * 在节点外包一个div，监听 drop 等事件
    */
   _createNodebox(isLayout, isBlock) {
-    const wrapper = $('<div>')
-      .addClass(NODE_BOX_CLS)
-      .style({
-        position: 'relative',
-        boxSizing: 'border-box'
-      }).el
+    const wrapper = $('<div>').addClass(NODE_BOX_CLS).style({
+      position: 'relative',
+      boxSizing: 'border-box'
+    }).el
 
     // 非布局组件直接返回
     if (!isLayout) {
@@ -593,7 +599,7 @@ export class Canvas {
 
     $(wrapper).style({ padding: NODE_BOX_PADDING + 'px', border: '1px solid #dedede' })
 
-    const getComponentMetaData = targetEl => {
+    const getComponentMetaData = (targetEl) => {
       const $nodeboxEl = lookupByClassName(targetEl, NODE_BOX_CLS)
       if (!$nodeboxEl) return []
       const targetComName = $($nodeboxEl).firstElement.getAttribute('data-name')
@@ -622,7 +628,7 @@ export class Canvas {
             if (state.data.getIsMyParent(dropedNode)) {
               // inner to inner(same container)
               // 2-1 操作model
-              const fromIndex = dropedNode.children.findIndex(i => i.$el === state.data.$el)
+              const fromIndex = dropedNode.children.findIndex((i) => i.$el === state.data.$el)
               const toIndex = dropedNode.children.length
               arrayMoveMutable(dropedNode.children, fromIndex, toIndex)
             } else {
@@ -640,7 +646,9 @@ export class Canvas {
             if (state.data.getIsMyParent(dropedNode.parent)) {
               // inner to inner(same container)
               // 2-1 操作model
-              const fromIndex = dropedNode.parent.children.findIndex(i => i.$el === state.data.$el)
+              const fromIndex = dropedNode.parent.children.findIndex(
+                (i) => i.$el === state.data.$el
+              )
               const toIndex = dropedNode.index
               arrayMoveMutable(dropedNode.parent.children, fromIndex, toIndex)
             } else {

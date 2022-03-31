@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VButton from './VButton.vue'
-import VButtonCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import Attr from './attr'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VButtonComponent = {
   name: 'VButton',
@@ -11,12 +11,14 @@ const VButtonComponent = {
     type: 'img',
     value: '/button.png'
   },
-  componentType: componentTypes.VIEW,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.VIEW,
   accept: [],
   $el: null,
   vm: null,
-  attrs: VButtonCfg,
+  attrs: Attr,
   props: null,
+  // setProps() {},  // 设置prop的值
   transformProps(p) {
     p.type = p.__bgcolor
     p.round = p.__btnstyle === 'round'

@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 import { parseProps, genVueInstance } from '../render-util'
 import VColumn from './VColumn.vue'
-import VColumnCfg from './config'
+import Attr from './attr'
 
 const VColumnComponent = {
   name: 'VColumn',
@@ -11,11 +11,12 @@ const VColumnComponent = {
     type: 'img',
     value: '/wrap.png'
   },
-  componentType: componentTypes.LAYOUT,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.LAYOUT,
   accept: ['VButton', 'VText', 'VInput', 'VTag', 'VImage', 'VDivider'],
   $el: null,
   vm: null,
-  attrs: VColumnCfg,
+  attrs: Attr,
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))

@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 import { parseProps, genVueInstance } from '../render-util'
 import VBlock from './VBlock.vue'
-import VBlockCfg from './config'
+import Attr from './attr'
 
 const VBlockComponent = {
   name: 'VBlock',
@@ -13,11 +13,12 @@ const VBlockComponent = {
   },
   // meta: {},
   // lifecycles ?
-  componentType: componentTypes.LAYOUT,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.LAYOUT,
   accept: ['VButton', 'VText', 'VInput', 'VTag', 'VImage', 'VDivider'],
   $el: null,
   vm: null,
-  attrs: VBlockCfg,
+  attrs: Attr,
   props: null,
   emits: [
     // 组件所暴露出来的自定义事件，用于其他组件的监听，所有组件的自定义事件用event模块来管理

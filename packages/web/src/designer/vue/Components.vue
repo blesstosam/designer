@@ -71,9 +71,6 @@
 .component .el-tabs__active-bar {
   background-color: #1989fa;
 }
-</style>
-
-<style>
 .component .el-tabs__header {
   margin: 0;
   padding-left: 8px;
@@ -120,11 +117,11 @@
         v-model="activeTabName"
         @tab-click="handleClick"
       >
-        <el-tab-pane label="组件库" name="component">
+        <el-tab-pane label="组件" name="component">
           <div class="component-wrap">
             <el-collapse v-model="activeCollapseNames">
               <el-collapse-item
-                v-for="(type, _idx) of collapseList"
+                v-for="type, _idx of collapseList"
                 :key="_idx"
                 :title="type.title"
                 :name="type.name"
@@ -132,7 +129,7 @@
                 <div class="content">
                   <div
                     class="com-item"
-                    v-for="(item, index) in comList(type.key)"
+                    v-for="(item, index) in getComList(type.key)"
                     :key="index"
                     :com-name="item.name"
                     :com-title="item.title"
@@ -160,6 +157,7 @@
             </el-collapse>
           </div>
         </el-tab-pane>
+        <el-tab-pane label="区块" name="block">区块</el-tab-pane>
         <el-tab-pane label="模板" name="template">模板</el-tab-pane>
       </el-tabs>
 
@@ -183,7 +181,7 @@ import TreeIcon from './icons/TreeIcon.vue'
 import RecordIcon from './icons/RecordIcon.vue'
 import CodeIcon from './icons/CodeIcon.vue'
 import { componentList, customComList } from '../config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes } from '@davincid/core/src/Components'
 import { EVENT_TYPES } from '@davincid/core/src/Event'
 
 export default {
@@ -206,9 +204,9 @@ export default {
       customComList,
       activeCollapseNames: ['1', '2', '3', '4'],
       collapseList: [
-        { name: '1', title: '布局组件', key: 'layoutCom' },
-        { name: '2', title: '视图组件', key: 'viewCom' },
-        { name: '3', title: '表单组件', key: 'formCom' }
+        { name: '1', title: '布局组件', key: ComponentTypes.LAYOUT },
+        { name: '2', title: '视图组件', key: ComponentTypes.VIEW },
+        { name: '3', title: '表单组件', key: ComponentTypes.FORM }
         // { name: '4', title: '自定义组件', key: 'customComList' }
       ]
     }
@@ -216,20 +214,6 @@ export default {
   computed: {
     activeBarTopVal() {
       return this.activeMenu === 'com' ? '6px' : this.activeMenu === 'tree' ? '42px' : '80px'
-    },
-    comList() {
-      return (key) => {
-        return this[key]
-      }
-    },
-    layoutCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.LAYOUT)
-    },
-    viewCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.VIEW)
-    },
-    formCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.FORM)
     },
     __components__() {
       return this.__designer__.__components__
@@ -241,7 +225,10 @@ export default {
     this.__components__.triggerUIInit()
   },
   methods: {
-    addPlugin(plug) {
+    getComList(type) {
+      return this.componentList.filter((i) => i.componentType === type)
+    },
+    registerPlug(plug) {
       this.menubarPlugins.push(plug)
       return '.' + this.genClsName(plug.name)
     },

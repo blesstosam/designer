@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VTag from './VTag.vue'
-import VTagCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import Attr from './attr'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VTagComponent = {
   name: 'VTag',
@@ -11,8 +11,9 @@ const VTagComponent = {
     type: 'img',
     value: '/tag.png'
   },
-  componentType: componentTypes.VIEW,
-  attrs: VTagCfg,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.VIEW,
+  attrs: Attr,
   isBlock: false,
   $el: null,
   vm: null,

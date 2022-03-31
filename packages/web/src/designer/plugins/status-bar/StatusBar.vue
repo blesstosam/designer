@@ -13,6 +13,7 @@
   <div class="status-bar">
     <span class="item" v-for="(path, index) in pathArr" :key="index">
       <span>{{ path }}</span>
+      <!-- TODO > 改成不同的组件的图标 -->
       <span v-if="index !== pathArr.length - 1"> ></span>
     </span>
   </div>

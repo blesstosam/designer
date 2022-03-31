@@ -1,5 +1,5 @@
 import { ResizeObserver } from '@juggle/resize-observer'
-import { componentTypes } from './Components'
+import { ComponentTypes } from './Components'
 import { DROP_EL_PADDING } from './Canvas'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
@@ -20,6 +20,8 @@ const getBtnsWidth = (isLayout) => (isLayout ? 100 : 75)
 
 const SELECTION_BORDER_STYLE = '1px solid rgb(70, 128, 255)'
 
+// TODO 支持自定义，提供几个核心方法：del, copy, move，有其他需求的操作可以自定义
+// 自定义组件需要 render 一个 UI，然后框架在ui对象上注入一个对象，用于核心api的调用
 export class Selection {
   constructor(desginer) {
     // ----- for debug -----
@@ -37,8 +39,7 @@ export class Selection {
     this.$recMoveBtn = null
     this.$coverEl = null
 
-    this.btnVPos = 'top'
-    this.btnHPos = 'right'
+    this.btnPos = { v: 'top', h: 'right' } // 'bottom' | 'left'
 
     this.initListener()
 
@@ -61,7 +62,7 @@ export class Selection {
   }
 
   get isLayout() {
-    return this.node.componentType === componentTypes.LAYOUT
+    return this.node.componentType === ComponentTypes.LAYOUT
   }
 
   get offset() {
@@ -97,11 +98,9 @@ export class Selection {
     this.observer.disconnect()
   }
 
-  // btnVPos = bottom | top
-  // btnHPos = left | right
   decideBtnPos(top, right) {
-    this.btnVPos = top < this.DISTANCE_TO_TOP ? 'bottom' : 'top'
-    this.btnHPos = right < this.DISTANCE_TO_LEFT + getBtnsWidth(this.isLayout) ? 'left' : 'right'
+    this.btnPos.v = top < this.DISTANCE_TO_TOP ? 'bottom' : 'top'
+    this.btnPos.h = right < this.DISTANCE_TO_LEFT + getBtnsWidth(this.isLayout) ? 'left' : 'right'
   }
 
   create(node) {
@@ -218,8 +217,8 @@ export class Selection {
   _createBtnWrap() {
     const div = (this.$btnWrap = $('<div>').style({
       position: 'absolute',
-      ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnVPos === 'top' ? '-22px' : `${this.offset.height}px`,
+      ...(this.btnPos.h === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
+      top: this.btnPos.v === 'top' ? '-22px' : `${this.offset.height}px`,
       height: '20px',
       width: this.isLayout ? '99px' : '76px',
       lineHeight: '21px',
@@ -233,8 +232,8 @@ export class Selection {
 
   _updateBtnWrap(offset) {
     $(this.$btnWrap).style({
-      ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
+      ...(this.btnPos.h === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
+      top: this.btnPos.v === 'top' ? '-22px' : `${offset.height}px`,
       width: this.isLayout ? '99px' : '76px'
     })
   }
@@ -282,7 +281,7 @@ export class Selection {
       .style({
         width: '14px',
         background: '#1989fa',
-        padding: '2px',
+        padding: '2px'
       }).el
     div.appendChild(img)
     this.$btnWrap.appendChild(div)
@@ -352,12 +351,12 @@ export class Selection {
   }
 
   _getBtnHPos(type) {
-    if (this.btnHPos === 'right') {
+    if (this.btnPos.h === 'right') {
       const map = {
         delete: 0,
         copy: '21px',
         move: this.isLayout ? 21 * 2 + 'px' : 21 * 1 + 'px',
-        title: this.isLayout ? 21 * 3 + 'px' : 21 * 2 +'px'
+        title: this.isLayout ? 21 * 3 + 'px' : 21 * 2 + 'px'
       }
       return { left: null, right: map[type] }
     }

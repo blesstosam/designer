@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { getCurrentViewNodeModel } from '@davincid/core/src/Util'
+import { getCurrentViewNodeModel } from '@davincid/core/src/Help'
 import { parse } from '@davincid/core/src/lib/parse-schema'
 import PropPanel from './prop-panel/Index.vue'
 import StylePanel from './style-panel/Index.vue'
