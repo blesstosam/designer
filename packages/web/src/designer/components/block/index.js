@@ -3,13 +3,14 @@ import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 import { parseProps, genVueInstance } from '../render-util'
 import VBlock from './VBlock.vue'
 import Attr from './attr'
+import RectPng from '../../assets/imgs/rect.png'
 
 const VBlockComponent = {
   name: 'VBlock',
   title: '区块',
   icon: {
     type: 'img',
-    value: '/rect.png'
+    value: RectPng
   },
   // meta: {},
   // lifecycles ?

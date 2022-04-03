@@ -1,4 +1,11 @@
-import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
+import {
+  lookupByClassName,
+  lookupByAttr,
+  lookdownByAttr,
+  lookdownForAttr,
+  getStyle,
+  $
+} from './lib/dom'
 import { Selection } from './Selection'
 import { ComponentTypes } from './Components'
 import { Node } from './Node'
@@ -32,6 +39,7 @@ const NODE_BOX_CLS = 'node-box'
 
 const getSlotName = (el) => el.getAttribute(SLOT_NAME_KEY)
 const getFirstSlotElOfNode = (node) => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
+const getParentFirstSlotElOfNode = (node) => lookupByAttr(node.$el, SLOT_NAME_KEY)
 
 // TODO canvas should extends from DropSource
 export class Canvas {
@@ -138,9 +146,18 @@ export class Canvas {
             }
           }
         }
+
         const com = this.__components__.findComByName(data.name)
-        const newNode = this[InsertTypes.AFTER](com, data.$el, data)
-        mount(data.children, newNode)
+        if (com.componentType === LAYOUT) {
+          const newNode = this[InsertTypes.AFTER](com, data.$el, data)
+          mount(data.children, newNode)
+        } else {
+          // if copy a normal component, append to first parent's slot
+          const $containerEl = getParentFirstSlotElOfNode(data)
+          if ($containerEl) {
+            this[InsertTypes.APPEND](com, $containerEl, data.parent)
+          }
+        }
       }
     })
 
@@ -163,28 +180,28 @@ export class Canvas {
       console.log('wrapper drop...')
       this.removeMarker()
 
-      // canvas容器只有两种情况 prepend&append
+      // canvas only has prepend & append action
       const state = getData()
       if (state.isMove) {
         if (state.data.componentType !== LAYOUT) {
-          // inner to wrap
-          // 1. 包一层wrap
+          // 1. inner to wrap
+          // 1.1 wrap a block
           const blockCom = this.__components__.findComByName('VBlock')
           const wrapNode = this[this.insertType](blockCom, this.$canvasEl, this.model)
-          // 2. 移动dom到新容器
+          // 1.2 move dom to new container element
           wrapNode.$el.children[0].appendChild(state.data.$el)
-          // 3. 操作model
+          // 1.3 update model
           state.data.remove()
           wrapNode[InsertTypes.APPEND](state.data)
         } else {
-          // B. wrap to wrap
-          // 1. 移动dom
+          // 2. wrap to wrap
+          // 2.1 move dom to new container element
           $(this.$canvasEl)[this.insertType](state.data.$el)
-          // 2. 操作model
+          // 2. update model
           const fromIndex = this.model.children.findIndex((i) => i.$el === state.data.$el)
           const toIndex = this.insertType === InsertTypes.APPEND ? this.model.children.length : 0
           arrayMoveMutable(this.model.children, fromIndex, toIndex)
-          // 3. 更新selection位置
+          // 2.2 update selection position
           this.selection && this.selection.update()
         }
       } else {
@@ -562,7 +579,7 @@ export class Canvas {
     if (this.selection) {
       this.selection.update(node)
     } else {
-      this.selection = new Selection(this.__designer__)
+      this.selection = new Selection(this.config, this.__designer__)
       this.selection.create(node)
     }
 

@@ -1,6 +1,7 @@
 import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import Attrs from './attr'
 import { h } from 'vue'
+import VueSvg from '../../assets/imgs/vue.svg'
 
 // TODO 接入组件库
 // const lib = {
@@ -25,8 +26,8 @@ const VVueComponent = {
   name: 'VVueComponent',
   title: 'VueDemo',
   icon: {
-    type: 'img',
-    value: '/rect.png'
+    type: 'svg',
+    value: VueSvg
   },
   // meta: {},
   // lifecycles ?

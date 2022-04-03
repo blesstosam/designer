@@ -3,13 +3,14 @@ import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VButton from './VButton.vue'
 import Attr from './attr'
 import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
+import ButtonPng from '../../assets/imgs/button.png'
 
 const VButtonComponent = {
   name: 'VButton',
   title: '按钮',
   icon: {
     type: 'img',
-    value: '/button.png'
+    value: ButtonPng
   },
   materialType: MaterialTypes.Component,
   componentType: ComponentTypes.VIEW,

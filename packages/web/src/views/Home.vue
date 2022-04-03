@@ -100,6 +100,7 @@ import Components from '../designer/vue/Components.vue'
 import ComponentTree from '../designer/vue/ComponentTree.vue'
 import ToolBar from '../designer/vue/ToolBar.vue'
 import AttrPanel from '../designer/vue/AttrPanel.vue'
+import Selection from '../designer/vue/Selection.vue'
 import { registerCom } from '../components/registerCom'
 import { Designer } from '@davincid/core/src/index'
 import { PLUGIN_TYPES } from '@davincid/core/src/Plugin'
@@ -128,6 +129,11 @@ export default {
       registerCom(app)
       return app.mount('.component-tree-wrap')
     }
+    const renderSelection = ({ el, props }) => {
+      const app = createApp(Selection, props)
+      app.use(ElementPlus)
+      return app.mount(el)
+    }
 
     this.designer = new Designer({
       canvasWrap: '.canvas-wrap',
@@ -135,6 +141,7 @@ export default {
       renderComponentTree,
       renderToolbar,
       renderAttr,
+      renderSelection,
       plugins: [LoggerPlugin, StatusBar],
       utils: [{
         name: 'createApp',

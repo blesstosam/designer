@@ -3,13 +3,14 @@ import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
 import { parseProps, genVueInstance } from '../render-util'
 import VColumn from './VColumn.vue'
 import Attr from './attr'
+import ColumnsSvg from '../../assets/imgs/columns.svg'
 
 const VColumnComponent = {
   name: 'VColumn',
   title: '分栏',
   icon: {
-    type: 'img',
-    value: '/wrap.png'
+    type: 'svg', // img|svg|inline-svg
+    value: ColumnsSvg
   },
   materialType: MaterialTypes.Component,
   componentType: ComponentTypes.LAYOUT,

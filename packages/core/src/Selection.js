@@ -16,17 +16,22 @@ const {
   SELECTION_DEACTIVED
 } = EVENT_TYPES
 
-const getBtnsWidth = (isLayout) => (isLayout ? 100 : 75)
-
+const BTNS_WIDTH = 100
 const SELECTION_BORDER_STYLE = '1px solid rgb(70, 128, 255)'
 
+const BTN_TYPES = {
+  DEL: 'delete',
+  COPY: 'copy',
+  MOVE: 'move',
+  TITLE: 'title'
+}
+
 // TODO 支持自定义，提供几个核心方法：del, copy, move，有其他需求的操作可以自定义
-// 自定义组件需要 render 一个 UI，然后框架在ui对象上注入一个对象，用于核心api的调用
+// 图片从外部传入
 export class Selection {
-  constructor(desginer) {
-    // ----- for debug -----
-    window.selection = this
+  constructor(config, desginer) {
     this.__designer__ = desginer
+    this.config = config || {}
     this.DISTANCE_TO_TOP = this.__canvas__.y + DROP_EL_PADDING + 25 // 距离顶部距离,25为按钮的高度
     this.DISTANCE_TO_LEFT = this.__canvas__.x + DROP_EL_PADDING // 距离左边距离
     this.node = null
@@ -76,6 +81,22 @@ export class Selection {
     }
   }
 
+  get delBtnHPosVal() {
+    return this._getBtnHPosVal(BTN_TYPES.DEL)
+  }
+
+  get copyBtnHPosVal() {
+    return this._getBtnHPosVal(BTN_TYPES.COPY)
+  }
+
+  get moveBtnHPosVal() {
+    return this._getBtnHPosVal(BTN_TYPES.MOVE)
+  }
+
+  get titleBtnHPosVal() {
+    return this._getBtnHPosVal(BTN_TYPES.TITLE)
+  }
+
   initListener() {
     this._cb = () => {
       if (this.$recEl && this.node) this.update()
@@ -98,22 +119,22 @@ export class Selection {
     this.observer.disconnect()
   }
 
-  decideBtnPos(top, right) {
+  _getBtnPos(top, right) {
     this.btnPos.v = top < this.DISTANCE_TO_TOP ? 'bottom' : 'top'
-    this.btnPos.h = right < this.DISTANCE_TO_LEFT + getBtnsWidth(this.isLayout) ? 'left' : 'right'
+    this.btnPos.h = right < this.DISTANCE_TO_LEFT + BTNS_WIDTH ? 'left' : 'right'
   }
 
   create(node) {
     this.node = node
     const offset = this.offset
-    this.decideBtnPos(offset.top, offset.width + offset.left)
+    this._getBtnPos(offset.top, offset.width + offset.left)
     this._createSelection()
     if (!node.isRoot) {
       this._createBtnWrap()
       this._createTitle()
       this._createBtn('delete')
       this._createBtn('move')
-      this.isLayout && this._createBtn('copy')
+      this._createBtn('copy')
     }
     this.observe()
     this.__designer__.emit(SELECTION_ACTIVED, node)
@@ -128,30 +149,21 @@ export class Selection {
     }
 
     const offset = this.offset
-    this.decideBtnPos(offset.top, offset.width + offset.left)
-    this._updateSelection(offset)
+    this._getBtnPos(offset.top, offset.width + offset.left)
+    this._updateSelection()
 
     if (this.$btnWrap) {
-      this._updateBtnWrap(offset)
-      this._updateTitle(offset)
+      this._updateBtnWrap()
+      this._updateTitle()
       this._updateBtn('delete', offset)
       this._updateBtn('move', offset)
-      if (this.isLayout) {
-        if (this.$recCopyBtn) {
-          this._updateBtn('copy', offset)
-          this._showBtn('copy')
-        } else {
-          this._createBtn('copy', offset)
-        }
-      } else {
-        this._hideBtn('copy')
-      }
+      this._updateBtn('copy', offset)
     } else {
       this._createBtnWrap()
       this._createTitle()
       this._createBtn('delete')
       this._createBtn('move')
-      this.isLayout && this._createBtn('copy')
+      this._createBtn('copy')
     }
 
     this.__designer__.emit(SELECTION_UPDATED, node)
@@ -165,6 +177,25 @@ export class Selection {
 
   _createSelection() {
     const { width, height } = this.offset
+    // const renderUI = this.config.renderSelection
+    // this.$recEl = document.createElement('div')
+    // this.node.$el.appendChild(this.$recEl)
+    // this.uiInstance = renderUI({
+    //   el: this.$recEl,
+    //   props: {
+    //     node: this.node,
+    //     btnPos: this.btnPos,
+    //     isLayout: this.isLayout,
+    //     offset: this.offset,
+    //     delBtnHPosVal: this.delBtnHPosVal,
+    //     copyBtnHPosVal: this.copyBtnHPosVal,
+    //     moveBtnHPosVal: this.moveBtnHPosVal,
+    //     titleBtnHPosVal: this.titleBtnHPosVal
+    //   }
+    // })
+    // this.uiInstance.__designer__ = this.__designer__
+    // return this.$recEl
+
     const div = (this.$recEl = $('<div>')
       .style({
         width: width + 'px',
@@ -182,8 +213,8 @@ export class Selection {
     return div
   }
 
-  _updateSelection(offset) {
-    const { width, height } = offset
+  _updateSelection() {
+    const { width, height } = this.offset
     this.node.$el.appendChild(this.$recEl)
     $(this.$recEl).style({
       width: width + 'px',
@@ -220,7 +251,7 @@ export class Selection {
       ...(this.btnPos.h === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
       top: this.btnPos.v === 'top' ? '-22px' : `${this.offset.height}px`,
       height: '20px',
-      width: this.isLayout ? '99px' : '76px',
+      width: BTNS_WIDTH + 'px',
       lineHeight: '21px',
       pointerEvents: 'all'
     }).el)
@@ -230,11 +261,11 @@ export class Selection {
     return div
   }
 
-  _updateBtnWrap(offset) {
+  _updateBtnWrap() {
+    const { height } = this.offset
     $(this.$btnWrap).style({
       ...(this.btnPos.h === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnPos.v === 'top' ? '-22px' : `${offset.height}px`,
-      width: this.isLayout ? '99px' : '76px'
+      top: this.btnPos.v === 'top' ? '-22px' : `${height}px`
     })
   }
 
@@ -242,7 +273,7 @@ export class Selection {
     const div = (this.$recTitle = $('<div>')
       .style({
         position: 'absolute',
-        ...this._getBtnHPos('title'),
+        ...this._getBtnHPosVal('title'),
         top: 0,
         cursor: 'pointer',
         background: '#1989fa',
@@ -263,13 +294,13 @@ export class Selection {
   _updateTitle() {
     $(this.$recTitle)
       .text(this.node.title)
-      .style({ ...this._getBtnHPos('title') })
+      .style({ ...this._getBtnHPosVal('title') })
   }
 
   _createBtn(type) {
     const div = $('<div>').style({
       position: 'absolute',
-      ...this._getBtnHPos(type),
+      ...this._getBtnHPosVal(type),
       top: 0,
       cursor: type === 'move' ? 'move' : 'pointer'
     }).el
@@ -331,7 +362,7 @@ export class Selection {
       copy: this.$recCopyBtn,
       move: this.$recMoveBtn
     }
-    $(map[type]).style({ ...this._getBtnHPos(type) })
+    $(map[type]).style({ ...this._getBtnHPosVal(type) })
   }
 
   _hideBtn(type) {
@@ -350,20 +381,20 @@ export class Selection {
     }
   }
 
-  _getBtnHPos(type) {
+  _getBtnHPosVal(type) {
     if (this.btnPos.h === 'right') {
       const map = {
         delete: 0,
-        copy: '21px',
-        move: this.isLayout ? 21 * 2 + 'px' : 21 * 1 + 'px',
-        title: this.isLayout ? 21 * 3 + 'px' : 21 * 2 + 'px'
+        copy: 21 + 'px',
+        move: 21 * 2 + 'px',
+        title: 21 * 3 + 'px'
       }
       return { left: null, right: map[type] }
     }
     const map = {
-      delete: this.isLayout ? '77px' : '53px',
-      copy: '53px',
-      move: '33px',
+      delete: 21 * 2 + 33 + 'px',
+      copy: 21 + 33 + 'px',
+      move: 33 + 'px',
       title: 0
     }
     return { left: map[type], right: null }

@@ -3,13 +3,14 @@ import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VInput from './VInput.vue'
 import Attr from './attr'
 import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
+import InputPng from '../../assets/imgs/input.png'
 
 const VInputComponent = {
   name: 'VInput',
   title: '输入框',
   icon: {
     type: 'img',
-    value: '/input.png'
+    value: InputPng
   },
   materialType: MaterialTypes.Component,
   componentType: ComponentTypes.FORM,

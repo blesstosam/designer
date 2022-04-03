@@ -121,7 +121,7 @@
           <div class="component-wrap">
             <el-collapse v-model="activeCollapseNames">
               <el-collapse-item
-                v-for="type, _idx of collapseList"
+                v-for="(type, _idx) of collapseList"
                 :key="_idx"
                 :title="type.title"
                 :name="type.name"
@@ -134,7 +134,26 @@
                     :com-name="item.name"
                     :com-title="item.title"
                   >
-                    <img width="26" height="26" draggable="false" :src="item.icon.value" alt="" />
+                    <img
+                      v-if="item.icon.type === 'svg' || item.icon.type === 'img'"
+                      width="26"
+                      height="26"
+                      draggable="false"
+                      :src="item.icon.value"
+                      alt=""
+                    />
+                    <svg
+                      v-else-if="item.icon.type === 'inline-svg'"
+                      t="1648711923539"
+                      class="icon"
+                      viewBox="0 0 1024 1024"
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      p-id="4019"
+                      width="26"
+                      height="26"
+                      v-html="item.icon.value"
+                    ></svg>
                     <div style="margin-top: 2px">{{ item.title }}</div>
                   </div>
                 </div>
@@ -157,7 +176,7 @@
             </el-collapse>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="区块" name="block">区块</el-tab-pane>
+        <el-tab-pane label="区块" name="block">区块 </el-tab-pane>
         <el-tab-pane label="模板" name="template">模板</el-tab-pane>
       </el-tabs>
 
