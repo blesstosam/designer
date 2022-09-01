@@ -7,7 +7,7 @@
   font-size: 12px;
 }
 .logo img {
-  height: 33px;
+  height: 40px;
 }
 .toolbar i {
   font-size: 20px;
