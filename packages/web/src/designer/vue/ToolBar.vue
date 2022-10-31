@@ -33,7 +33,7 @@
 <template>
   <div class="toolbar">
     <div class="logo">
-      <img src="/logo.png" alt="logo" />
+      <img :src="Logo" alt="logo" />
     </div>
     <div class="toolbar-content">
       <span class="tool-item" :class="{ disabled: !prevStatus }" @click="undo">
@@ -67,6 +67,7 @@
 <script>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import Logo from '../../assets/logo.png'
 
 export default {
   name: 'ToolBar',
@@ -88,6 +89,7 @@ export default {
     }
 
     return {
+      Logo,
       prevStatus,
       nextStatus,
       activePrev,

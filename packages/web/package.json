@@ -10,6 +10,7 @@
   "dependencies": {
     "@davincid/core": "file:../core",
     "@juggle/resize-observer": "^3.3.1",
+    "@vitejs/plugin-legacy": "^1.8.2",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.55",
     "lodash.clonedeep": "^4.5.0",
@@ -18,12 +19,14 @@
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.1.0",
+    "@vitejs/plugin-vue": "^2.3.4",
     "lint-staged": "^9.5.0",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
-    "vite": "^2.7.13",
-    "vite-plugin-monaco-editor": "^1.0.10"
+    "terser": "^5.15.1",
+    "vite": "^2.9.15",
+    "vite-plugin-monaco-editor": "^1.0.10",
+    "vite-plugin-qiankun": "^1.0.15"
   },
   "eslintConfig": {
     "root": true,
