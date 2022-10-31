@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@davincid/core": "^1.0.0",
+    "@davincid/core": "file:../core",
     "@juggle/resize-observer": "^3.3.1",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.55",
