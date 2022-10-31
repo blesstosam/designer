@@ -36,7 +36,6 @@ export class LoggerPlugin {
     this.uiInstance = app.mount(document.querySelector(wrap))
 
     this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], d => {
-      console.log('logger...', d)
       const { type, data } = d
       let title = ''
       if ([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D].includes(type)) {

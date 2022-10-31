@@ -25,7 +25,7 @@ export function parseProps(attrs) {
       obj[i.id] = i.value
     }
   })
-  console.log(allCfgs, obj)
+  // console.log(allCfgs, obj)
   return obj
 }
 

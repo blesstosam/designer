@@ -19,7 +19,7 @@ export class Plugin {
     this.plugins = new Map()
   }
 
-  add(Plugin) {
+  register(Plugin) {
     if (typeof Plugin !== 'function') {
       throw new Error('[designer] 插件请传递一个构造函数或类')
     }

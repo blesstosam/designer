@@ -86,9 +86,7 @@ import TreeIcon from './icons/TreeIcon.vue'
 export default {
   name: 'ComponentTree',
   components: { TreeIcon },
-  props: {
-    tree: Array
-  },
+  props: ['tree'],
   created() {
     this.innerTree = this.tree
   },
@@ -139,13 +137,14 @@ export default {
     }
   },
   methods: {
-    // 必须实现的api
+    /* 必须实现的 api */
     setCurrentKey(key) {
       this.$refs.tree.setCurrentKey(key)
     },
     setData(d) {
       this.innerTree = d
     },
+    /* core 需要调用该方法来更新数据 */
 
     handleNodeClick(d) {
       this.__componentTree__.selectNode(d)

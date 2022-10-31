@@ -1,21 +1,23 @@
 import { reactive } from 'vue'
 import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VInput from './VInput.vue'
-import VInputCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import Attr from './attr'
+import { ComponentTypes, MaterialTypes } from '@davincid/core/src/Components'
+import InputPng from '../../assets/imgs/input.png'
 
 const VInputComponent = {
   name: 'VInput',
   title: '输入框',
   icon: {
     type: 'img',
-    value: '/input.png'
+    value: InputPng
   },
-  componentType: componentTypes.FORM,
+  materialType: MaterialTypes.Component,
+  componentType: ComponentTypes.FORM,
   accept: [],
   $el: null,
   vm: null,
-  attrs: VInputCfg,
+  attrs: Attr,
   props: null,
   render() {
     this.props = reactive(parseProps(this.attrs))

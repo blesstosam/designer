@@ -96,7 +96,7 @@ import TextDecoration from '../prop-panel/TextDecoration.vue'
 import TextStyle from '../prop-panel/TextStyle.vue'
 import EventEditor from './EventEditor.vue'
 import { FormTypes } from '@davincid/core/src/AttrFormTypes'
-import { getCurrentViewNodeModel } from '@davincid/core/src/Util'
+import { getCurrentViewNodeModel } from '@davincid/core/src/Help'
 import { EVENT_TYPES } from '@davincid/core/src/Event'
 
 export default {

@@ -17,6 +17,23 @@ export function lookupByClassName(dom, classname) {
  * @param {string} attrval? 如果有值进行比对 如果没有值只需要找到该属性即可
  * @returns {Element}
  */
+ export function lookupByAttr(dom, attrname, attrval) {
+  if (!dom || dom.nodeType !== 1) return
+  if (attrval) {
+    if (dom.getAttribute(attrname) === attrval) return dom
+  } else {
+    if (dom.getAttribute(attrname) != null) return dom
+  }
+  return lookupByAttr(dom.parentNode, attrname, attrval)
+}
+
+/**
+ * 通过 attr 向下查找最近的一个 dom 节点
+ * @param {Element} dom
+ * @param {string} attrname
+ * @param {string} attrval? 如果有值进行比对 如果没有值只需要找到该属性即可
+ * @returns {Element}
+ */
 export function lookdownByAttr(dom, attrname, attrval) {
   if (!dom || dom.nodeType !== 1) return
   if (attrval) {

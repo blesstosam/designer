@@ -9,11 +9,30 @@ import { EVENT_TYPES } from './Event'
 
 const COMPONENT_EL_CLS = 'component-item'
 
-// 从功能维度划分
-export const componentTypes = {
-  LAYOUT: 'layout',  // 布局组件
+// 物料的几种形态
+// 组件：最小单元
+// 组件库：比如element-plus这种组件库，里面是一组组件库
+// 区块：一系列组件的组合
+// 模板：一系列区块的组合
+export const MaterialTypes = {
+  Component: 'component',
+  ComponentLib: 'component-lib',
+  Block: 'block',
+  Template: 'template'
+}
+
+// 组件从功能维度划分
+export const ComponentTypes = {
+  LAYOUT: 'layout', // 布局组件
   VIEW: 'view', // 视图组件
   FORM: 'form' // 表单组件
+}
+
+// 组件使用什么框架写的
+export const FrameWorkTypes = {
+  Vue: 'vue',
+  Vue3: 'vue3',
+  React: 'react'
 }
 
 /**
@@ -35,6 +54,10 @@ export class Components {
 
   get __componentTree__() {
     return this.__designer__.__componentTree__
+  }
+
+  get __util__() {
+    return this.__designer__.__util__
   }
 
   get registeredComponents() {
@@ -61,9 +84,11 @@ export class Components {
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START)
     })
 
-    this.__dragon__.onDragEnd(target, () => { console.log('drag end...') })
+    this.__dragon__.onDragEnd(target, () => {
+      console.log('drag end...')
+    })
   }
- 
+
   /**
    * 同步注册左侧组件
    * 主要是给组件dom绑定一些属性和事件
@@ -79,6 +104,15 @@ export class Components {
       .addClass(COMPONENT_EL_CLS)
 
     this._bindEvent(comEl)
+    if (com.materialType === MaterialTypes.Component) {
+      if (com.framework === FrameWorkTypes.Vue3) {
+        const realCom = this.vue3Util(com)
+        this._hasRegistered.push(realCom)
+        return realCom
+      }
+    } else {
+      // handle block/template
+    }
     this._hasRegistered.push(com)
     return com
   }
@@ -103,7 +137,7 @@ export class Components {
             {
               [`${name}_${version}`]: url
             },
-            mod => {
+            (mod) => {
               const realCom = {
                 name,
                 title,
@@ -130,7 +164,7 @@ export class Components {
                 com: realCom
               })
             },
-            err => {
+            (err) => {
               console.error('fetch custom plugin errror: ', err)
               reject(err)
             }
@@ -142,8 +176,39 @@ export class Components {
     return Promise.resolve(Promise.all(pArr))
   }
 
+  // 将一个纯 Vue 组件对象转化为一个设计器组件
+  vue2Util(com) {
+    const Vue2 = this.__util__.get('Vue2')
+    if (!Vue2) {
+      throw new Error('Util.Vue2 is not found')
+    }
+    return {
+      ...com,
+      render() {
+        const vm = new Vue2(com.component).$mount(document.createElement('div'))
+        return vm.$el
+      }
+    }
+  }
+
+  vue3Util(com) {
+    const createApp = this.__util__.get('createApp')
+    if (!createApp) {
+      throw new Error('Util.createApp is not found')
+    }
+    return {
+      ...com,
+      render() {
+        const vm = createApp(com.component).mount(document.createElement('div'))
+        return vm.$el
+      }
+    }
+  }
+
+  reactUtil() {}
+
   findComByName(name) {
-    return this._hasRegistered.find(c => c.name === name)
+    return this._hasRegistered.find((c) => c.name === name)
   }
 
   renderComponent() {

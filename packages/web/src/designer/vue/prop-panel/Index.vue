@@ -191,7 +191,7 @@ import RowAlign from './RowAlign.vue'
 import VerticalAlign from './VerticalAlign.vue'
 import ColorPicker from './ColorPicker.vue'
 import ColumnSetting from './ColumnSetting.vue'
-import { getCurrentViewNodeModel } from '@davincid/core/src/Util.js'
+import { getCurrentViewNodeModel } from '@davincid/core/src/Help'
 import { FormTypes } from '@davincid/core/src/AttrFormTypes'
 import { EVENT_TYPES } from '@davincid/core/src/Event.js'
 
