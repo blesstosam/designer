@@ -19,7 +19,7 @@
 
     .left {
       width: 270px;
-      flex: none;
+      flex-shrink: 0;
       border-right: 1px solid #eee;
       height: calc(100vh - 57px);
 
@@ -32,7 +32,7 @@
       flex: 1;
 
       .canvas-wrap {
-        height: calc(100vh - 85px);
+        height: calc(100vh - 70px);
         overflow-y: auto;
         background: #ddd;
       }
@@ -47,11 +47,18 @@
     }
 
     .right {
-      width: 300px;
-      padding: 6px;
+      width: 320px;
+      padding: 6px 0;
       border-left: 1px solid #eee;
       height: calc(100vh - 67px);
       overflow-y: auto;
+      flex-shrink: 0;
+
+      .status-bar-wrap {
+        //border-bottom: 1px solid #dedede;
+        font-size: 13px;
+        margin-top: -6px;
+      }
 
       &::-webkit-scrollbar {
         width: 8px;
@@ -81,10 +88,10 @@
 
       <div class="center">
         <div class="canvas-wrap"></div>
-        <div class="status-bar-wrap"></div>
       </div>
 
       <div class="right">
+        <div class="status-bar-wrap"></div>
         <div id="attr"></div>
       </div>
     </div>

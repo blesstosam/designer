@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- <label>{{label}}222</label> -->
-    <el-input style="display: inline-block" readonly v-bind="$attrs" />
+    <el-input readonly v-bind="$attrs" />
   </div>
 </template>
 

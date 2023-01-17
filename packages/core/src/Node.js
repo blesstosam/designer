@@ -10,10 +10,11 @@ export const VERSION_NO = '1.0.0'
 
 export class Node {
   constructor(node, parent) {
-    this.name = node.name
+    this.componentName = node.componentName
     this.title = node.title
     this.unique = node.unique || randomString()
     this.icon = node.icon
+    node.framework && (this.framework = node.framework)
     node.componentType && (this.componentType = node.componentType)
     this.props = node.props
     this.attrs = node.attrs
@@ -26,8 +27,6 @@ export class Node {
     this.children = []
     parent && (this.parent = parent)
 
-    this.accept = node.accept
-    this.isBlock = !!node.isBlock
     node.slotName && (this.slotName = node.slotName)
     node.vm && (this.vm = node.vm)
 
@@ -39,7 +38,6 @@ export class Node {
     node.category && (this.category = node.category)
 
     // function
-    this.render = node.render
     node.transformProps && (this.transformProps = node.transformProps)
 
     // store to nodeMap

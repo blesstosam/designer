@@ -144,8 +144,8 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: 'medium',
-                      enum: ['large', 'medium', 'small'],
+                      default: 'default',
+                      enum: ['large', 'default', 'small'],
                       enumLabel: ['大', '标准', '小']
                     }
                   }

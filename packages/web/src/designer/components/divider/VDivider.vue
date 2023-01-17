@@ -1,5 +1,5 @@
 <template>
-  <el-divider v-bind="$attrs">{{ content }}</el-divider>
+  <el-divider v-bind="$attrs"></el-divider>
 </template>
 <script>
 import { ElDivider } from 'element-plus'

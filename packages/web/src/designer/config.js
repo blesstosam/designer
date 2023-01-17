@@ -25,7 +25,7 @@ export const componentList = [
 
 export const customComList = [
   {
-    name: '123',
+    componentName: '123',
     title: '插件1',
     version: '0.0.1',
     icon: {
@@ -36,7 +36,7 @@ export const customComList = [
     preview: []
   },
   {
-    name: '345',
+    componentName: '345',
     title: '插件2',
     version: '0.0.1',
     icon: {

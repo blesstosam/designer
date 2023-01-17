@@ -3,6 +3,7 @@ import { ElTooltip } from 'element-plus'
 import LoggerPluginVue from './LoggerPlugin.vue'
 import { EVENT_TYPES } from '@davincid/core/src/Event'
 import { PLUGIN_TYPES } from '@davincid/core/src/Plugin'
+import { InsertTypes } from '@davincid/core/src/Util'
 
 const {
   CANVAS_ACTIONS_APPEND: C_A_A,
@@ -35,8 +36,8 @@ export class LoggerPlugin {
 
     this.uiInstance = app.mount(document.querySelector(wrap))
 
-    this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], d => {
-      console.log('logger...', d)
+    this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], (d) => {
+      // console.log('logger...', d)
       const { type, data } = d
       let title = ''
       if ([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D].includes(type)) {
@@ -56,11 +57,7 @@ export class LoggerPlugin {
       }
       props.logs.unshift({
         title,
-        timestamp: new Date()
-          .toISOString()
-          .split('.')
-          .shift()
-          .replace('T', ' ')
+        timestamp: new Date().toISOString().split('.').shift().replace('T', ' ')
       })
     })
   }

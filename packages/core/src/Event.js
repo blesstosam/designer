@@ -67,7 +67,7 @@ export class Event {
   _offOne(type, cb) {
     const origin = this.subs.get(type)
     if (cb != undefined) {
-      const index = origin.findIndex(i => i === cb)
+      const index = origin.findIndex((i) => i === cb)
       if (index > -1) {
         origin.splice(index, 1)
       }
@@ -112,10 +112,15 @@ export const EVENT_TYPES = {
   CANVAS_INITED: 'canvas.inited',
   CANVAS_LAYOUTED: 'canvas.layouted',
   CANVAS_DESTROYED: 'canvas.destroyed',
+  BEFORE_CANVAS_ACTIONS_APPEND: 'before.canvas.actions.append',
   CANVAS_ACTIONS_APPEND: 'canvas.actions.append',
+  BEFORE_CANVAS_ACTIONS_PREPEND: 'before.canvas.actions.prepend',
   CANVAS_ACTIONS_PREPEND: 'canvas.actions.prepend',
+  BEFORE_CANVAS_ACTIONS_AFTER: 'before.canvas.actions.after',
   CANVAS_ACTIONS_AFTER: 'canvas.actions.after',
+  BEFORE_CANVAS_ACTIONS_BEFORE: 'before.canvas.actions.before',
   CANVAS_ACTIONS_BEFORE: 'canvas.actions.before',
+  BEFORE_CANVAS_ACTIONS_DELETE: 'before.canvas.actions.delete',
   CANVAS_ACTIONS_DELETE: 'canvas.actions.delete',
   CANVAS_ACTIONS_CLEAR: 'canvas.actions.clear',
   CANVAS_ACTIONS_MOVE_START: 'canvas.actions.move.start',
@@ -159,5 +164,5 @@ export const EVENT_TYPES = {
 
   PLUG_INITED: 'plug.inited',
   PLUG_ADDED: 'plug.added',
-  PLUG_DESTROYED: 'plug.destroyed',
+  PLUG_DESTROYED: 'plug.destroyed'
 }

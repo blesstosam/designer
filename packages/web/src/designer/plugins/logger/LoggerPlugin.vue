@@ -5,7 +5,7 @@
 }
 .logger-plugin-wrap .header {
   border-bottom: 1px solid #dedede;
-  padding: 10px 8px;
+  padding: 6px 0;
   margin-bottom: 12px;
 }
 .logger-plugin-wrap .header span {
@@ -56,7 +56,6 @@
 <template>
   <div class="logger-plugin-wrap">
     <div class="header">
-      <record-icon fill="#333" :width="18" />
       <span>日志</span>
     </div>
 

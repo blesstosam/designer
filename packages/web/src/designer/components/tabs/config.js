@@ -129,10 +129,10 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: { label: '标准', value: 'medium' },
+                      default: { label: '标准', value: 'default' },
                       enum: [
                         { label: '大', value: 'large' },
-                        { label: '标准', value: 'medium' },
+                        { label: '标准', value: 'default' },
                         { label: '小', value: 'small' }
                       ]
                     }

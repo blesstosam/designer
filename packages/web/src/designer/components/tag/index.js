@@ -1,11 +1,9 @@
-import { reactive } from 'vue'
-import { parseProps, changeProps, genVueInstance } from '../render-util'
 import VTag from './VTag.vue'
 import VTagCfg from './config'
 import { componentTypes } from '@davincid/core/src/Components'
 
 const VTagComponent = {
-  name: 'VTag',
+  componentName: 'VTag',
   title: '标签',
   icon: {
     type: 'img',
@@ -13,15 +11,8 @@ const VTagComponent = {
   },
   componentType: componentTypes.VIEW,
   attrs: VTagCfg,
-  isBlock: false,
   $el: null,
-  vm: null,
-  props: null,
-  accept: [],
-  render() {
-    this.props = reactive(parseProps(this.attrs))
-    const vm = genVueInstance(VTag, this.props)
-    return vm.$el
-  }
+  framework: 'Vue',
+  component: VTag
 }
 export { VTagComponent, VTag }

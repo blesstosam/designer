@@ -1,12 +1,14 @@
 import { createApp } from 'vue'
 import { createWebHistory, createRouter } from 'vue-router'
 import ElementPlus from 'element-plus'
-import 'element-plus/lib/theme-chalk/index.css'
+import 'element-plus/dist/index.css'
 import App from './App.vue'
 import { registerCom } from './components/registerCom'
 import { routes } from './router'
 
 import { renderWithQiankun, qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
+
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 let router = null
 let app = null
@@ -26,6 +28,9 @@ function render(props = {}) {
     .use(ElementPlus)
     .mount(container ? container.querySelector('#app') : '#app')
   registerCom(app)
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
 }
 
 renderWithQiankun({

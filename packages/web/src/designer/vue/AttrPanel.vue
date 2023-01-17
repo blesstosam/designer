@@ -28,13 +28,13 @@
 <template>
   <div class="attr-wrap">
     <div v-if="attrs.title">
-      <div class="desc">
+      <!-- <div class="desc">
         <div class="title">
-          <img :src="icon.value" />
+          <img :src="icon?.value" />
           <span> {{ formList.title }} </span>
         </div>
         <div>{{ formList.description }}</div>
-      </div>
+      </div> -->
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="属性" name="prop">

@@ -57,7 +57,6 @@
 }
 </style>
 
-
 <template>
   <div class="border">
     <div class="top">
@@ -158,6 +157,7 @@ export default {
       this.borderType = valArr[1]
       this.color = valArr[2]
       this.createdFlag = true
+      this.inited = true
     }
   },
   computed: {
@@ -184,6 +184,7 @@ export default {
   },
   methods: {
     handleEmit() {
+      if (this.inited) return
       if (this.createdFlag && this.val != null && this.color && this.borderType) {
         this.$emit('update:modelValue', this.finalVal)
         this.$emit('change', this.finalVal)

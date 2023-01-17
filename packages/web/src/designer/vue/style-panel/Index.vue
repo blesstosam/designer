@@ -50,7 +50,7 @@
           <div v-else-if="_item.formType === FormTypes.Select" class="dis-flex">
             <span>{{ _item.title }}</span>
             <el-select
-              size="medium"
+              size="default"
               :placeholder="_item.description || '请选择'"
               v-model="_item.value"
               @change="handleChange(_item, $event)"
@@ -156,8 +156,9 @@ export default {
       this.handleChange(item, valArr[1])
     },
     handleChange(item, val) {
+      debugger
       const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
+      this.canvas.patch(currentNode, item, val)
       this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {
         type: EVENT_TYPES.ATTRPANEL_SET_ATTR,
         data: { item, val, currentNode }

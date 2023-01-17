@@ -70,9 +70,9 @@ export default {
                     },
                     value: {
                       type: 'string',
-                      default: 'medium',
-                      enum: ['medium', 'small', 'mni'],
-                      enumLabel: ['medium', 'small', 'mni']
+                      default: 'default',
+                      enum: ['default', 'small', 'mni'],
+                      enumLabel: ['default', 'small', 'mni']
                     }
                   }
                 },
@@ -82,7 +82,7 @@ export default {
                   title: '主题',
                   properties: {
                     id: {
-                      const: 'size'
+                      const: 'effect'
                     },
                     formType: {
                       const: 'select'

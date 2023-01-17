@@ -1,11 +1,9 @@
-import { reactive } from 'vue'
-import { parseProps, genVueInstance } from '../render-util'
 import VImage from './VImage.vue'
 import VImageCfg from './config'
 import { componentTypes } from '@davincid/core/src/Components'
 
 const VImageComponent = {
-  name: 'VImage',
+  componentName: 'VImage',
   title: '图片',
   icon: {
     type: 'img',
@@ -13,15 +11,8 @@ const VImageComponent = {
   },
   componentType: componentTypes.VIEW,
   attrs: VImageCfg,
-  isBlock: false,
   $el: null,
-  vm: null,
-  props: null,
-  accept: [],
-  render() {
-    this.props = reactive(parseProps(this.attrs))
-    const vm = genVueInstance(VImage, this.props)
-    return vm.$el
-  }
+  framework: 'Vue',
+  component: VImage,
 }
 export { VImageComponent, VImage }

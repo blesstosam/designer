@@ -1,5 +1,3 @@
-<style></style>
-
 <script>
 import { VButton } from '../designer/components/button/index'
 import { VText } from '../designer/components/text/index'
@@ -9,6 +7,7 @@ import { VColumn } from '../designer/components/column/index'
 import { VTag } from '../designer/components/tag/index'
 import { VImage } from '../designer/components/image/index'
 import { VDivider } from '../designer/components/divider/index'
+import { VTabs } from '../designer/components/tabs/index'
 import { h, resolveComponent } from 'vue'
 import Custom from './Custom.vue'
 
@@ -23,6 +22,7 @@ export default {
     VTag,
     VImage,
     VDivider,
+    VTabs,
     Custom
   },
   props: {
@@ -34,15 +34,13 @@ export default {
     getModuleData(d) {
       return {
         js: {
-          [`${d.name}_${d.version}`]: d.url
+          [`${d.componentName}_${d.version}`]: d.url
         }
       }
     }
   },
   render() {
-    const { item: _item } = this
-
-    const genRender = item => {
+    const genRenderFn = (item) => {
       if (item.isCustom) return h(Custom, { moduleData: this.getModuleData(item.customData) })
 
       const slots = {},
@@ -56,33 +54,38 @@ export default {
         }
         return r
       }, {})
-      Object.keys(cats).forEach(key => {
+      Object.keys(cats).forEach((key) => {
         const arr = cats[key]
         slots[key] = () =>
-          arr.map(child => {
+          arr.map((child) => {
             if (child.isCustom)
               return h(Custom, { moduleData: this.getModuleData(child.customData) })
 
             handleEvents(child.props)
-            return h(resolveComponent(child.name), child.props, { default: () => genRender(child) })
+
+            return genRenderFn(child)
           })
       })
 
       handleEvents(item.props)
-      return h(resolveComponent(item.name), item.props, slots)
+      return h(
+        resolveComponent(item.componentName),
+        { ...item.props, style: { marginBottom: item.componentType === 'layout' ? '12px' : 0 } },
+        slots
+      )
     }
 
-    const handleEvents = props => {
+    const handleEvents = (props) => {
       const { events } = props
       for (let evtName in events) {
         const code = events[evtName]
-        props[`${evtName}`] = e => {
+        props[`${evtName}`] = (e) => {
           eval(`(${code})(e)`)
         }
       }
     }
 
-    return genRender(_item)
+    return genRenderFn(this.item)
   }
 }
 </script>

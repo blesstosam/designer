@@ -11,7 +11,7 @@ const COMPONENT_EL_CLS = 'component-item'
 
 // 从功能维度划分
 export const componentTypes = {
-  LAYOUT: 'layout',  // 布局组件
+  LAYOUT: 'layout', // 布局组件
   VIEW: 'view', // 视图组件
   FORM: 'form' // 表单组件
 }
@@ -61,9 +61,11 @@ export class Components {
       this.__designer__.emit(EVENT_TYPES.COMPONENTS_DRAG_START)
     })
 
-    this.__dragon__.onDragEnd(target, () => { console.log('drag end...') })
+    this.__dragon__.onDragEnd(target, () => {
+      console.log('drag end...')
+    })
   }
- 
+
   /**
    * 同步注册左侧组件
    * 主要是给组件dom绑定一些属性和事件
@@ -74,7 +76,6 @@ export class Components {
   registerComponent(comEl, com) {
     $(comEl)
       .attr('draggable', true)
-      .attr('is-block', !!com.isBlock)
       .attr('component-type', com.componentType)
       .addClass(COMPONENT_EL_CLS)
 
@@ -103,12 +104,11 @@ export class Components {
             {
               [`${name}_${version}`]: url
             },
-            mod => {
+            (mod) => {
               const realCom = {
-                name,
+                componentName: name,
                 title,
                 icon,
-                accept: [],
                 isCustom: true,
                 customData: {
                   name,
@@ -130,7 +130,7 @@ export class Components {
                 com: realCom
               })
             },
-            err => {
+            (err) => {
               console.error('fetch custom plugin errror: ', err)
               reject(err)
             }
@@ -143,7 +143,7 @@ export class Components {
   }
 
   findComByName(name) {
-    return this._hasRegistered.find(c => c.name === name)
+    return this._hasRegistered.find((c) => c.componentName === name)
   }
 
   renderComponent() {
