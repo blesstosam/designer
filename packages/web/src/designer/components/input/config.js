@@ -85,9 +85,9 @@ export default {
                     },
                     value: {
                       type: 'object',
-                      default: 'medium',
-                      enum: ['large', 'medium', 'small', 'mini'],
-                      enumLabel: ['large', 'medium', 'small', 'mini']
+                      default: 'default',
+                      enum: ['large', 'default', 'small', 'mini'],
+                      enumLabel: ['large', 'default', 'small', 'mini']
                     }
                   }
                 },

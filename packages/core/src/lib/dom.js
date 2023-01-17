@@ -1,3 +1,5 @@
+import { includes } from 'lodash'
+
 /**
  * 通过 classname 向上查找最近的一个 dom 节点
  * @param {Element} dom
@@ -100,7 +102,12 @@ class DomUtil {
       this.dom = selector
     } else if (typeof selector === 'string') {
       if (selector.startsWith('<') && selector.endsWith('>')) {
-        this.dom = document.createElement(selector.replace(/\<|\>/g, ''))
+        const tagName = selector.replace(/\<|\>/g, '')
+        if ((['svg', 'path'].includes(tagName))) {
+          this.dom = document.createElementNS('http://www.w3.org/2000/svg', tagName)
+        } else {
+          this.dom = document.createElement(selector.replace(/\<|\>/g, ''))
+        }
       } else {
         this.dom = document.querySelector(selector)
       }
@@ -116,7 +123,7 @@ class DomUtil {
 
   style(key, val) {
     if (typeof key === 'object') {
-      Object.keys(key).forEach(k => {
+      Object.keys(key).forEach((k) => {
         this.dom.style[k] = key[k]
       })
     } else {
@@ -134,7 +141,7 @@ class DomUtil {
 
   attr(key, val) {
     if (typeof key === 'object') {
-      Object.keys(key).forEach(k => {
+      Object.keys(key).forEach((k) => {
         this.dom.setAttribute(k, key[k])
       })
     } else {

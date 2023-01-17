@@ -36,7 +36,7 @@
   margin-bottom: 8px;
   font-size: 12px;
   text-align: center;
-  cursor: pointer;
+  cursor: grab;
   transition: 200ms;
 }
 
@@ -134,7 +134,7 @@
                     class="com-item"
                     v-for="(item, index) in comList(type.key)"
                     :key="index"
-                    :com-name="item.name"
+                    :com-name="item.componentName"
                     :com-title="item.title"
                   >
                     <img width="26" height="26" draggable="false" :src="item.icon.value" alt="" />
@@ -148,7 +148,7 @@
                     class="custom-com-item"
                     v-for="(item, index) in customComList"
                     :key="index"
-                    :com-name="item.name"
+                    :com-name="item.componentName"
                     :com-title="item.title"
                   >
                     <img width="20" height="20" draggable="false" :src="item.icon.value" alt="" />
@@ -252,7 +252,7 @@ export default {
       const comItems = document.querySelectorAll('.com-item')
       for (const el of comItems) {
         const comName = el.getAttribute('com-name')
-        const com = componentList.find((i) => i.name === comName)
+        const com = componentList.find((i) => i.componentName === comName)
         this.__components__.registerComponent(el, com)
       }
     },
@@ -261,7 +261,7 @@ export default {
       const modArr = []
       for (const el of comItems) {
         const comName = el.getAttribute('com-name')
-        const com = customComList.find((i) => i.name === comName)
+        const com = customComList.find((i) => i.componentName === comName)
         modArr.push({ comEl: el, com })
       }
       this.__components__

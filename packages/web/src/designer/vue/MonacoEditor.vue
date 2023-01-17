@@ -1,6 +1,6 @@
 <style>
 .event-editor .el-overlay {
-  right: 300px;
+  right: 350px;
 }
 .event-editor .el-drawer {
   border-right: 1px solid #dedede;

@@ -1,27 +1,70 @@
 import cloneDeep from 'lodash.clonedeep'
 import { EVENT_TYPES } from './Event'
+import { InsertTypes } from './Util'
 
 const {
-  CANVAS_ACTIONS_APPEND: C_A_A,
-  CANVAS_ACTIONS_DELETE: C_A_D,
-  ATTRPANEL_SET_ATTR: A_S_A
+  CANVAS_ACTIONS_APPEND,
+  CANVAS_ACTIONS_PREPEND,
+  CANVAS_ACTIONS_AFTER,
+  CANVAS_ACTIONS_BEFORE,
+  CANVAS_ACTIONS_DELETE,
+  ATTRPANEL_SET_ATTR
 } = EVENT_TYPES
 
-const DEFAULT_MAX_LENGTH = 10
+const canvasInsert = (data, canvas) => {
+  // debugger
+  const currentData = data
+  const map = {
+    [CANVAS_ACTIONS_APPEND]: InsertTypes.APPEND,
+    [CANVAS_ACTIONS_PREPEND]: InsertTypes.PREPEND,
+    [CANVAS_ACTIONS_AFTER]: InsertTypes.AFTER,
+    [CANVAS_ACTIONS_BEFORE]: InsertTypes.BEFORE
+  }
+  return {
+    execute() {
+      const fnName = map[data.type]
+      canvas[fnName](currentData.component, currentData.container)
+    },
+    undo() {
+      canvas.remove(currentData.data)
+    }
+  }
+}
+
+const canvasRemove = () => {}
+
+const setAttr = () => {}
+
+const getCommand = (eventType) => {
+  if (
+    [
+      CANVAS_ACTIONS_APPEND,
+      CANVAS_ACTIONS_PREPEND,
+      CANVAS_ACTIONS_AFTER,
+      CANVAS_ACTIONS_BEFORE
+    ].includes(eventType)
+  ) {
+    return canvasInsert
+  }
+  if (CANVAS_ACTIONS_DELETE === eventType) {
+    return canvasRemove
+  }
+  if (ATTRPANEL_SET_ATTR === eventType) {
+    return setAttr
+  }
+}
+
+const DEFAULT_MAX_LENGTH = 20
 
 export class Command {
   constructor(config = {}, designer) {
     this.__designer__ = designer
-    // ----- for debug ------
     window.command = this
-    // _actions = { type: event_type, data: {}, timestamp: Date }
-    this._actions = []
-    this._actionIdx = -1
+    this.actions = []
+    this.actionIdx = -1
     this.maxRecordLength = config.maxRecordLength || DEFAULT_MAX_LENGTH
-    // 需要操作的事件类型
-    this.OptTypes = config.OptTypes
-    // 每次redo和undo触发的时候调用
-    this.onChange = config.onChange
+    this.cb = null
+    this.CommandTypes = config.CommandTypes
     // 当执行redo和undo的时候开启锁 因为该操作会执行action，执行action的时候又会发送事件 但是此时不应该监听
     this.lockType = null
   }
@@ -35,40 +78,44 @@ export class Command {
   }
 
   get size() {
-    return this._actions.length
+    return this.actions.length
   }
 
   get canUndo() {
-    return this._actions.length && this._actionIdx > -1
+    return this.actions.length && this.actionIdx > -1
   }
 
   get canRedo() {
-    return this._actions.length && this._actionIdx < this._actions.length - 1
+    return this.actions.length && this.actionIdx < this.actions.length - 1
   }
 
   get isLastStep() {
-    return this._actionIdx === this._actions.length - 1
+    return this.actionIdx === this.actions.length - 1
   }
 
   listen(cb) {
-    this.__designer__.on(this.OptTypes || [], d => {
+    this.cb = cb
+    this.__designer__.on(this.CommandTypes || [], (d) => {
       if (!this.lockType) {
-        this.add(d, () => {
-          cb && cb({ actions: this._actions, idx: this._actionIdx })
-        })
-      } else if (d.type === C_A_A) {
-        // 在执行redo中
-        // 如果是添加节点，需要把node的$el重新赋值，因为之前被remove掉了
-        // TODO 理论上可以去掉 因为在canvas.append的时候已经判断过$el了，但是在hover的时候还是会报错
-        if (this.lockType === 'redo') {
-          this._actions[this._actionIdx].data.$el = d.data.$el
-        }
+        this.exec1(d)
       }
     })
   }
+  exec1(data) {
+    const { actionIdx, actions } = this
+    if (actionIdx < actions.length - 1) {
+      this.actions = actions.slice(0, actionIdx + 1)
+    }
+    if (getCommand(data.type)) {
+      const concreteCommand = getCommand(data.type)(data, this.__canvas__)
+      this.actions.push(concreteCommand)
+      this.actionIdx++
+    }
+    this.cb && this.cb({ actions: this.actions, idx: this.actionIdx })
+  }
 
-  add(d, cb) {
-    if (!this._actions.length >= this.maxRecordLength) return
+  exec(d) {
+    if (!this.actions.length >= this.maxRecordLength) return
     const _data = {
       type: d.type,
       data: cloneDeep(d.data),
@@ -76,31 +123,27 @@ export class Command {
     }
     if (this.isLastStep) {
       // 如果当前操作为最后一步
-      this._actions.push(_data)
-      this._actionIdx++
-    } else if (this._actionIdx === -1) {
+      this.actions.push(_data)
+      this.actionIdx++
+    } else if (this.actionIdx === -1) {
       // 如果撤销了所有操作，将actions重置之后再插入
-      this._actions = [_data]
+      this.actions = [_data]
     } else {
       // 如果当前操作不是最后一步 即之前点击了上一步
       // 将 actions 里指针后面的操作都删除掉
-      this._actions.splice(this._actionIdx, this._actions.length - this._actionIdx - 1)
-      this._actions.push(_data)
-      this._actionIdx = this._actions.length - 1
+      this.actions.splice(this.actionIdx, this.actions.length - this.actionIdx - 1)
+      this.actions.push(_data)
+      this.actionIdx = this.actions.length - 1
     }
-    cb && cb()
+    this.cb && this.cb({ actions: this.actions, idx: this.actionIdx })
   }
 
   undo(cb) {
     if (this.canUndo) {
       this.lockType = 'undo'
-      const currentAction = this._actions[this._actionIdx]
-      console.log(currentAction, 'in undo')
-      const type = this._getOpposite(currentAction.type)
-      this.getActions(type)(currentAction.data)
-      this._actionIdx--
-      cb && cb(this._actions)
-      this._emitChange()
+      this.actions[this.actionIdx].undo()
+      this.actionIdx--
+      cb && cb({ idx: this.actionIdx, canUndo: this.canUndo, canRedo: this.canRedo })
       this.lockType = null
     }
   }
@@ -108,44 +151,10 @@ export class Command {
   redo(cb) {
     if (this.canRedo) {
       this.lockType = 'redo'
-      this._actionIdx++
-      const currentAction = this._actions[this._actionIdx]
-      console.log(currentAction, 'in redo')
-      this.getActions(currentAction.type)(currentAction.data)
-      cb && cb(this._actionIdx)
-      this._emitChange()
+      this.actionIdx++
+      this.actions[this.actionIdx].execute()
+      cb && cb({ idx: this.actionIdx, canUndo: this.canUndo, canRedo: this.canRedo })
       this.lockType = null
     }
-  }
-
-  getActions(type) {
-    const actions = {
-      [C_A_A]: data => {
-        // 因为deepclone 导致parent是一个新的对象 这里重新从model里找到parent
-        const realParent = this.model.findByEl(data.parent.$el)
-        const $targetEl = data.parent.$el.children[0]
-        this.__canvas__.append(data, $targetEl, realParent)
-      },
-      [C_A_D]: data => {
-        this.__canvas__.remove(data)
-      },
-      // TODO
-      [A_S_A]: data => {}
-    }
-    return actions[type]
-  }
-
-  _getOpposite(type) {
-    const actions = {
-      [C_A_A]: C_A_D,
-      [C_A_D]: C_A_A,
-      [A_S_A]: A_S_A
-    }
-    return actions[type]
-  }
-
-  _emitChange() {
-    const { canRedo, canUndo } = this
-    this.onChange && this.onChange({ canRedo, canUndo })
   }
 }

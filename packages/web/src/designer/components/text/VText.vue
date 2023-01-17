@@ -1,5 +1,5 @@
 <template>
-  <div>{{ content }}</div>
+  <div class="v-text">{{ content }}</div>
 </template>
 <script>
 export default {

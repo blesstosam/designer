@@ -1,11 +1,10 @@
-<style>
+<style scoped>
 /* 该样式只在画布里才有 */
 .canvas-wrap .v-block {
   /* border: 1px dashed #aaa; */
   background-color: #fff;
-  min-height: 70px;
   box-sizing: border-box;
-  padding: 12px 0
+  /* padding: 12px 0 !important; */
 }
 </style>
 
@@ -18,6 +17,6 @@
 
 <script>
 export default {
-  name: 'VBlock'
+  name: 'VBlock',
 }
 </script>

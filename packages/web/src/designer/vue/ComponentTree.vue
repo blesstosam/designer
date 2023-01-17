@@ -4,7 +4,7 @@
 }
 .component-tree .header {
   border-bottom: 1px solid #dedede;
-  padding: 10px 8px;
+  padding: 6px 0;
   margin-bottom: 12px;
 }
 .component-tree .header span {
@@ -38,7 +38,6 @@
 <template>
   <div class="component-tree">
     <div class="header">
-      <tree-icon fill="#333" :width="18" />
       <span>组件树</span>
     </div>
 
@@ -51,6 +50,7 @@
       :highlight-current="true"
       :expand-on-click-node="false"
       :current-node-key="currentNodeKey"
+      default-expand-all
       @node-click="handleNodeClick"
     >
       <template #default="{ data }">
@@ -65,6 +65,7 @@
           </div>
           <!-- actionShowRow === data.$treeNodeId -->
           <div
+            v-if="data.componentName!=='Page'"
             class="right"
             :style="{ visibility: actionShowRow === data.$treeNodeId ? 'visible' : 'hidden' }"
           >
@@ -81,11 +82,8 @@
 </template>
 
 <script>
-import TreeIcon from './icons/TreeIcon.vue'
-
 export default {
   name: 'ComponentTree',
-  components: { TreeIcon },
   props: {
     tree: Array
   },
@@ -106,22 +104,30 @@ export default {
   computed: {
     treeData() {
       const tree = this.innerTree || []
-      const treeData = []
+      const treeData = [
+        {
+          componentName: 'Page',
+          title: '页面',
+          unique: 'Page',
+          children: [],
+          display: true
+        }
+      ]
       for (const t of tree) {
         const item = {
-          name: t.name,
+          name: t.componentName,
           title: t.title,
           unique: t.unique,
           icon: t.icon,
           children: [],
           display: true
         }
-        treeData.push(item)
+        treeData[0].children.push(item)
         if (t.children) {
           const _d = []
           for (const _t of t.children) {
             _d.push({
-              name: _t.name,
+              name: _t.componentName,
               title: _t.title,
               unique: _t.unique,
               icon: _t.icon,
@@ -136,6 +142,9 @@ export default {
     },
     __componentTree__() {
       return this.__designer__.__componentTree__
+    },
+    __canvas__() {
+      return this.__designer__.__canvas__
     }
   },
   methods: {
@@ -148,7 +157,11 @@ export default {
     },
 
     handleNodeClick(d) {
-      this.__componentTree__.selectNode(d)
+      if (d.componentName === 'Page') {
+        this.__componentTree__.selectPage()
+      } else {
+        this.__componentTree__.selectNode(d)
+      }
     },
     handleNodeDel(d) {
       this.__componentTree__.delNode(d)

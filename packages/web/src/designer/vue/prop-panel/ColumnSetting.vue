@@ -213,7 +213,7 @@
         <el-input
           v-model="defaultVal"
           style="width: 193px"
-          size="medium"
+          size="default"
           @blur="handleBlur"
         ></el-input>
       </el-tooltip>

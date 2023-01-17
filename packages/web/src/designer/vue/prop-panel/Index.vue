@@ -33,7 +33,6 @@
             <el-input
               style="width: 193px"
               :placeholder="_item.description || '请输入'"
-              size="medium"
               v-model="_item.value"
               @input="handleChange(_item, $event)"
             />
@@ -45,7 +44,6 @@
             <el-input-number
               style="width: 193px"
               :placeholder="_item.description || '请输入'"
-              size="medium"
               v-model="_item.value"
               @input="handleChange(_item, $event)"
             />
@@ -69,7 +67,6 @@
             <span>{{ _item.title }}</span>
             <el-select
               :disabled="_item.disabled"
-              size="medium"
               :placeholder="_item.description || '请选择'"
               v-model="_item.value"
               @change="handleChange(_item, $event)"
@@ -234,7 +231,7 @@ export default {
   methods: {
     handleChange(item, val) {
       const currentNode = getCurrentViewNodeModel()
-      this.canvas.patch(currentNode.$el, item, val)
+      this.canvas.patch(currentNode, item, val)
       this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {
         type: EVENT_TYPES.ATTRPANEL_SET_ATTR,
         data: { item, val, currentNode }

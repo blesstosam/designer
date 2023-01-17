@@ -37,6 +37,9 @@ export class ComponentTree {
   // core => update data => update ui
   // core => call ui method
 
+  selectPage() {
+    this.__canvas__.handleNodeboxSelect(this.__canvas__.model)
+  }
   selectNode(d) {
     const node = this.__canvas__.model.findByKey('unique', d.unique)
     if (node) this.__canvas__.handleNodeboxSelect(node)

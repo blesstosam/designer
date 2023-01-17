@@ -3,13 +3,11 @@
 .canvas-wrap .v-column {
   /* border: 1px dashed #aaa; */
   background-color: #fff;
-  min-height: 80px;
   /* margin: 4px 0; */
 }
 .canvas-wrap .v-column .content {
-  border: solid 1px #ddd;
-  min-height: 72px;
-  margin-top: 4px;
+  /* border: solid 1px #ddd; */
+  /* min-height: 72px; */
 }
 
 .v-column {
@@ -17,13 +15,12 @@
 }
 .v-column .content {
   box-sizing: border-box;
-  display: flex;
 }
 </style>
 
 <template>
   <div class="v-column" :style="{ background: this.bgColor }">
-    <el-row style="width: 100%; margin-left: 0" :gutter="gutter">
+    <el-row :gutter="gutter">
       <!-- 布局组件为容器 需要加 c-slot-name 和 对应的 class-->
       <el-col v-for="(s, index) in spanArr" :key="index" :span="s">
         <div class="content" :style="contentStyle" :c-slot-name="`default${index}`">
