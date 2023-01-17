@@ -677,8 +677,9 @@ export class Canvas {
         } else {
           const [componentMeta] = this.getComponentMetaData(e.target)
           const canInsert = componentMeta.componentType === componentTypes.LAYOUT
+          // console.log(canInsert, '22')
           // !canInsert && (style.background = 'red')
-          if (!canInsert) return
+          // if (!canInsert) return
           this.insertType = InsertTypes.APPEND
           realTarget = target
         }
