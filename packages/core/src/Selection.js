@@ -225,7 +225,7 @@ export class Selection {
     const div = (this.btnWrap = $('<div>').style({
       position: 'absolute',
       ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnVPos === 'top' ? '-22px' : `${this.offset.height}px`,
+      top: this.btnVPos === 'top' ? '-20px' : `${this.offset.height}px`,
       height: '20px',
       width: '99px',
       lineHeight: '21px',
@@ -240,7 +240,7 @@ export class Selection {
   _updateBtnWrap(offset) {
     $(this.btnWrap).style({
       ...(this.btnHPos === 'left' ? { left: 0, right: null } : { left: null, right: 0 }),
-      top: this.btnVPos === 'top' ? '-22px' : `${offset.height}px`,
+      top: this.btnVPos === 'top' ? '-20px' : `${offset.height}px`,
       width: '99px'
     })
   }

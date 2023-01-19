@@ -95,7 +95,7 @@ export class Canvas {
   }
 
   init(viewModel) {
-    // canvas依赖components 插件，防止多次触发使用once
+    // canvas依赖components插件，防止多次触发使用once
     this.__designer__.once(COMPONENTS_REGISTER_END, () => {
       const canvasStyle = (viewModel && viewModel.props.style) || this._genDefaultCanvasStyle()
       const div = (this.canvasEl = $('<div>')
@@ -143,7 +143,7 @@ export class Canvas {
           }
         }
         const com = this.__components__.findComByName(data.componentName)
-        const newNode = this[InsertTypes.AFTER](com, data.$el)
+        const newNode = this[InsertTypes.AFTER]({ ...com, slotName: data.slotName }, data.$el)
         mount(data.children, newNode)
       }
     })
@@ -431,24 +431,24 @@ export class Canvas {
       }
     }
 
-    // 当组件的slotname 为 default 时，直接插入到容器的末尾；不为 default 时，需要查找对应的容器
-    const slotName = d.slotName || 'default'
-    // TODO 这里的container可以去掉 由parentNode.$el 计算
-    // 1. 当是append或prepend的时候，查找其slot容器元素
-    // 2. 当是after或before时候，直接使用siblingNode.$el
-    let realContainer = container
-    if (slotName !== 'default') {
-      realContainer = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
-    }
-
-    if (realContainer) {
-      if (
-        realContainer.children[0] &&
-        realContainer.children[0].classList.contains(CONTAINER_PLACOHOLDER_CLS)
-      ) {
-        this.placeholder.removeByEl(realContainer.children[0])
+    if (type === InsertTypes.APPEND || type === InsertTypes.PREPEND) {
+      // 当组件的slotname 为 default 时，直接插入到容器的末尾；不为 default 时，需要查找对应的容器
+      const slotName = d.slotName || 'default'
+      let realContainer = container
+      if (slotName !== 'default') {
+        realContainer = lookdownByAttr(container, SLOT_NAME_KEY, d.slotName)
       }
-      $(realContainer)[type](wrapper)
+      if (realContainer) {
+        if (
+          realContainer.children[0] &&
+          realContainer.children[0].classList.contains(CONTAINER_PLACOHOLDER_CLS)
+        ) {
+          this.placeholder.removeByEl(realContainer.children[0])
+        }
+        $(realContainer)[type](wrapper)
+      }
+    } else {
+      $(container)[type](wrapper)
     }
 
     this.scrollToBottom()
@@ -550,9 +550,7 @@ export class Canvas {
       boxSizing: 'border-box'
     }).el
     if (isLayout) {
-      $(wrapper).style({
-        marginBottom: NODE_BOX_SPACING + 'px'
-      })
+      $(wrapper).style({ marginBottom: NODE_BOX_SPACING + 'px' })
     }
 
     // 非布局组件直接返回
