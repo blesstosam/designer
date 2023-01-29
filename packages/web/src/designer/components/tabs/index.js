@@ -1,13 +1,14 @@
 import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VTabs from './VTabs.vue'
 import VTabsCfg from './config'
+import Png from '../../../assets/imgs/tabs.png'
 
 const VTabsComponent = {
   componentName: 'VTabs',
   title: '选项卡',
   icon: {
     type: 'img',
-    value: '/tabs.png'
+    value: Png,
   },
   componentType: ComponentTypes.LAYOUT,
   $el: null,

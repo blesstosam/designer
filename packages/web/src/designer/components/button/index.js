@@ -1,13 +1,14 @@
 import VButton from './VButton.vue'
 import VButtonCfg from './config'
 import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
+import Png from '../../../assets/imgs/button.png'
 
 const VButtonComponent = {
   componentName: 'VButton',
   title: '按钮',
   icon: {
     type: 'img',
-    value: '/button.png'
+    value: Png,
   },
   componentType: ComponentTypes.VIEW,
   $el: null,

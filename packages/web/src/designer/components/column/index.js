@@ -1,13 +1,14 @@
 import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VColumn from './VColumn.vue'
 import VColumnCfg from './config'
+import Png from '../../../assets/imgs/column.png'
 
 const VColumnComponent = {
   componentName: 'VColumn',
   title: '分栏',
   icon: {
     type: 'img',
-    value: '/wrap.png'
+    value: Png,
   },
   componentType: ComponentTypes.LAYOUT,
   $el: null,
