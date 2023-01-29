@@ -102,7 +102,7 @@ class Designer extends Event {
     this.__plug__ = new Plugin(this.config, this)
     const plugs = this.config.plugins || []
     for (const p of plugs) {
-      this.__plug__.add(p)
+      this.__plug__.register(p)
     }
   }
 }

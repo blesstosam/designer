@@ -1,6 +1,6 @@
 import VButton from './VButton.vue'
 import VButtonCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VButtonComponent = {
   componentName: 'VButton',
@@ -9,7 +9,7 @@ const VButtonComponent = {
     type: 'img',
     value: '/button.png'
   },
-  componentType: componentTypes.VIEW,
+  componentType: ComponentTypes.VIEW,
   $el: null,
   attrs: VButtonCfg,
   // transformProps(p) {
@@ -26,8 +26,9 @@ const VButtonComponent = {
   //     p.icon = p.__chooseicon
   //   }
   // },
-  framework: 'Vue',
-  component: VButton,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VButton
 }
 
 export { VButtonComponent, VButton }

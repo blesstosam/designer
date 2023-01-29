@@ -1,7 +1,7 @@
 import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
 import { Selection } from './Selection'
 import { Marker } from './Marker'
-import { componentTypes } from './Components'
+import { ComponentTypes } from './Components'
 import { Node } from './Node'
 import { EVENT_TYPES } from './Event'
 import { Hover } from './Hover'
@@ -25,7 +25,7 @@ const {
   COMPONENTS_REGISTER_END
 } = EVENT_TYPES
 
-const { LAYOUT } = componentTypes
+const { LAYOUT } = ComponentTypes
 export const ROOT_DROP_EL_PADDING = 8
 export const NODE_BOX_SPACING = 12
 export const SLOT_NAME_KEY = 'c-slot-name'
@@ -617,7 +617,7 @@ export class Canvas {
             // if append or prepend
             const slotContainer = getSlotContainer(e.target)
             const slotName = getSlotName(slotContainer) || 'default'
-            if (dropedNode && componentMeta.componentType === componentTypes.LAYOUT) {
+            if (dropedNode && componentMeta.componentType === ComponentTypes.LAYOUT) {
               this[this.insertType]({ ...state.data, slotName }, slotContainer)
             }
           } else {
@@ -626,7 +626,7 @@ export class Canvas {
               const slotName = getSlotName(nodeboxEl.parentNode) || 'default'
               const [parentComponentMeta] = this.getComponentMetaData(nodeboxEl.parentNode)
               if (parentComponentMeta) {
-                if (parentComponentMeta.componentType === componentTypes.LAYOUT) {
+                if (parentComponentMeta.componentType === ComponentTypes.LAYOUT) {
                   this[this.insertType](
                     { ...state.data, slotName },
                     lookupByClassName(e.target, NODE_BOX_CLS)
@@ -676,8 +676,7 @@ export class Canvas {
           realTarget = lookupByClassName(target, NODE_BOX_CLS)
         } else {
           const [componentMeta] = this.getComponentMetaData(e.target)
-          const canInsert = componentMeta.componentType === componentTypes.LAYOUT
-          // console.log(canInsert, '22')
+          const canInsert = componentMeta.componentType === ComponentTypes.LAYOUT
           // !canInsert && (style.background = 'red')
           // if (!canInsert) return
           this.insertType = InsertTypes.APPEND

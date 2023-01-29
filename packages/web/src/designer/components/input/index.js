@@ -1,6 +1,6 @@
 import VInput from './VInput.vue'
 import VInputCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VInputComponent = {
   componentName: 'VInput',
@@ -9,11 +9,12 @@ const VInputComponent = {
     type: 'img',
     value: '/input.png'
   },
-  componentType: componentTypes.FORM,
+  componentType: ComponentTypes.FORM,
   $el: null,
   attrs: VInputCfg,
-  framework: 'Vue',
-  component: VInput,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VInput
 }
 
 export { VInputComponent, VInput }

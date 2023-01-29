@@ -1,4 +1,4 @@
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VBlock from './VBlock.vue' // VBlock经过编译之后就是一个对象，包含name和render函数
 import VBlockCfg from './config'
 
@@ -11,7 +11,7 @@ const VBlockComponent = {
   },
   // meta: {},
   // lifecycles ?
-  componentType: componentTypes.LAYOUT,
+  componentType: ComponentTypes.LAYOUT,
   $el: null,
   attrs: VBlockCfg,
   emits: [
@@ -25,12 +25,13 @@ const VBlockComponent = {
       }
     }
   ],
-  framework: 'Vue', // Vue/Vue2/React/WebComponent
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
 
-  // 组件实现代码 
+  // 组件实现代码
   // 对于宜搭来说，组件已经注册到React上了，画布使用该React实例来渲染，所以只需要组件name即可
   // 但是对于我来说，我是要兼容所有框架的，core的运行时不固定，组件实现需要提供给core
-  component: VBlock 
+  component: VBlock
 }
 
 export { VBlockComponent, VBlock }

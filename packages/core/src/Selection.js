@@ -1,5 +1,4 @@
 import { ResizeObserver } from '@juggle/resize-observer'
-import { componentTypes } from './Components'
 import { ROOT_DROP_EL_PADDING } from './Canvas'
 import { Tooltip } from './Tooltip'
 import { EVENT_TYPES } from './Event'

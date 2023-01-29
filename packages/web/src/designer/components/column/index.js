@@ -1,4 +1,4 @@
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VColumn from './VColumn.vue'
 import VColumnCfg from './config'
 
@@ -9,11 +9,12 @@ const VColumnComponent = {
     type: 'img',
     value: '/wrap.png'
   },
-  componentType: componentTypes.LAYOUT,
+  componentType: ComponentTypes.LAYOUT,
   $el: null,
   attrs: VColumnCfg,
-  framework: 'Vue',
-  component: VColumn,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VColumn
 }
 
 export { VColumnComponent, VColumn }
