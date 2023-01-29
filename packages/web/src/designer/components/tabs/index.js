@@ -1,4 +1,4 @@
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VTabs from './VTabs.vue'
 import VTabsCfg from './config'
 
@@ -9,11 +9,12 @@ const VTabsComponent = {
     type: 'img',
     value: '/tabs.png'
   },
-  componentType: componentTypes.LAYOUT,
+  componentType: ComponentTypes.LAYOUT,
   $el: null,
   attrs: VTabsCfg,
-  framework: 'Vue',
-  component: VTabs,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VTabs
 }
 
 export { VTabsComponent, VTabs }

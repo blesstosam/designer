@@ -1,6 +1,6 @@
 import VTag from './VTag.vue'
 import VTagCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes,MaterialTypes } from '@davincid/core/src/Components'
 
 const VTagComponent = {
   componentName: 'VTag',
@@ -9,10 +9,11 @@ const VTagComponent = {
     type: 'img',
     value: '/tag.png'
   },
-  componentType: componentTypes.VIEW,
+  componentType: ComponentTypes.VIEW,
   attrs: VTagCfg,
   $el: null,
-  framework: 'Vue',
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
   component: VTag
 }
 export { VTagComponent, VTag }

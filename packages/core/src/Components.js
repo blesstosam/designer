@@ -9,12 +9,33 @@ import { EVENT_TYPES } from './Event'
 
 const COMPONENT_EL_CLS = 'component-item'
 
+// 物料的几种形态
+// 组件：最小单元
+// 组件库：比如element-plus这种组件库，里面是一组组件库
+// 区块：一系列组件的组合
+// 模板：一系列区块的组合
+export const MaterialTypes = {
+  Component: 'Component',
+  ComponentLib: 'ComponentLib',
+  Block: 'Block',
+  Template: 'Template'
+}
+
 // 从功能维度划分
-export const componentTypes = {
+export const ComponentTypes = {
   LAYOUT: 'layout', // 布局组件
   VIEW: 'view', // 视图组件
   FORM: 'form' // 表单组件
 }
+
+// 组件使用什么框架写的
+export const FrameWorkTypes = {
+  Vue: 'Vue',
+  Vue2: 'Vue2',
+  React: 'React',
+  WebComponent: 'WebComponent'
+}
+
 
 /**
  * 组件提供了注册，绑定事件等方法

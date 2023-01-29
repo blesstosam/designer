@@ -1,6 +1,6 @@
 import VImage from './VImage.vue'
 import VImageCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VImageComponent = {
   componentName: 'VImage',
@@ -9,10 +9,11 @@ const VImageComponent = {
     type: 'img',
     value: '/image.png'
   },
-  componentType: componentTypes.VIEW,
+  componentType: ComponentTypes.VIEW,
   attrs: VImageCfg,
   $el: null,
-  framework: 'Vue',
-  component: VImage,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VImage
 }
 export { VImageComponent, VImage }

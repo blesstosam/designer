@@ -1,6 +1,6 @@
 import VDivider from './VDivider.vue'
 import VDividerCfg from './config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 
 const VDividerComponent = {
   componentName: 'VDivider',
@@ -9,10 +9,11 @@ const VDividerComponent = {
     type: 'img',
     value: '/divider.png'
   },
-  componentType: componentTypes.VIEW,
+  componentType: ComponentTypes.VIEW,
   attrs: VDividerCfg,
   $el: null,
-  framework: 'Vue',
-  component: VDivider,
+  framework: FrameWorkTypes.Vue,
+  materialType: MaterialTypes.Component,
+  component: VDivider
 }
 export { VDividerComponent, VDivider }

@@ -183,7 +183,7 @@ import TreeIcon from './icons/TreeIcon.vue'
 import RecordIcon from './icons/RecordIcon.vue'
 import CodeIcon from './icons/CodeIcon.vue'
 import { componentList, customComList } from '../config'
-import { componentTypes } from '@davincid/core/src/Components'
+import { ComponentTypes } from '@davincid/core/src/Components'
 import { EVENT_TYPES } from '@davincid/core/src/Event'
 
 export default {
@@ -223,13 +223,13 @@ export default {
       }
     },
     layoutCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.LAYOUT)
+      return this.componentList.filter((i) => i.componentType === ComponentTypes.LAYOUT)
     },
     viewCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.VIEW)
+      return this.componentList.filter((i) => i.componentType === ComponentTypes.VIEW)
     },
     formCom() {
-      return this.componentList.filter((i) => i.componentType === componentTypes.FORM)
+      return this.componentList.filter((i) => i.componentType === ComponentTypes.FORM)
     },
     __components__() {
       return this.__designer__.__components__

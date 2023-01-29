@@ -41,9 +41,9 @@ this.__componentTree__.uiInstance.callMethod() // core call ui method
 uiInstance.__componentTree__.callMethod() // ui call core method
 ```
 
-# 扩展机制
+# 扩展
 
-1. 提供插件机制，通过传入插件，替代默认实现的插件和添加自己的插件，达到替换视图的目的，在自定义插件里传入相关的 api 和配置
+提供插件机制，通过传入插件，替代默认实现的插件和添加自己的插件，达到替换视图的目的，在自定义插件里传入相关的 api 和配置
 
 ```js
 class MyComponents {
@@ -54,7 +54,22 @@ const designer = new Designer({
 })
 ```
 
-2. 每个插件需要实现核心 api，视图里面可以拿到这些核心 api 调用，完成视图的绘制，支持任意框架
+# 定制
+
+1. 支持 options 定制，抽象一些定制点，暴露定制的入口  
+   比如设计器的 logo
+
+```js
+new Designer({
+  logo: {
+    type: 'img', // img|svg|inline-svg
+    value: './logo.png'
+  }
+})
+```
+
+2. UI 完全定制  
+   每个插件需要实现核心 api，视图里面可以拿到这些核心 api 调用，完成视图的绘制，支持任意框架
 
 ```js
 class Components {
@@ -70,12 +85,14 @@ const _renderUI = () => {
 this.__components__.init(_renderUI)
 ```
 
-3. 属性面板本质上是表单，所以使用 json schema 去描述。  
-   定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
+# 属性面板
 
-4. 通信机制，eventBus
+属性面板本质上是表单，所以使用 json schema 去描述。  
+ 定义好所有的表单类型后，新开发的组件只需要写对应的 schema 即可渲染出正确的属性面板。
 
-5. 组件框架无关
+# 通信机制，eventBus
+
+# 组件框架无关
 
 # TODO
 
