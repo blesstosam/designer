@@ -21,7 +21,8 @@
       width: 270px;
       flex-shrink: 0;
       border-right: 1px solid #eee;
-      height: calc(100vh - 57px);
+      height: calc(100vh - 62px);
+      box-sizing: border-box;
 
       .component-tepl {
         height: 100%;
@@ -32,7 +33,7 @@
       flex: 1;
 
       .canvas-wrap {
-        height: calc(100vh - 70px);
+        height: calc(100vh - 64px);
         overflow-y: auto;
         background: #ddd;
       }
@@ -50,9 +51,10 @@
       width: 320px;
       padding: 6px 0;
       border-left: 1px solid #eee;
-      height: calc(100vh - 67px);
+      height: calc(100vh - 62px);
       overflow-y: auto;
       flex-shrink: 0;
+      box-sizing: border-box;
 
       .status-bar-wrap {
         //border-bottom: 1px solid #dedede;
