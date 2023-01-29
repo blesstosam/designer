@@ -33,6 +33,8 @@ const NODE_BOX_CLS = 'node-box'
 
 const getSlotName = (el) => el.getAttribute(SLOT_NAME_KEY)
 const getFirstSlotElOfNode = (node) => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
+const getSlotElOfNode = (node, slotName) =>
+  lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY, slotName)
 
 export const isRootContainer = (el) => {
   return el.classList.contains('canvas-root')
@@ -135,8 +137,8 @@ export class Canvas {
           for (const node of nodeArr) {
             const com = this.__components__.findComByName(node.componentName)
             const targetEl =
-              parent.$el === this.canvasEl ? this.canvasEl : getFirstSlotElOfNode(parent)
-            const newNode = this[InsertTypes.APPEND](com, targetEl)
+              parent.$el === this.canvasEl ? this.canvasEl : getSlotElOfNode(parent, node.slotName)
+            const newNode = this[InsertTypes.APPEND]({ ...com, slotName: node.slotName }, targetEl)
             if (node.children && node.children.length) {
               mount(node.children, newNode)
             }
