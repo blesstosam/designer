@@ -1,13 +1,14 @@
 import { ComponentTypes, FrameWorkTypes, MaterialTypes } from '@davincid/core/src/Components'
 import VBlock from './VBlock.vue' // VBlock经过编译之后就是一个对象，包含name和render函数
 import VBlockCfg from './config'
+import Png from '../../../assets/imgs/rect.png'
 
 const VBlockComponent = {
   componentName: 'VBlock',
   title: '区块',
   icon: {
     type: 'img',
-    value: '/rect.png'
+    value: Png
   },
   // meta: {},
   // lifecycles ?
