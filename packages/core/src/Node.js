@@ -69,6 +69,19 @@ export class Node {
     return this.children[this.children.length - 1]
   }
 
+  // 是否是其父级节点的第一个节点
+  get isFirstChild() {
+    if (!this.parent) return false
+    return this.parent.children[0] === this
+  }
+
+    // 是否是其父级节点的最后一个节点
+  get isLastChild() {
+    if (!this.parent) return false
+    const children = this.parent.children
+    return children[children.length - 1] === this
+  }
+
   [InsertTypes.APPEND](node) {
     this.children.push(node)
     if (node.parent !== this) node.parent = this

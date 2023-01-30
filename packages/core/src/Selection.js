@@ -1,5 +1,4 @@
 import { ResizeObserver } from '@juggle/resize-observer'
-import { ROOT_DROP_EL_PADDING } from './Canvas'
 import { Tooltip } from './Tooltip'
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
@@ -18,14 +17,15 @@ const {
 
 const getBtnsWidth = () => 100
 
-const SELECTION_BORDER_STYLE = '1px solid rgb(70, 128, 255)'
+export const BORDER_COLOR = '#409EFF'
+const SELECTION_BORDER_STYLE = `1px solid ${BORDER_COLOR}`
 
 export class Selection {
   constructor(desginer) {
     window.selection = this
     this.__designer__ = desginer
-    this.DISTANCE_TO_TOP = this.__canvas__.y + ROOT_DROP_EL_PADDING + 25 // 距离顶部距离,25为按钮的高度
-    this.DISTANCE_TO_LEFT = this.__canvas__.x + ROOT_DROP_EL_PADDING // 距离左边距离
+    this.DISTANCE_TO_TOP = this.__canvas__.y + 25 // 距离顶部距离,25为按钮的高度
+    this.DISTANCE_TO_LEFT = this.__canvas__.x // 距离左边距离
     this.node = null
 
     this.recEl = null
