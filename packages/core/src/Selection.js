@@ -230,7 +230,7 @@ export class Selection {
       pointerEvents: 'all'
     }).el)
     // remove hover!
-    $(div).hover(() => this.__canvas__.handleNodeboxHoverRemove())
+    $(div).hover(() => this.__canvas__.hover?.remove())
     this.recEl.appendChild(div)
     return div
   }
@@ -268,6 +268,13 @@ export class Selection {
         fontWeight: 500
       })
       .text(this.node.title).el)
+    // if (this.node.icon.type === 'img') {
+    //   const img = $('img').attr('src', this.node.icon.value).style({
+    //     width: '20px',
+    //     background:'#1989fa'
+    //   }).el
+    //   this.btnWrap.appendChild(img)
+    // }  
     this.btnWrap.appendChild(div)
     return div
   }
