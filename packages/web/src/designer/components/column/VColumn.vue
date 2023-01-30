@@ -1,16 +1,13 @@
 <style>
-/* 该样式只在画布里才有 */
-.canvas-wrap .v-column {
-  /* border: 1px dashed #aaa; */
-  background-color: #fff;
-  /* margin: 4px 0; */
-}
-.canvas-wrap .v-column .content {
-  /* border: solid 1px #ddd; */
-  /* min-height: 72px; */
-}
-
 .v-column {
+  box-sizing: border-box;
+}
+.v-column .row {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+}
+.v-column .row .col {
   box-sizing: border-box;
 }
 .v-column .content {
@@ -20,14 +17,29 @@
 
 <template>
   <div class="v-column" :style="{ background: this.bgColor }">
-    <el-row :gutter="gutter">
+    <!-- 可改为grid布局 -->
+    <div
+      class="row"
+      :style="{ 'margin-left': (gutter / 2) * -1 + 'px', 'margin-right': (gutter / 2) * -1 + 'px' }"
+    >
       <!-- 布局组件为容器 需要加 c-slot-name 和 对应的 class-->
-      <el-col v-for="(s, index) in spanArr" :key="index" :span="s">
+      <div
+        class="col"
+        v-for="(s, index) in spanArr"
+        :key="index"
+        :span="s"
+        :style="{
+          'padding-left': gutter / 2 + 'px',
+          'padding-right': gutter / 2 + 'px',
+          'max-width': (s / 24) * 100 + '%',
+          flex: `0 0 ${(s / 24) * 100}%`
+        }"
+      >
         <div class="content" :style="contentStyle" :c-slot-name="`default${index}`">
           <slot :name="`default${index}`"></slot>
         </div>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
   </div>
 </template>
 

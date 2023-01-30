@@ -1,4 +1,11 @@
-import { lookupByClassName, lookdownByAttr, lookdownForAttr, getStyle, $ } from './lib/dom'
+import {
+  lookupByClassName,
+  lookdownByAttr,
+  lookupByAttr,
+  lookdownForAttr,
+  getStyle,
+  $
+} from './lib/dom'
 import { Selection } from './Selection'
 import { Marker } from './Marker'
 import { ComponentTypes } from './Components'
@@ -26,10 +33,10 @@ const {
 } = EVENT_TYPES
 
 const { LAYOUT } = ComponentTypes
-export const ROOT_DROP_EL_PADDING = 8
 export const NODE_BOX_SPACING = 12
 export const SLOT_NAME_KEY = 'c-slot-name'
 const NODE_BOX_CLS = 'node-box'
+export const CANVAS_ROOT_CLS = 'canvas-root'
 
 const getSlotName = (el) => el.getAttribute(SLOT_NAME_KEY)
 const getFirstSlotElOfNode = (node) => lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY)
@@ -37,13 +44,21 @@ const getSlotElOfNode = (node, slotName) =>
   lookdownByAttr(node.$el.children[0], SLOT_NAME_KEY, slotName)
 
 export const isRootContainer = (el) => {
-  return el.classList.contains('canvas-root')
+  return el.classList.contains(CANVAS_ROOT_CLS)
 }
 
-// 查找slot容器
+// 向下查找slot容器
 export const getSlotContainer = (container) => {
   if (isRootContainer(container)) return container
   const c = lookdownByAttr(container, SLOT_NAME_KEY)
+  if (c) return c
+  return container
+}
+
+// 向上查找第一个slot容器
+export const getSlotContainerUp = (container) => {
+  if (isRootContainer(container)) return container
+  const c = lookupByAttr(container, SLOT_NAME_KEY)
   if (c) return c
   return container
 }
@@ -102,7 +117,7 @@ export class Canvas {
       const canvasStyle = (viewModel && viewModel.props.style) || this._genDefaultCanvasStyle()
       const div = (this.canvasEl = $('<div>')
         .addClass('drop')
-        .addClass('canvas-root')
+        .addClass(CANVAS_ROOT_CLS)
         .style(canvasStyle).el)
       document.querySelector(this.config.canvasWrap).appendChild(div)
 
@@ -227,7 +242,7 @@ export class Canvas {
         // https://github.com/Shopify/draggable/blob/6f5539b1f396a34b08fcbf0b52651ca1ee669665/examples/src/content/Draggable/DragEvents/index.js#L67
         // 上面说在拖动过程中使用getBoundingClientRect性能损耗大，后面验证一下
         const rectPos = this.canvasEl.getBoundingClientRect()
-        if (y < rectPos.y + ROOT_DROP_EL_PADDING) {
+        if (y <= rectPos.y) {
           this.insertType = InsertTypes.PREPEND
           this.showMarker(target, InsertTypes.PREPEND)
         } else {
@@ -266,8 +281,18 @@ export class Canvas {
       }
     })
 
+    this.canvasEl.addEventListener(
+      'click',
+      (e) => {
+        this.handleNodeboxSelect(this.model)
+      }
+      // true
+    )
+    this.canvasEl.addEventListener('mouseover', (e) => {
+      this.handleNodeboxHover(this.model)
+    })
     this.canvasEl.addEventListener('mouseleave', (e) => {
-      this.handleNodeboxHoverRemove()
+      this.hover?.remove()
     })
   }
 
@@ -282,8 +307,7 @@ export class Canvas {
       width: config.width || '100%', // 550为左右的宽度加边距
       height: config.height || '100%',
       minWidth: '100%',
-      padding: ROOT_DROP_EL_PADDING + 'px',
-      paddingBottom: '24px',
+      boxShadow: '0px 0px 4px 1px rgb(0 0 0 / 12%)',
       boxSizing: 'border-box',
       backgroundColor: '#efefef',
       overflowY: 'auto'
@@ -466,12 +490,13 @@ export class Canvas {
       // true
     )
     wrapper.addEventListener('mouseover', (e) => {
+      e.stopPropagation()
       const nodeBoxEl = lookupByClassName(e.target, NODE_BOX_CLS)
       const node = this.model.findByEl(nodeBoxEl)
       this.handleNodeboxHover(node)
     })
-    // wrapper.addEventListener('mouseleave', e => {
-    //   this.handleNodeboxHoverRemove()
+    // wrapper.addEventListener('mouseleave', (e) => {
+    //   this.hover?.remove()
     // })
 
     return wrapper
@@ -530,10 +555,6 @@ export class Canvas {
       this.hover = new Hover({}, this.__designer__)
       this.hover.create(node)
     }
-  }
-
-  handleNodeboxHoverRemove() {
-    this.hover && this.hover.remove()
   }
 
   getComponentMetaData(targetEl) {
@@ -678,7 +699,7 @@ export class Canvas {
           const [componentMeta] = this.getComponentMetaData(e.target)
           const canInsert = componentMeta.componentType === ComponentTypes.LAYOUT
           // !canInsert && (style.background = 'red')
-          // if (!canInsert) return
+          if (!canInsert) return
           this.insertType = InsertTypes.APPEND
           realTarget = target
         }

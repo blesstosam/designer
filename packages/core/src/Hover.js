@@ -1,5 +1,6 @@
 import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
+import { BORDER_COLOR } from './Selection'
 
 export class Hover {
   constructor(config = {}, designer) {
@@ -10,7 +11,7 @@ export class Hover {
     this.hoverEl = null
 
     // 当先hover，然后select时，为避免hover和selection同时触发，及时隐藏hover
-    this.__designer__.on([EVENT_TYPES.SELECTION_ACTIVED, EVENT_TYPES.SELECTION_UPDATED], node => {
+    this.__designer__.on([EVENT_TYPES.SELECTION_ACTIVED, EVENT_TYPES.SELECTION_UPDATED], (node) => {
       if (node === this.node) {
         this._hideEffect()
       }
@@ -67,11 +68,11 @@ export class Hover {
         .style({
           ...this._getStyle(offset),
           position: 'absolute',
-          border: '1px dashed #409EFF',
+          border: `1px dashed ${BORDER_COLOR}`,
           zIndex: 0,
           boxSizing: 'border-box',
           pointerEvents: 'none',
-          transition: 'all .1s',
+          transition: 'all .1s'
         })
         .addClass('hover').el
     }

@@ -36,6 +36,8 @@
         height: calc(100vh - 64px);
         overflow-y: auto;
         background: #ddd;
+        padding: 8px 8px;
+        box-sizing: border-box;
       }
 
       .status-bar-wrap {
@@ -89,7 +91,12 @@
       </div>
 
       <div class="center">
-        <div class="canvas-wrap"></div>
+        <div class="canvas-wrap">
+          <!-- <div style="border: 1px solid red; width: 100%;height: 20px;display: flex;">
+            <div style="width: 100%;border: 1px solid green;box-sizing: border-box;">1</div>
+            <div style="width: 100%;border: 1px solid green;box-sizing: border-box;">2</div>
+          </div> -->
+        </div>
       </div>
 
       <div class="right">

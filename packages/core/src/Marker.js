@@ -1,7 +1,9 @@
 import { $ } from './lib/dom'
 import { isPendType, InsertTypes } from './Util'
-import { getSlotContainer, ROOT_DROP_EL_PADDING } from './Canvas'
+import { getSlotContainer, getSlotContainerUp } from './Canvas'
 import { CONTAINER_PLACOHOLDER_CLS } from './Placeholder'
+
+export const MARKER_COLOR = '#1989fa'
 
 export class Marker {
   constructor(designer) {
@@ -11,6 +13,11 @@ export class Marker {
     this.slotContainer = null
   }
 
+  get model() {
+    return this.__designer__.__canvas__.model
+  }
+
+  // slot container offset
   get offset() {
     const { slotContainer } = this
     const domRect = slotContainer.getBoundingClientRect()
@@ -23,45 +30,65 @@ export class Marker {
   }
 
   show(target, type) {
-    const style = {
-      width: target.classList.contains('canvas-root')
-        ? target.offsetWidth - ROOT_DROP_EL_PADDING * 2 + 'px'
-        : target.offsetWidth + 'px'
-    }
     if (!isPendType(type)) {
       if (this.markerEl) {
         this.markerEl.remove()
         this.markerEl = null
       }
+      if (this.slotContainer) {
+        $(this.slotContainer).style({ border: 0 })
+      }
+
       const borderDirection = type === InsertTypes.BEFORE ? 'border-top' : 'border-bottom'
       if (this.previous) {
         $(this.previous).style(this.previousBorder)
       }
       this.previous = target
       this.previousBorder = { [borderDirection]: $(target).getStyle('border-bottom') }
-      $(target).style({ [borderDirection]: '3px solid green' })
+      $(target).style({ [borderDirection]: `3px solid ${MARKER_COLOR}` })
+
+      const slotContainer = getSlotContainerUp(target)
+      this.slotContainer = slotContainer
+      const node = this.model.findByEl(target)
+      const insertPos =
+        node.isFirstChild && type === InsertTypes.BEFORE
+          ? 'first'
+          : node.isLastChild && type === InsertTypes.AFTER
+          ? 'last'
+          : 'center'
+      this.showFocus(slotContainer, insertPos)
     } else {
       if (this.previous) {
         $(this.previous).style(this.previousBorder)
         this.previous = null
         this.previousBorder = null
       }
+      if (this.slotContainer) {
+        $(this.slotContainer).style({ border: 0 })
+      }
 
       const slotContainer = getSlotContainer(target)
+      this.slotContainer = slotContainer
+
+      const style = {
+        width: slotContainer ? slotContainer.offsetWidth.offset + 'px' : target.offsetWidth + 'px'
+      }
+      // 当容器为空显示cover
       if (
         slotContainer.children[0] &&
         slotContainer.children[0].classList.contains(CONTAINER_PLACOHOLDER_CLS)
       ) {
-        if (this.recEl) {
-          this.update(slotContainer)
+        if (this.coverEl) {
+          this.updateCoverEl()
         } else {
-          this.create(slotContainer)
+          this.createCoverEl()
         }
       } else {
+        this.showFocus(slotContainer, type === InsertTypes.APPEND ? 'last' : 'first')
         if (!this.markerEl) {
           this.markerEl = $('<div>').style({
             display: 'flex',
-            background: '#1989fa',
+            background: MARKER_COLOR,
             height: '3px',
             pointerEvents: 'auto', // 当进入被拖入元素的子元素时，也会触发dragleave事件 所以给marker元素加上 `pointerEvents:none`
             ...style
@@ -69,27 +96,15 @@ export class Marker {
         } else {
           $(this.markerEl).style(style)
         }
-        $(target)[type](this.markerEl)
+        $(slotContainer || target)[type](this.markerEl)
       }
     }
   }
 
-  create(slotContainer) {
-    this.slotContainer = slotContainer
-    this._createCover()
-  }
-
-  update(slotContainer) {
-    if (slotContainer) {
-      this.slotContainer = slotContainer
-      this._updateCover()
-    }
-  }
-
   remove() {
-    if (this.recEl) {
-      this.recEl.remove()
-      this.recEl = null
+    if (this.coverEl) {
+      this.coverEl.remove()
+      this.coverEl = null
     }
     if (this.markerEl) {
       this.markerEl.remove()
@@ -100,11 +115,37 @@ export class Marker {
       this.previous = null
       this.previousBorder = null
     }
+    if (this.slotContainer) {
+      $(this.slotContainer).style({ border: 0 })
+    }
   }
 
-  _createCover() {
+  // pos: first|center|last
+  showFocus(slotContainer, pos) {
+    if (slotContainer) {
+      if (pos === 'center') {
+        $(slotContainer).style({
+          border: `1px dashed ${MARKER_COLOR}`
+        })
+      } else if (pos === 'first') {
+        $(slotContainer).style({
+          borderLeft: `1px dashed ${MARKER_COLOR}`,
+          borderRight: `1px dashed ${MARKER_COLOR}`,
+          borderBottom: `1px dashed ${MARKER_COLOR}`
+        })
+      } else if (pos === 'last') {
+        $(slotContainer).style({
+          borderLeft: `1px dashed ${MARKER_COLOR}`,
+          borderRight: `1px dashed ${MARKER_COLOR}`,
+          borderTop: `1px dashed ${MARKER_COLOR}`
+        })
+      }
+    }
+  }
+
+  createCoverEl() {
     const { width, height, left } = this.offset
-    const div = (this.recEl = $('<div>')
+    const div = (this.coverEl = $('<div>')
       .style({
         width: width + 'px',
         height: height + 'px',
@@ -121,10 +162,10 @@ export class Marker {
     return div
   }
 
-  _updateCover() {
+  updateCoverEl() {
     const { width, height, left } = this.offset
-    this.slotContainer.appendChild(this.recEl)
-    $(this.recEl).style({
+    this.slotContainer.appendChild(this.coverEl)
+    $(this.coverEl).style({
       width: width + 'px',
       height: height + 'px',
       top: 0,

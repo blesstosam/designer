@@ -66,8 +66,9 @@ export class Placeholder {
             lineHeight: '70px',
             width: '100%',
             textAlign: 'center',
-            backgroundColor: 'rgba(0,0,0,0.1)',
-            color: '#666'
+            backgroundColor: '#ddd',
+            color: '#666',
+            border: '1px dotted'
           }).el
           node.placeholderEls = (node.placeholderEls || []).concat([el])
           slotEl.appendChild(el)
