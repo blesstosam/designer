@@ -92,10 +92,7 @@
 
       <div class="center">
         <div class="canvas-wrap">
-          <!-- <div style="border: 1px solid red; width: 100%;height: 20px;display: flex;">
-            <div style="width: 100%;border: 1px solid green;box-sizing: border-box;">1</div>
-            <div style="width: 100%;border: 1px solid green;box-sizing: border-box;">2</div>
-          </div> -->
+
         </div>
       </div>
 
@@ -108,7 +105,7 @@
 </template>
 
 <script>
-import { createApp, h, nextTick } from 'vue'
+import { createApp, nextTick } from 'vue'
 import ElementPlus from 'element-plus'
 import { LoggerPlugin } from '../designer/plugins/logger/index'
 import { StatusBar } from '../designer/plugins/status-bar/index'
@@ -122,6 +119,9 @@ import { PLUGIN_TYPES } from '@davincid/core/src/Plugin'
 
 export default {
   name: 'Home',
+  components: {
+    Components
+  },
   mounted() {
     const renderComponents = () => {
       const app = createApp(Components)

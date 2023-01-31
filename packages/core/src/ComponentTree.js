@@ -1,6 +1,5 @@
 import { EVENT_TYPES } from './Event'
-
-const { CANVAS_ACTIONS_DELETE: C_A_D, CANVAS_ACTIONS_APPEND: C_A_A } = EVENT_TYPES
+const { CANVAS_ACTIONS_DELETE, CANVAS_ACTIONS_APPEND } = EVENT_TYPES
 
 export class ComponentTree {
   constructor(config, designer) {
@@ -23,7 +22,7 @@ export class ComponentTree {
 
     this.uiInstance.__designer__ = this.__designer__
     this.$wrapEl = this.uiInstance.$el.parentNode
-    this.__designer__.on([C_A_D, C_A_A], (payload) => {
+    this.__designer__.on([CANVAS_ACTIONS_DELETE, CANVAS_ACTIONS_APPEND], (payload) => {
       const {
         type,
         viewModel: { children = [] }
@@ -57,7 +56,7 @@ export class ComponentTree {
     if (node) this.__canvas__.handleNodeboxHover(node)
   }
   removeNodeHover() {
-    this.__canvas__.handleNodeboxHoverRemove()
+    this.__canvas__.hover?.remove()
   }
   setCurrentKey(key) {
     if (this.uiInstance && this.uiInstance.setCurrentKey) {

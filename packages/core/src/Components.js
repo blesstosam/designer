@@ -65,7 +65,7 @@ export class Components {
   init(renderUI) {
     this.uiInstance = renderUI()
     this.uiInstance.__designer__ = this.__designer__
-    this.$wrapEl = this.uiInstance.$el.parentNode
+    // this.wrapEl = this.uiInstance.$el.parentNode
     this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
   }
 
