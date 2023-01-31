@@ -19,9 +19,7 @@ export class ComponentTree {
     this.uiInstance = renderUI({
       props: { tree: (data && data.children) || [] }
     })
-
     this.uiInstance.__designer__ = this.__designer__
-    this.$wrapEl = this.uiInstance.$el.parentNode
     this.__designer__.on([CANVAS_ACTIONS_DELETE, CANVAS_ACTIONS_APPEND], (payload) => {
       const {
         type,

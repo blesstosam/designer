@@ -140,11 +140,15 @@ export default {
       }
       return treeData
     },
+    // tree() {
+    //   const data = this.__canvas__?.model
+    //   return data?.children||[]
+    // },
     __componentTree__() {
       return this.__designer__.__componentTree__
     },
     __canvas__() {
-      return this.__designer__.__canvas__
+      return this.__designer__?.__canvas__
     }
   },
   methods: {

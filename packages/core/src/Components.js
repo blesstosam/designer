@@ -136,7 +136,7 @@ export class Components {
                   version,
                   url
                 },
-                // TODO 属性面板怎么处理
+                // TODO 属性面板怎么处理需要加载自定义组件的描述文件
                 attrs: {},
                 render() {
                   // vm 是指微组件实例
