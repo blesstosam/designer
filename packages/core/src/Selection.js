@@ -15,7 +15,7 @@ const {
   SELECTION_DEACTIVED
 } = EVENT_TYPES
 
-const BTNS_WIDTH = 99
+const BTNS_WIDTH = 119
 
 export const BORDER_COLOR = '#409EFF'
 const SELECTION_BORDER_STYLE = `1px solid ${BORDER_COLOR}`
@@ -258,10 +258,10 @@ export class Selection {
         top: 0,
         cursor: 'pointer',
         background: '#1989fa',
-        color: 'white',
+        color: '#fff',
         height: '18px',
+        width: '50px',
         textAlign: 'center',
-        padding: '0 3px',
         lineHeight: '19px',
         fontSize: '12px',
         whiteSpace: 'nowrap',
@@ -287,10 +287,12 @@ export class Selection {
       const dropdownItem = $('<div>').text(node.title).style({
         fontSize: '12px',
         background: '#1989fa',
-        padding: '2px',
         color: '#fff',
         cursor: 'pointer',
-        marginBottom: '2px'
+        marginBottom: '2px',
+        height: '18px',
+        width: '50px',
+        textAlign: 'center',
       }).el
       dropdownItem.addEventListener('click', () => {
         this.__canvas__.handleNodeboxSelect(node)

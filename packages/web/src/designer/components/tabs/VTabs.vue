@@ -1,5 +1,11 @@
+<style>
+.v-tabs .el-tabs__content {
+  padding: 20px;
+}
+</style>
+
 <template>
-  <el-tabs type="border-card">
+  <el-tabs type="border-card" class="v-tabs" v-model="activeName">
     <el-tab-pane
       v-for="(item, index) in tabOptions"
       :key="index"
@@ -14,6 +20,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus'
 
 export default {
@@ -31,6 +38,12 @@ export default {
   components: {
     ElTabs,
     ElTabPane
+  },
+  setup(props) {
+    const activeName = ref(props.tabOptions[0].name)
+    return {
+      activeName
+    }
   }
 }
 </script>
