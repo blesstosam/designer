@@ -60,7 +60,6 @@ export const getSlotContainerUp = (container) => {
   if (isRootContainer(container)) return container
   const c = lookupByAttr(container, SLOT_NAME_KEY)
   if (c) return c
-  return container
 }
 
 export class Canvas {
@@ -182,6 +181,9 @@ export class Canvas {
     this.__dragon__.onDrop(this.canvasEl, ({ getData }) => {
       console.log('wrapper drop...')
       this.marker?.remove()
+
+      // 没有拖动到容器里
+      if (!this.insertType) return
 
       // canvas容器只有两种情况 prepend&append
       const state = getData()
@@ -587,6 +589,8 @@ export class Canvas {
         this.dropToInnerSlot = false
         this.marker?.remove()
 
+        if (!this.insertType) return
+
         // nodebox有三种情况 append & before & after
         // 找到node-box节点的子节点
         const [componentMeta, nodeboxEl] = this.getComponentMetaData(e.target)
@@ -684,6 +688,10 @@ export class Canvas {
       wrapper,
       throttle(({ $event: e, getData }) => {
         console.log('inner over...')
+        // 没有拖到容器组件的slot容器里
+        const containerEl = getSlotContainerUp(e.target)
+        if (!containerEl) return
+
         const { y, target } = e
         const rectPos = target.getBoundingClientRect()
 

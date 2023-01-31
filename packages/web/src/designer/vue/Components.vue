@@ -232,6 +232,7 @@ export default {
       return this.componentList.filter((i) => i.componentType === ComponentTypes.FORM)
     },
     __components__() {
+      // 只要保证designer实例能获取就行
       return this.__designer__.__components__
     }
   },
