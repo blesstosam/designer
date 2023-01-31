@@ -6,7 +6,9 @@
       :label="item.label"
       :name="item.name"
     >
-      {{ item.label }}
+      <div class="content" :c-slot-name="`default${index}`">
+        <slot :name="`default${index}`"></slot>
+      </div>
     </el-tab-pane>
   </el-tabs>
 </template>

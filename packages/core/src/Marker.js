@@ -117,6 +117,7 @@ export class Marker {
     }
     if (this.slotContainer) {
       $(this.slotContainer).style({ border: 0 })
+      this.slotContainer = null
     }
   }
 

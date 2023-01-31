@@ -4,9 +4,9 @@ import { EVENT_TYPES } from './Event'
 import { $ } from './lib/dom'
 
 const {
-  COMPONENTS_DRAG_START: C_D_S,
-  COMPONENTS_DROPED: C_D,
-  DRAG_END: D_E,
+  COMPONENTS_DRAG_START,
+  COMPONENTS_DROPED,
+  DRAG_END,
   SELECTION_UPDATED,
   SELECTION_DEL_CLICK,
   SELECTION_COPY_CLICK,
@@ -15,7 +15,7 @@ const {
   SELECTION_DEACTIVED
 } = EVENT_TYPES
 
-const getBtnsWidth = () => 100
+const BTNS_WIDTH = 99
 
 export const BORDER_COLOR = '#409EFF'
 const SELECTION_BORDER_STYLE = `1px solid ${BORDER_COLOR}`
@@ -89,10 +89,10 @@ export class Selection {
     }
     window.addEventListener('resize', this._cb)
 
-    this.__designer__.on(C_D_S, () => {
+    this.__designer__.on(COMPONENTS_DRAG_START, () => {
       this.recEl.style.zIndex = -1
     })
-    this.__designer__.on([C_D, D_E], () => {
+    this.__designer__.on([COMPONENTS_DROPED, DRAG_END], () => {
       this.recEl.style.zIndex = 2
     })
   }
@@ -109,7 +109,7 @@ export class Selection {
   // btnHPos = left | right
   decideBtnPos(top, right) {
     this.btnVPos = top < this.DISTANCE_TO_TOP ? 'bottom' : 'top'
-    this.btnHPos = right < this.DISTANCE_TO_LEFT + getBtnsWidth() ? 'left' : 'right'
+    this.btnHPos = right < this.DISTANCE_TO_LEFT + BTNS_WIDTH ? 'left' : 'right'
   }
 
   create(node) {
@@ -274,7 +274,7 @@ export class Selection {
     //     background:'#1989fa'
     //   }).el
     //   this.btnWrap.appendChild(img)
-    // }  
+    // }
     this.btnWrap.appendChild(div)
     return div
   }
