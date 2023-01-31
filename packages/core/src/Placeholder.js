@@ -64,7 +64,6 @@ export class Placeholder {
           const el = $(this._createEl()).style({
             height: '70px',
             lineHeight: '70px',
-            width: '100%',
             textAlign: 'center',
             backgroundColor: '#ddd',
             color: '#666',
