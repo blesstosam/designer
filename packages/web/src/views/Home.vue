@@ -87,7 +87,9 @@
 
     <div class="content">
       <div class="left">
-        <div class="component-tepl"></div>
+        <div class="component-tepl">
+          <!-- <Components /> -->
+        </div>
       </div>
 
       <div class="center">

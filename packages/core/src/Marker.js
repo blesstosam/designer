@@ -1,6 +1,6 @@
 import { $ } from './lib/dom'
 import { isPendType, InsertTypes } from './Util'
-import { getSlotContainer, getSlotContainerUp } from './Canvas'
+import { getSlotContainer, getSlotContainerUp, isRootContainer } from './Canvas'
 import { CONTAINER_PLACOHOLDER_CLS } from './Placeholder'
 
 export const MARKER_COLOR = '#1989fa'
@@ -84,7 +84,15 @@ export class Marker {
           this.createCoverEl()
         }
       } else {
-        this.showFocus(slotContainer, type === InsertTypes.APPEND ? 'last' : 'first')
+        this.showFocus(
+          slotContainer,
+          type === InsertTypes.PREPEND
+            ? 'first'
+            : // 当拖到canvas的时候且为append时，为全边框
+            isRootContainer(slotContainer)
+            ? 'center'
+            : 'last'
+        )
         if (!this.markerEl) {
           this.markerEl = $('<div>').style({
             display: 'flex',

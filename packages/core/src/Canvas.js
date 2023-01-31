@@ -269,7 +269,7 @@ export class Canvas {
     // enter 比 over 先触发
     this.__dragon__.onDragEnter(this.canvasEl, ({ $event: e, addDragEnterCls }) => {
       addDragEnterCls(e)
-      this.placeholder && this.placeholder.remove(this.model)
+      this.placeholder?.remove(this.model)
       console.log('wrapper enter...')
     })
 
@@ -349,6 +349,7 @@ export class Canvas {
       this.selection = null
       this.__attr__.uiInstance.resetData()
     }
+    setCurrentViewNodeModel(null)
   }
 
   /**
@@ -529,8 +530,10 @@ export class Canvas {
   remove(node) {
     const movedNode = this.model.removeByKey('$el', node.$el)
     movedNode.$el.remove()
-    this.clearSelection()
-    setCurrentViewNodeModel(null) // TODO 选中前一个
+    if (node.parent) {
+      this.placeholder.create(node.parent)
+      this.handleNodeboxSelect(node.parent)
+    }
     this._dispathRemove(movedNode)
   }
 
