@@ -96,7 +96,7 @@ export class Canvas {
     return this.canvasEl.getBoundingClientRect().y
   }
 
-  // TODO 没有使用di的时候 只能一层层的找依赖
+  // 没有使用di的时候 只能一层层的找依赖
   get __components__() {
     return this.__designer__.__components__
   }
@@ -550,7 +550,7 @@ export class Canvas {
       this.selection = new Selection(this.__designer__)
       this.selection.create(node)
     }
-    this.__componentTree__ && this.__componentTree__.setCurrentKey(node.unique)
+    this.__componentTree__?.setCurrentKey(node.unique)
   }
 
   handleNodeboxHover(node) {

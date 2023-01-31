@@ -153,13 +153,13 @@ export class Marker {
   }
 
   createCoverEl() {
-    const { width, height, left } = this.offset
+    const { width, height, left, top } = this.offset
     const div = (this.coverEl = $('<div>')
       .style({
         width: width + 'px',
         height: height + 'px',
         top: 0,
-        left: left,
+        // left: left + 'px',
         position: 'absolute',
         backgroundColor: 'lightsteelblue',
         zIndex: 2,

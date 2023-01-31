@@ -1,6 +1,10 @@
 <style>
 .v-tabs .el-tabs__content {
-  padding: 20px;
+  padding: 0px;
+}
+.v-tabs .content {
+  margin: 20px;
+  position: relative;
 }
 </style>
 
