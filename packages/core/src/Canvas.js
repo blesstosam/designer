@@ -525,6 +525,13 @@ export class Canvas {
       changeProps({ [item.id]: val }, node.props)
       node.transformProps && node.transformProps(node.props)
     }
+
+    // 有可能容器的slot发生变化，重新计算placeholder
+    if (node.componentType === LAYOUT) {
+      setTimeout(() => {
+        this.placeholder?.create(node)
+      }, 0);
+    }
   }
 
   remove(node) {
