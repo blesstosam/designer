@@ -71,7 +71,7 @@ export class Marker {
       this.slotContainer = slotContainer
 
       const style = {
-        width: slotContainer ? slotContainer.offsetWidth.offset + 'px' : target.offsetWidth + 'px'
+        width: slotContainer ? slotContainer.offsetWidth + 'px' : target.offsetWidth + 'px'
       }
       // 当容器为空显示cover
       if (

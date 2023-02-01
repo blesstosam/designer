@@ -419,22 +419,6 @@ export class Selection {
     $(map[type]).style({ ...this._getBtnHPos(type) })
   }
 
-  _hideBtn(type) {
-    if (type === 'delete') {
-      this.recDelBtn.style.display = 'none'
-    } else {
-      this.recCopyBtn && (this.recCopyBtn.style.display = 'none')
-    }
-  }
-
-  _showBtn(type) {
-    if (type === 'delete') {
-      this.recDelBtn.style.display = 'block'
-    } else {
-      this.recCopyBtn && (this.recCopyBtn.style.display = 'block')
-    }
-  }
-
   _getBtnHPos(type) {
     if (this.btnHPos === 'right') {
       const map = {

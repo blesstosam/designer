@@ -28,7 +28,6 @@ export class Node {
     parent && (this.parent = parent)
 
     node.slotName && (this.slotName = node.slotName)
-    node.vm && (this.vm = node.vm)
 
     // 是否是自定义组件
     this.isCustom = !!node.isCustom
