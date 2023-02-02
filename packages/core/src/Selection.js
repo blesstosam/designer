@@ -125,7 +125,10 @@ export class Selection {
       this._createBtn('copy')
     }
     this.observe()
-    this.__designer__.emit(SELECTION_ACTIVED, node)
+    this.__designer__.emit(SELECTION_ACTIVED, {
+      type: SELECTION_ACTIVED,
+      data: node
+    })
   }
 
   update(node) {
@@ -159,7 +162,10 @@ export class Selection {
       }
     }
 
-    this.__designer__.emit(SELECTION_UPDATED, node)
+    this.__designer__.emit(SELECTION_UPDATED, {
+      type: SELECTION_UPDATED,
+      data: node
+    })
   }
 
   remove() {
@@ -292,7 +298,7 @@ export class Selection {
         marginBottom: '2px',
         height: '18px',
         width: '50px',
-        textAlign: 'center',
+        textAlign: 'center'
       }).el
       dropdownItem.addEventListener('click', () => {
         this.__canvas__.handleNodeboxSelect(node)

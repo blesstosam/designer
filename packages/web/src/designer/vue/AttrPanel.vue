@@ -68,11 +68,9 @@ export default {
     StylePanel,
     EventPanel
   },
+  props: ['mounted'],
   beforeCreate() {
     this.data = getCurrentViewNodeModel()
-  },
-  mounted() {
-    this.__attr__.triggerUIInit()
   },
   data() {
     return {
@@ -92,6 +90,11 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    mounted(val) {
+      if (!val) return
+      this.__attr__.triggerUIInit()
+      this.__attr__.ui = this
     }
   },
   computed: {

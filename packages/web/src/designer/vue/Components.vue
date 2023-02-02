@@ -163,7 +163,9 @@
         <el-tab-pane label="模板" name="template">模板</el-tab-pane>
       </el-tabs>
 
-      <div v-show="activeMenu === 'tree'" class="component-tree-wrap"></div>
+      <div v-show="activeMenu === 'tree'" class="component-tree-wrap">
+        <ComponentTree :mounted="mounted" />
+      </div>
 
       <div
         v-for="(item, index) in menubarPlugins"
@@ -183,16 +185,19 @@ import TreeIcon from './icons/TreeIcon.vue'
 import RecordIcon from './icons/RecordIcon.vue'
 import CodeIcon from './icons/CodeIcon.vue'
 import { componentList, customComList } from '../config'
+import ComponentTree from './ComponentTree.vue'
 import { ComponentTypes } from '@davincid/core/src/Components'
 import { EVENT_TYPES } from '@davincid/core/src/Event'
 
 export default {
   name: 'Components',
+  props: ['mounted'],
   components: {
     LegoIcon,
     TreeIcon,
     RecordIcon,
-    CodeIcon
+    CodeIcon,
+    ComponentTree
   },
   data() {
     return {
@@ -232,14 +237,17 @@ export default {
       return this.componentList.filter((i) => i.componentType === ComponentTypes.FORM)
     },
     __components__() {
-      // 只要保证designer实例能获取就行
       return this.__designer__.__components__
     }
   },
-  mounted() {
-    this.registerCom()
-    this.registerCustomCom()
-    this.__components__.triggerUIInit()
+  watch: {
+    mounted(val) {
+      if (!val) return
+      this.registerCom()
+      this.registerCustomCom()
+      this.__components__.ui = this
+      this.__components__.triggerUIInit()
+    }
   },
   methods: {
     addPlugin(plug) {

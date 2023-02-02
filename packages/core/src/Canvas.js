@@ -339,7 +339,7 @@ export class Canvas {
     this.canvasEl.innerHTML = ''
     this.clearSelection()
     this.showPlaceholder(this.model)
-    localStorage.clear('viewModel')
+    localStorage.removeItem('viewModel')
     this.__designer__.emit(CANVAS_ACTIONS_CLEAR, { type: CANVAS_ACTIONS_CLEAR, viewModel: [] })
   }
 
@@ -347,7 +347,7 @@ export class Canvas {
     if (this.selection) {
       this.selection.remove()
       this.selection = null
-      this.__attr__.uiInstance.resetData()
+      this.__attr__.resetData()
     }
     setCurrentViewNodeModel(null)
   }
@@ -550,7 +550,7 @@ export class Canvas {
 
   handleNodeboxSelect(node) {
     setCurrentViewNodeModel(node)
-    this.__attr__.uiInstance.setData(node)
+    this.__attr__.setData(node)
     if (this.selection) {
       this.selection.update(node)
     } else {

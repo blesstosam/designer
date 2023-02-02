@@ -9,10 +9,6 @@ import { Plugin } from './Plugin'
 import { Dragon } from './Dragon'
 import { Cursor } from './Cursor'
 
-// 页面模型数据 应该是一个 json
-// 参考 virtual dom 树型数据结构 =>
-// { tag: 'div', { style: { width: '50%' } },  children: [ text : 'Hello'] }
-// 然后把 tag 换成 componentName，把布局 css 换成特定的约定 比如 column span 等
 let viewModel = null
 try {
   viewModel = JSON.parse(localStorage.getItem('viewModel'))
@@ -52,33 +48,19 @@ class Designer extends Event {
 
   initAttr() {
     this.__attr__ = new Attr(this.config, this)
-    this.__attr__.init(this.config.renderAttr)
   }
 
   initComponents() {
     this.__dragon__ = new Dragon({}, this)
     this.__components__ = new Components(this.config, this)
-    this.__components__.init(this.config.renderComponents)
   }
 
   initToolbar() {
     this.__toolbar__ = new Toolbar(this.config, this)
-    this.__toolbar__.init(this.config.renderToolbar)
   }
 
   initComponentTree() {
-    // 组件树依赖
-    // 1.components组件dom渲染完成
-    // 2.canvas将组件渲染完成
-    const { CANVAS_LAYOUTED, COMPONENTS_UI_INITED } = EVENT_TYPES
-    let index = 0
-    this.on([CANVAS_LAYOUTED, COMPONENTS_UI_INITED], () => {
-      index++
-      if (index === 2) {
-        this.__componentTree__ = new ComponentTree(this.config, this)
-        this.__componentTree__.init(this.config.renderComponentTree)
-      }
-    })
+    this.__componentTree__ = new ComponentTree(this.config, this)
   }
 
   initKeyboard() {

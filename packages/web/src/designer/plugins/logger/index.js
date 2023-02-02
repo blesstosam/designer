@@ -34,7 +34,7 @@ export class LoggerPlugin {
       render: () => h(LoggerPluginVue, props)
     }).component(ElTooltip.name, ElTooltip)
 
-    this.uiInstance = app.mount(document.querySelector(wrap))
+    app.mount(document.querySelector(wrap))
 
     this.__designer__.on([C_A_A, C_A_P, C_A_AFTER, C_A_BEFORE, C_A_D, A_S_A, C_A_C], (d) => {
       const { type, data } = d
