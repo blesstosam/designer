@@ -50,6 +50,7 @@ export class StatusBar {
   }
 }
 
+StatusBar.$container = '.status-bar-wrap'
 StatusBar.$inject = ['__canvas__'] // 依赖的core api
 StatusBar.$name = 'StatusBar'
 StatusBar.$type = PLUGIN_TYPES.UI

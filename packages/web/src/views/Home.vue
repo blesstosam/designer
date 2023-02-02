@@ -137,16 +137,15 @@ export default {
         canvasWrap: '.canvas-wrap',
         plugins: [LoggerPlugin, StatusBar]
       })
-      // for debug
+
       window.designer = designer
 
       // 处理插件，为插件设置容器dom
       for (let plug of designer.__plug__.plugins.values()) {
-        const { p: plugInstance, type, name, deps } = plug
-        if (name === 'StatusBar') {
-          plugInstance.init('.status-bar-wrap')
-        }
-        if (type === PLUGIN_TYPES.MENU_BAR) {
+        const { p: plugInstance, type, name, deps, container } = plug
+        if (container) {
+          plugInstance.init(container)
+        } else if (type === PLUGIN_TYPES.MENU_BAR) {
           // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器）
           designer.on(deps, () => {
             const wrapName = designer.__components__.addPlugin(plug)

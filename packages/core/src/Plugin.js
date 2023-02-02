@@ -9,7 +9,7 @@ const PLUGIN_SUPPORT = [
 // 插件类型
 export const PLUGIN_TYPES = {
   MENU_BAR: 'menuBar', // 左侧菜单栏插件，属于ui插件
-  UI: 'ui', // 普通 ui 插件
+  UI: 'ui' // 普通 ui 插件
 }
 
 export class Plugin {
@@ -24,9 +24,7 @@ export class Plugin {
       throw new Error('[designer] 插件请传递一个构造函数或类')
     }
 
-    // 如果不是几个替换默认的组件
     if (!PLUGIN_SUPPORT.includes(Plugin.$name)) {
-      // TODO 通过 injector 注入依赖
       const arr = []
       for (const n of Plugin.$inject) {
         arr.push(this.__designer__[n])
@@ -37,7 +35,8 @@ export class Plugin {
         p: new Plugin(...arr),
         type: Plugin.$type,
         name: Plugin.$name,
-        deps: Plugin.$deps
+        deps: Plugin.$deps,
+        container: Plugin.$container
       })
     } else {
       // TODO 如果要替换默认的组件
