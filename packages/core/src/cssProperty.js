@@ -1,4 +1,4 @@
-export const cssProperty = {
+export const CssProperty = {
   backgroundColor: 1,
   color: 1,
   fontFamily: 1,

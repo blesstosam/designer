@@ -5,7 +5,6 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import { registerCom } from './components/registerCom'
 import { routes } from './router'
-import Home from './views/Home.vue'
 
 import { renderWithQiankun, qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 

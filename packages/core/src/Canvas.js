@@ -217,7 +217,6 @@ export class Canvas {
             insertType: this.insertType,
             state,
             siblingOrParentDom: this.canvasEl,
-            parentNode: this.model
           })
         } else {
           this[this.insertType](state.data, this.canvasEl)
@@ -674,7 +673,6 @@ export class Canvas {
                     insertType: this.insertType,
                     state,
                     siblingOrParentDom: lookupByClassName(e.target, NODE_BOX_CLS),
-                    parentNode: dropedNode
                   })
                 } else {
                   this[this.insertType](
@@ -756,9 +754,9 @@ export class Canvas {
     return wrapper
   }
 
-  wrapBlockThenInsert({ insertType, state, siblingOrParentDom, parentNode }) {
+  wrapBlockThenInsert({ insertType, state, siblingOrParentDom }) {
     const blockCom = this.__components__.findComByName('VBlock')
-    const wrapNode = this[insertType](blockCom, siblingOrParentDom, parentNode)
+    const wrapNode = this[insertType](blockCom, siblingOrParentDom, true)
     const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
     this[InsertTypes.APPEND]({ ...state.data, slotName }, wrapNode.$el.children[0])
   }

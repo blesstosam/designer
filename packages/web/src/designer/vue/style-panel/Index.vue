@@ -156,7 +156,6 @@ export default {
       this.handleChange(item, valArr[1])
     },
     handleChange(item, val) {
-      debugger
       const currentNode = getCurrentViewNodeModel()
       this.canvas.patch(currentNode, item, val)
       this.designer.emit(EVENT_TYPES.ATTRPANEL_SET_ATTR, {

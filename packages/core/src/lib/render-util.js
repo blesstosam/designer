@@ -1,5 +1,5 @@
 import { createApp, h, reactive } from 'vue'
-import { cssProperty } from '../cssProperty'
+import { CssProperty } from '../CssProperty'
 import { parse } from '../lib/parse-schema'
 
 // 生成vue实例挂载
@@ -8,7 +8,6 @@ export function genVueInstance(appOpt, props) {
     render: () => h(appOpt, props)
   })
   const rootInstance = app.mount(document.createElement('div'))
-  // console.log('app', app, 'rootInstance', rootInstance)
   return rootInstance
 }
 
@@ -18,7 +17,7 @@ export function parseProps(attrs) {
   const obj = {}
   allCfgs.forEach((i) => {
     // 将css属性包一层style
-    if (cssProperty[i.id]) {
+    if (CssProperty[i.id]) {
       obj.style = obj.style || {}
       obj.style[i.id] = i.value
     } else {
@@ -31,7 +30,7 @@ export function parseProps(attrs) {
 
 export function changeProps(newProps, oldProps) {
   for (const k in newProps) {
-    if (cssProperty[k]) {
+    if (CssProperty[k]) {
       oldProps.style[k] = newProps[k]
     } else {
       oldProps[k] = newProps[k]

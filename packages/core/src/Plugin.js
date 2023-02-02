@@ -6,7 +6,7 @@ const PLUGIN_SUPPORT = [
   '__componentTree__'
 ]
 
-// 插件类型
+// 插件类型, 只保留左侧菜单插件
 export const PLUGIN_TYPES = {
   MENU_BAR: 'menuBar', // 左侧菜单栏插件，属于ui插件
   UI: 'ui' // 普通 ui 插件
