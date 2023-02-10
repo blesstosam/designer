@@ -2,7 +2,7 @@
 .v-tabs .el-tabs__content {
   padding: 0px;
 }
-.v-tabs .content {
+.v-tabs .tab-content {
   margin: 20px;
   position: relative;
 }
@@ -16,7 +16,7 @@
       :label="item.label"
       :name="item.name"
     >
-      <div class="content" :c-slot-name="`default${index}`">
+      <div class="tab-content" :c-slot-name="`default${index}`">
         <slot :name="`default${index}`"></slot>
       </div>
     </el-tab-pane>

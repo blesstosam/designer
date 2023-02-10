@@ -18,7 +18,7 @@ export class Placeholder {
 
   create(node) {
     if (node.isRoot) {
-      if (!this.getPlaceholderEls(node)) {
+      if (!this.getPlaceholderEls(node)?.length && !node.children.length) {
         const el = $(this._createEl()).style({ paddingTop: '200px' }).el
         node.$el.appendChild(el)
         this.map.set(el, node)
@@ -35,7 +35,8 @@ export class Placeholder {
             textAlign: 'center',
             backgroundColor: '#ddd',
             color: '#666',
-            border: '1px dotted'
+            border: '1px dotted',
+            overflow: 'hidden'
           }).el
           arr.push(el)
           slotEl.appendChild(el)
