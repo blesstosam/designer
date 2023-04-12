@@ -16,7 +16,7 @@
 </style>
 
 <template>
-  <div class="v-column" :style="{ background: this.bgColor }">
+  <div class="v-column" :style="{ background: bgColor }">
     <!-- 可改为grid布局 -->
     <div
       class="row"

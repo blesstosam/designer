@@ -217,7 +217,6 @@ export class Canvas {
             insertType: this.insertType,
             state,
             siblingOrParentDom: this.canvasEl,
-            parentNode: this.model
           })
         } else {
           this[this.insertType](state.data, this.canvasEl)
@@ -339,7 +338,7 @@ export class Canvas {
     this.canvasEl.innerHTML = ''
     this.clearSelection()
     this.showPlaceholder(this.model)
-    localStorage.clear('viewModel')
+    localStorage.removeItem('viewModel')
     this.__designer__.emit(CANVAS_ACTIONS_CLEAR, { type: CANVAS_ACTIONS_CLEAR, viewModel: [] })
   }
 
@@ -347,7 +346,7 @@ export class Canvas {
     if (this.selection) {
       this.selection.remove()
       this.selection = null
-      this.__attr__.uiInstance.resetData()
+      this.__attr__.resetData()
     }
     setCurrentViewNodeModel(null)
   }
@@ -550,7 +549,7 @@ export class Canvas {
 
   handleNodeboxSelect(node) {
     setCurrentViewNodeModel(node)
-    this.__attr__.uiInstance.setData(node)
+    this.__attr__.setData(node)
     if (this.selection) {
       this.selection.update(node)
     } else {
@@ -674,7 +673,6 @@ export class Canvas {
                     insertType: this.insertType,
                     state,
                     siblingOrParentDom: lookupByClassName(e.target, NODE_BOX_CLS),
-                    parentNode: dropedNode
                   })
                 } else {
                   this[this.insertType](
@@ -756,9 +754,9 @@ export class Canvas {
     return wrapper
   }
 
-  wrapBlockThenInsert({ insertType, state, siblingOrParentDom, parentNode }) {
+  wrapBlockThenInsert({ insertType, state, siblingOrParentDom }) {
     const blockCom = this.__components__.findComByName('VBlock')
-    const wrapNode = this[insertType](blockCom, siblingOrParentDom, parentNode)
+    const wrapNode = this[insertType](blockCom, siblingOrParentDom, true)
     const slotName = lookdownForAttr(wrapNode.$el, SLOT_NAME_KEY)
     this[InsertTypes.APPEND]({ ...state.data, slotName }, wrapNode.$el.children[0])
   }

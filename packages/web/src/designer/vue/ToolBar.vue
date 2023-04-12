@@ -37,27 +37,27 @@
     </div>
     <div class="toolbar-content">
       <span class="tool-item" :class="{ disabled: !prevStatus }" @click="undo">
-        <!-- <el-icon><Back /></el-icon> -->
+        <el-icon><Back /></el-icon>
         <span>上一步</span>
       </span>
       <span class="tool-item" :class="{ disabled: !nextStatus }" @click="redo">
-        <!-- <el-icon><Right /></el-icon> -->
+        <el-icon><Right /></el-icon>
         <span>下一步</span>
       </span>
       <span class="tool-item" @click="save">
-        <!-- <el-icon><CameraFilled /></el-icon> -->
+        <el-icon><CameraFilled /></el-icon>
         <span>导出</span>
       </span>
       <span class="tool-item" @click="clear">
-        <!-- <el-icon><Delete /></el-icon> -->
+        <el-icon><Delete /></el-icon>
         <span>清空</span>
       </span>
       <span class="tool-item" @click="preview">
-        <!-- <el-icon><Monitor /></el-icon> -->
+        <el-icon><Monitor /></el-icon>
         <span>预览</span>
       </span>
       <span class="tool-item" @click="save">
-        <!-- <el-icon><UploadFilled /></el-icon> -->
+        <el-icon><UploadFilled /></el-icon>
         <span>保存</span>
       </span>
     </div>
@@ -71,6 +71,7 @@ import Logo from '../../assets/logo.png'
 
 export default {
   name: 'ToolBar',
+  props: ['mounted'],
   setup(_, ctx) {
     const prevStatus = ref(0)
     const nextStatus = ref(0)
@@ -103,10 +104,21 @@ export default {
       return this.__designer__
     },
     toolbar() {
-      return this.__designer__.__toolbar__
+      return this.__designer__?.__toolbar__
     },
     commander() {
-      return this.toolbar.commander
+      return this.toolbar?.commander
+    }
+  },
+  watch: {
+    mounted(val) {
+      if (!val) return
+      this.commander?.listen(({ actions, idx }) => {
+        if (actions.length === 1) {
+          this.activePrev()
+        }
+      })
+      this.toolbar?.triggerUIInit()
     }
   },
   methods: {

@@ -20,19 +20,9 @@ export class Toolbar {
     return this.__designer__.__canvas__
   }
 
-  init(renderUI) {
-    this.uiInstance = renderUI()
-    this.uiInstance.__designer__ = this.__designer__
-
-    this.commander.listen(({ actions, idx }) => {
-      if (actions.length === 1) {
-        this.uiInstance.activePrev()
-      }
-    })
-
+  triggerUIInit() {
     this.__designer__.on(EVENT_TYPES.KEYBOARD_REDO, this.redo.bind(this))
     this.__designer__.on(EVENT_TYPES.KEYBOARD_UNDO, this.undo.bind(this))
-
     this.__designer__.emit(EVENT_TYPES.TOOLBAR_INITED)
   }
 

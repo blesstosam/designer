@@ -63,9 +63,8 @@
             <img :src="data.icon && data.icon.value" />
             <span style="color: #333">{{ data.title }}</span>
           </div>
-          <!-- actionShowRow === data.$treeNodeId -->
           <div
-            v-if="data.componentName!=='Page'"
+            v-if="data.componentName !== 'Page'"
             class="right"
             :style="{ visibility: actionShowRow === data.$treeNodeId ? 'visible' : 'hidden' }"
           >
@@ -82,14 +81,11 @@
 </template>
 
 <script>
+import { EVENT_TYPES } from '@davincid/core/src/Event'
+
 export default {
   name: 'ComponentTree',
-  props: {
-    tree: Array
-  },
-  created() {
-    this.innerTree = this.tree
-  },
+  props: ['mounted'],
   data() {
     return {
       innerTree: [],
@@ -140,15 +136,21 @@ export default {
       }
       return treeData
     },
-    // tree() {
-    //   const data = this.__canvas__?.model
-    //   return data?.children||[]
-    // },
     __componentTree__() {
       return this.__designer__.__componentTree__
     },
     __canvas__() {
       return this.__designer__?.__canvas__
+    }
+  },
+  watch: {
+    mounted(val) {
+      if (!val) return
+      this.__designer__.once(EVENT_TYPES.CANVAS_INITED, () => {
+        this.innerTree = this.__canvas__.model.children
+      })
+
+      this.__componentTree__.ui = this
     }
   },
   methods: {

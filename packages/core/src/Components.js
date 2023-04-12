@@ -36,7 +36,6 @@ export const FrameWorkTypes = {
   WebComponent: 'WebComponent'
 }
 
-
 /**
  * 组件提供了注册，绑定事件等方法
  * 视图根据用户自己的选择定制通过重写 init 方法
@@ -48,6 +47,7 @@ export class Components {
     this.__designer__ = designer
     this._hasRegistered = []
     this.loader = null
+    this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
   }
 
   get __dragon__() {
@@ -60,13 +60,6 @@ export class Components {
 
   get registeredComponents() {
     return this._hasRegistered
-  }
-
-  init(renderUI) {
-    this.uiInstance = renderUI()
-    this.uiInstance.__designer__ = this.__designer__
-    // this.wrapEl = this.uiInstance.$el.parentNode
-    this.__designer__.emit(EVENT_TYPES.COMPONENTS_INITED)
   }
 
   triggerUIInit() {
@@ -164,6 +157,10 @@ export class Components {
 
   findComByName(name) {
     return this._hasRegistered.find((c) => c.componentName === name)
+  }
+
+  addPlugin(plugin) {
+    return this.ui?.addPlugin(plugin)
   }
 
   renderComponent() {

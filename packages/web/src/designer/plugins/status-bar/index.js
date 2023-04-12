@@ -31,7 +31,7 @@ export class StatusBar {
       render: () => h(StatusBarVue, props)
     }).component(ElTooltip.name, ElTooltip)
 
-    this.uiInstance = app.mount(document.querySelector(wrap))
+    app.mount(document.querySelector(wrap))
 
     const getParentTitle= (node, arr) => {
       node.title && arr.unshift(node.title)
@@ -40,7 +40,7 @@ export class StatusBar {
       }
     }
 
-    this.__designer__.on([SELECTION_ACTIVED, SELECTION_UPDATED], (node) => {
+    this.__designer__.on([SELECTION_ACTIVED, SELECTION_UPDATED], ({type, data: node}) => {
       if (node) {
         const pathArr = []
         getParentTitle(node, pathArr)
@@ -50,6 +50,7 @@ export class StatusBar {
   }
 }
 
+StatusBar.$container = '.status-bar-wrap'
 StatusBar.$inject = ['__canvas__'] // 依赖的core api
 StatusBar.$name = 'StatusBar'
 StatusBar.$type = PLUGIN_TYPES.UI

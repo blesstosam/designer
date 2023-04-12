@@ -82,97 +82,87 @@
 <template>
   <div class="home">
     <div class="header">
-      <div class="toolbar-wrap"></div>
+      <div class="toolbar-wrap">
+        <ToolBar :mounted="mounted" />
+      </div>
     </div>
 
     <div class="content">
       <div class="left">
         <div class="component-tepl">
-          <!-- <Components /> -->
+          <Components :mounted="mounted" />
         </div>
       </div>
 
       <div class="center">
-        <div class="canvas-wrap">
-
-        </div>
+        <div class="canvas-wrap"></div>
       </div>
 
       <div class="right">
         <div class="status-bar-wrap"></div>
-        <div id="attr"></div>
+        <div id="attr">
+          <AttrPanel :mounted="mounted" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { createApp, nextTick } from 'vue'
-import ElementPlus from 'element-plus'
+import { nextTick, onMounted, ref } from 'vue'
 import { LoggerPlugin } from '../designer/plugins/logger/index'
 import { StatusBar } from '../designer/plugins/status-bar/index'
 import Components from '../designer/vue/Components.vue'
 import ComponentTree from '../designer/vue/ComponentTree.vue'
 import ToolBar from '../designer/vue/ToolBar.vue'
 import AttrPanel from '../designer/vue/AttrPanel.vue'
-import { registerCom } from '../components/registerCom'
+import { registerGlobalFn } from '../main'
 import { Designer } from '@davincid/core/src/index'
 import { PLUGIN_TYPES } from '@davincid/core/src/Plugin'
 
 export default {
   name: 'Home',
   components: {
-    Components
+    ToolBar,
+    Components,
+    ComponentTree,
+    AttrPanel
   },
-  mounted() {
-    const renderComponents = () => {
-      const app = createApp(Components)
-      app.use(ElementPlus)
-      return app.mount('.component-tepl')
-    }
-    const renderToolbar = () => {
-      const app = createApp(ToolBar)
-      return app.mount('.toolbar-wrap')
-    }
-    const renderAttr = () => {
-      const app = createApp(AttrPanel)
-      app.use(ElementPlus)
-      return app.mount('#attr')
-    }
-    const renderComponentTree = ({ props }) => {
-      const app = createApp(ComponentTree, props)
-      app.use(ElementPlus)
-      registerCom(app)
-      return app.mount('.component-tree-wrap')
-    }
+  setup() {
+    const mounted = ref(false)
 
-    this.designer = new Designer({
-      canvasWrap: '.canvas-wrap',
-      renderComponents,
-      renderComponentTree,
-      renderToolbar,
-      renderAttr,
-      plugins: [LoggerPlugin, StatusBar]
-    })
-    this.designer.__vueApp__ = this
-    // for debug
-    window.designer = this.designer
+    let designer = null
+    onMounted(() => {
+      designer = new Designer({
+        canvasWrap: '.canvas-wrap',
+        plugins: [LoggerPlugin, StatusBar]
+      })
 
-    // 处理插件，为插件设置容器dom
-    for (let plug of this.designer.__plug__.plugins.values()) {
-      const { p: plugInstance, type, name, deps } = plug
-      if (name === 'StatusBar') {
-        plugInstance.init('.status-bar-wrap')
-      }
-      if (type === PLUGIN_TYPES.MENU_BAR) {
-        // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器）
-        this.designer.on(deps, () => {
-          const wrapName = this.designer.__components__.uiInstance.addPlugin(plug)
-          nextTick(() => {
-            plugInstance.init(wrapName)
+      window.designer = designer
+
+      // 处理插件，为插件设置容器dom
+      for (let plug of designer.__plug__.plugins.values()) {
+        const { p: plugInstance, type, name, deps, container } = plug
+        if (container) {
+          plugInstance.init(container)
+        } else if (type === PLUGIN_TYPES.MENU_BAR) {
+          // 插件需要提供一个图标（svg文件路径）和一个init方法（参数为dom容器或选择器）
+          designer.on(deps, () => {
+            const wrapName = designer.__components__.addPlugin(plug)
+            nextTick(() => {
+              plugInstance.init(wrapName)
+            })
           })
-        })
+        }
       }
+
+      registerGlobalFn('__designer__', designer)
+
+      mounted.value = true
+    })
+
+    return {
+      mounted
     }
   }
 }

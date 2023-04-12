@@ -56,3 +56,7 @@ renderWithQiankun({
 if (!qiankunWindow.__POWERED_BY_QIANKUN__) {
   render({})
 }
+
+export function registerGlobalFn(key, fn) {
+  app.config.globalProperties[key] = fn
+}
